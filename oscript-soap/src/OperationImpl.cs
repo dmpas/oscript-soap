@@ -1,14 +1,17 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
+using System.Web.Services.Description;
 
 namespace OneScript.Soap
 {
 	[ContextClass("WSОперация", "WSOperation")]
-	public class OperationImpl : AutoContext<OperationImpl>
+	public class OperationImpl : AutoContext<OperationImpl>, IWithName
 	{
-		internal OperationImpl()
+		internal OperationImpl(Operation operation)
 		{
+			Name = operation.Name;
+			Documentation = operation.Documentation;
 		}
 
 		[ContextProperty("ВозвращаемоеЗначение", "ReturnValue")]

@@ -1,5 +1,6 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
+using System.Web.Services.Description;
 
 namespace OneScript.Soap
 {
@@ -7,8 +8,10 @@ namespace OneScript.Soap
 	[ContextClass ("WSСервис", "WSService")]
 	public class ServiceImpl : AutoContext<ServiceImpl>, IWithName
 	{
-		internal ServiceImpl ()
+		internal ServiceImpl (Service service)
 		{
+			Name = service.Name;
+			Documentation = service.Documentation;
 		}
 
 		[ContextProperty ("Имя", "Name")]

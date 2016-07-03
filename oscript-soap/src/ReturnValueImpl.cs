@@ -1,13 +1,14 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
+using System.Web.Services.Description;
 
 namespace OneScript.Soap
 {
 	[ContextClass("WSВозвращаемоеЗначение", "WSReturnValue")]
 	public class ReturnValueImpl : AutoContext<ReturnValueImpl>
 	{
-		internal ReturnValueImpl()
+		internal ReturnValueImpl(OperationOutput returnValue)
 		{
 		}
 

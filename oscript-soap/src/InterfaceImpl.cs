@@ -1,14 +1,17 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
+using System.Web.Services.Description;
 
 namespace OneScript.Soap
 {
 	[ContextClass("WSИнтерфейс", "WSInterface")]
-	public class InterfaceImpl : AutoContext<InterfaceImpl>
+	public class InterfaceImpl : AutoContext<InterfaceImpl>, IWithName
 	{
-		internal InterfaceImpl()
+		internal InterfaceImpl(Binding binding)
 		{
+			Documentation = binding.Documentation;
+			Name = binding.Name;
 		}
 
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]

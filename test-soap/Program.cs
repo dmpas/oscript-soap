@@ -39,6 +39,13 @@ namespace testsoap
 			CheckIValueFor<ProxyImpl>();
 		}
 
+		public void TestWsdlNoAuth()
+		{
+
+			var def = new DefinitionsImpl("http://vm21297.hv8.ru:10080/httpservice/ws/complex.1cws?wsdl");
+
+		}
+
 		public void Run()
 		{
 			Check_AllClassesIsIValues();

@@ -4,6 +4,7 @@ using ScriptEngine.Machine;
 
 namespace OneScript.Soap
 {
+	[ContextClass("WSПрокси", "WSProxy")]
 	public class ProxyImpl : AutoContext<ProxyImpl> // TODO: Убрать AutoContext
 	{
 		// TODO: полный список аргументов
@@ -36,6 +37,7 @@ namespace OneScript.Soap
 		public IValue XdtoFactory { get; }
 
 		// TODO: полный список параметров
+		[ScriptConstructor]
 		public static IRuntimeContextInstance Constructor(DefinitionsImpl definitions)
 		{
 			return new ProxyImpl(definitions);

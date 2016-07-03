@@ -1,11 +1,12 @@
 ﻿using System;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
+using System.Web.Services.Description;
 
 namespace OneScript.Soap
 {
 	[ContextClass("WSПараметр", "WSParameter")]
-	public class ParameterImpl : AutoContext<ParameterImpl>
+	public class ParameterImpl : AutoContext<ParameterImpl>, IWithName
 	{
 		internal ParameterImpl ()
 		{

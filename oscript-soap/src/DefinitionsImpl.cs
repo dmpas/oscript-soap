@@ -4,6 +4,8 @@ using ScriptEngine.Machine;
 using System.IO;
 using System.Web.Services.Description;
 using System.Xml;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OneScript.Soap
 {
@@ -35,8 +37,16 @@ namespace OneScript.Soap
 
 			_wsd = ReachWsdl();
 
-			// TODO: Место для волшебства
+			Services = ServiceCollectionImpl.Create(_wsd.Services);
+			InitializeStructures();
+		}
 
+		private void InitializeStructures()
+		{
+			foreach (Service service in _wsd.Services)
+			{
+				ServiceImpl _s = new ServiceImpl(service);
+			}
 		}
 
 		[ContextProperty("Документация", "Documentation")]
@@ -55,15 +65,22 @@ namespace OneScript.Soap
 			return ServiceDescription.Read(stream);
 		}
 
-		public static IRuntimeContextInstance Constructor (string wsdl,
-		                                                   string userName = null,
-		                                                   string password = null,
-		                                                   IValue internetProxy = null,
-		                                                   decimal timeout = 0,
-		                                                   IValue securedConnection = null
+		[ScriptConstructor()]
+		public static IRuntimeContextInstance Constructor (IValue wsdl,
+			IValue userName = null,
+			IValue password = null,
+			IValue internetProxy = null,
+			IValue timeout = null,
+			IValue securedConnection = null
 		)
 		{
-			var definitions = new DefinitionsImpl(wsdl, userName, password, internetProxy, timeout, securedConnection);
+			var definitions = new DefinitionsImpl(
+				wsdl.ToString(),
+				userName?.ToString(),
+				password?.ToString(),
+				internetProxy,
+				0,
+				securedConnection);
 			return definitions;
 		}
 	}
