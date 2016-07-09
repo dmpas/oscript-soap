@@ -6,6 +6,7 @@ using System.Web.Services.Description;
 using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
+using TinyXdto;
 
 namespace OneScript.Soap
 {
@@ -37,6 +38,8 @@ namespace OneScript.Soap
 
 			_wsd = ReachWsdl();
 
+			XdtoFactory = new XdtoFactoryImpl (_wsd.Types.Schemas);
+
 			Services = ServiceCollectionImpl.Create(_wsd.Services);
 			InitializeStructures();
 		}
@@ -56,7 +59,7 @@ namespace OneScript.Soap
 		public ServiceCollectionImpl Services { get; }
 
 		[ContextProperty("ФабрикаXDTO", "XDTOFactory")]
-		public IValue XdtoFactory { get; }
+		public XdtoFactoryImpl XdtoFactory { get; }
 
 		// TODO: использовать InternetProxy, timeout и SecuredConnection
 		private ServiceDescription ReachWsdl()
