@@ -22,10 +22,15 @@ namespace OneScript.Soap
 				}
 			}
 
-			/*
-			Binding binding = port.Service.ServiceDescription.Bindings.
-			Interface = new InterfaceImpl(binding);
-			*/
+			// TODO: Проверить логику поиска
+			foreach (var oBinding in port.Service.ServiceDescription.Bindings) {
+				var binding = oBinding as Binding;
+				if (binding.Name.Equals (port.Binding.Name)) {
+					Interface = new InterfaceImpl (binding);
+					break;
+				}
+			}
+
 		}
 
 		[ContextProperty("Документация", "Documentation")]

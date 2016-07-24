@@ -12,6 +12,7 @@ namespace OneScript.Soap
 		{
 			Name = service.Name;
 			Documentation = service.Documentation;
+			Endpoints = EndpointCollectionImpl.Create (service.Ports);
 		}
 
 		[ContextProperty ("Имя", "Name")]

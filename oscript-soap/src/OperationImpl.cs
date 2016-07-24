@@ -8,7 +8,7 @@ namespace OneScript.Soap
 	[ContextClass("WSОперация", "WSOperation")]
 	public class OperationImpl : AutoContext<OperationImpl>, IWithName
 	{
-		internal OperationImpl(Operation operation)
+		internal OperationImpl(OperationBinding operation)
 		{
 			Name = operation.Name;
 			Documentation = operation.Documentation;
@@ -27,4 +27,3 @@ namespace OneScript.Soap
 		public ParameterCollectionImpl Parameters { get; }
 	}
 }
-

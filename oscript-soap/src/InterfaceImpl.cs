@@ -12,6 +12,8 @@ namespace OneScript.Soap
 		{
 			Documentation = binding.Documentation;
 			Name = binding.Name;
+			// TODO: NamespaceURI = 
+			Operations = OperationCollectionImpl.Create (binding.Operations);
 		}
 
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]
@@ -27,4 +29,3 @@ namespace OneScript.Soap
 		public OperationCollectionImpl Operations { get; }
 	}
 }
-
