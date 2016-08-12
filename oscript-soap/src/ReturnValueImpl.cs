@@ -8,7 +8,7 @@ namespace OneScript.Soap
 	[ContextClass("WSВозвращаемоеЗначение", "WSReturnValue")]
 	public class ReturnValueImpl : AutoContext<ReturnValueImpl>
 	{
-		internal ReturnValueImpl(OutputBinding returnValue)
+		internal ReturnValueImpl(OperationOutput returnValue)
 		{
 			Documentation = returnValue.Documentation;
 		}

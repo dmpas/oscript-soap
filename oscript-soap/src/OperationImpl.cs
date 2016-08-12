@@ -2,16 +2,20 @@
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Web.Services.Description;
+using System.Collections.Generic;
 
 namespace OneScript.Soap
 {
 	[ContextClass("WSОперация", "WSOperation")]
 	public class OperationImpl : AutoContext<OperationImpl>, IWithName
 	{
-		internal OperationImpl(OperationBinding operation)
+		internal OperationImpl(Operation operation)
 		{
 			Name = operation.Name;
 			Documentation = operation.Documentation;
+			ReturnValue = new ReturnValueImpl (operation.Messages.Output);
+
+			Parameters = ParameterCollectionImpl.Create (operation.Messages.Input);
 		}
 
 		[ContextProperty("ВозвращаемоеЗначение", "ReturnValue")]

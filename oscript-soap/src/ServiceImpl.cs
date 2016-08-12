@@ -11,6 +11,7 @@ namespace OneScript.Soap
 		internal ServiceImpl (Service service)
 		{
 			Name = service.Name;
+			NamespaceURI = service.ServiceDescription.TargetNamespace;
 			Documentation = service.Documentation;
 			Endpoints = EndpointCollectionImpl.Create (service.Ports);
 		}

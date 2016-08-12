@@ -19,7 +19,7 @@ namespace testsoap
 		}
 
 		// В случае неправильного наследования код не скомпилируется
-		void Check_AllClassesIsIValues()
+		void Check_AllClassesAreIValues()
 		{
 			CheckIValueFor<ParameterImpl>();
 			CheckIValueFor<ParameterCollectionImpl>();
@@ -58,6 +58,9 @@ namespace testsoap
 					}
 				}
 			}
+
+			var proxy = ProxyImpl.Constructor (def, "http://dmpas/complex", "Complex", "ComplexSoap");
+
 		}
 
 		private void StartEngine ()
@@ -70,7 +73,7 @@ namespace testsoap
 
 		public void Run()
 		{
-			Check_AllClassesIsIValues();
+			Check_AllClassesAreIValues();
 
 			StartEngine ();
 			TestWsdlNoAuth ();

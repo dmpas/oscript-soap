@@ -26,8 +26,14 @@ namespace OneScript.Soap
 			foreach (var oBinding in port.Service.ServiceDescription.Bindings) {
 				var binding = oBinding as Binding;
 				if (binding.Name.Equals (port.Binding.Name)) {
-					Interface = new InterfaceImpl (binding);
-					break;
+
+					foreach (var oPortType in port.Service.ServiceDescription.PortTypes) {
+						var portType = oPortType as PortType;
+						if (portType.Name.Equals (binding.Type.Name)) {
+							Interface = new InterfaceImpl (portType);
+							break;
+						}
+					}
 				}
 			}
 

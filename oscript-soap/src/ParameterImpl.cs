@@ -2,14 +2,23 @@
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
 using System.Web.Services.Description;
+using System.Xml.Schema;
+using TinyXdto;
 
 namespace OneScript.Soap
 {
 	[ContextClass("WSПараметр", "WSParameter")]
 	public class ParameterImpl : AutoContext<ParameterImpl>, IWithName
 	{
-		internal ParameterImpl ()
+		// TODO: проверить, сработает ли
+		private static ParameterDirectionEnum parameterDirection = ParameterDirectionEnum.CreateInstance ();
+
+		internal ParameterImpl (XmlSchemaElement element)
 		{
+			Name = element.Name;
+			Nillable = element.IsNillable;
+			ParameterDirection = parameterDirection.In;
+			Documentation = "";
 		}
 
 		[ContextProperty("ВозможноПустой", "Nillable")]
@@ -22,10 +31,10 @@ namespace OneScript.Soap
 		public string Name { get; }
 
 		[ContextProperty("НаправлениеПараметра", "ParameterDirection")]
-		public ParameterDirectionEnum ParameterDirection { get; }
+		public EnumerationValue ParameterDirection { get; }
 
 		[ContextProperty("Тип", "Type")]
-		public IValue Type { get; }
+		public IXdtoType Type { get; }
 	}
 }
 

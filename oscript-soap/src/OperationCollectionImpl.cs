@@ -14,12 +14,12 @@ namespace OneScript.Soap
 		{
 		}
 
-		internal static OperationCollectionImpl Create (OperationBindingCollection data)
+		internal static OperationCollectionImpl Create (OperationCollection data)
 		{
 			var operations = new List<OperationImpl> ();
 
 			foreach (var oOperation in data) {
-				var operation = oOperation as OperationBinding;
+				var operation = oOperation as Operation;
 				operations.Add (new OperationImpl (operation));
 			}
 

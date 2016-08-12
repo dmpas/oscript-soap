@@ -8,12 +8,12 @@ namespace OneScript.Soap
 	[ContextClass("WSИнтерфейс", "WSInterface")]
 	public class InterfaceImpl : AutoContext<InterfaceImpl>, IWithName
 	{
-		internal InterfaceImpl(Binding binding)
+		internal InterfaceImpl(PortType portType)
 		{
-			Documentation = binding.Documentation;
-			Name = binding.Name;
+			Documentation = portType.Documentation;
+			Name = portType.Name;
 			// TODO: NamespaceURI = 
-			Operations = OperationCollectionImpl.Create (binding.Operations);
+			Operations = OperationCollectionImpl.Create (portType.Operations);
 		}
 
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]

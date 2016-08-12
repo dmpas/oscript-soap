@@ -46,10 +46,7 @@ namespace OneScript.Soap
 
 		private void InitializeStructures()
 		{
-			foreach (Service service in _wsd.Services)
-			{
-				ServiceImpl _s = new ServiceImpl(service);
-			}
+
 		}
 
 		[ContextProperty("Документация", "Documentation")]
