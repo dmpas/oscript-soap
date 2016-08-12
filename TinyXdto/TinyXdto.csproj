@@ -62,6 +62,8 @@
     <Compile Include="src\XdtoListImpl.cs" />
     <Compile Include="src\XdtoSequenceImpl.cs" />
     <Compile Include="src\XdtoObjectTypeImpl.cs" />
+    <Compile Include="src\XmlDataType.cs" />
+    <Compile Include="src\XmlExpandedName.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
