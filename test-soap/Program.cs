@@ -82,11 +82,18 @@ namespace testsoap
 			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (DefinitionsImpl)));
 		}
 
+		public void TestXdto ()
+		{
+		}
+
 		public void Run()
 		{
 			Check_AllClassesAreIValues();
 
 			StartEngine ();
+
+			TestXdto ();
+
 			TestWsdlNoAuth ();
 		}
 

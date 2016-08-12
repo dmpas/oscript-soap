@@ -1,12 +1,18 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
+using ScriptEngine.HostedScript.Library;
+using ScriptEngine.HostedScript.Library.Http;
+using ScriptEngine.HostedScript.Library.Xml;
+using System.Xml;
+using System.IO;
 using System.Linq;
+using TinyXdto;
 using System.Collections.Generic;
 
 namespace OneScript.Soap
 {
-	[ContextClass("WSПрокси", "WSProxy")]
+	[ContextClass ("WSПрокси", "WSProxy")]
 	public class ProxyImpl : AutoContext<ProxyImpl>
 	{
 
@@ -14,9 +20,10 @@ namespace OneScript.Soap
 		private static ParameterDirectionEnum parameterDirection = ParameterDirectionEnum.CreateInstance ();
 		private List<MethodInfo> _methods = new List<MethodInfo> ();
 		private List<OperationImpl> _operations = new List<OperationImpl> ();
+		private HttpConnectionContext _conn = null;
 
 		// TODO: полный список аргументов
-		public ProxyImpl(DefinitionsImpl definitions, EndpointImpl endpoint)
+		public ProxyImpl (DefinitionsImpl definitions, EndpointImpl endpoint)
 		{
 			Definitions = definitions;
 			Endpoint = endpoint;
@@ -33,28 +40,28 @@ namespace OneScript.Soap
 			}
 		}
 
-		[ContextProperty("ЗащищенноеСоединение", "SecuredConnection")]
+		[ContextProperty ("ЗащищенноеСоединение", "SecuredConnection")]
 		public IValue SecuredConnection { get; }
 
-		[ContextProperty("Определение", "Definitions")]
+		[ContextProperty ("Определение", "Definitions")]
 		public DefinitionsImpl Definitions { get; }
 
-		[ContextProperty("Пароль", "Password")]
+		[ContextProperty ("Пароль", "Password")]
 		public string Password { get; set; }
 
-		[ContextProperty("Пользователь", "User")]
+		[ContextProperty ("Пользователь", "User")]
 		public string User { get; set; }
 
-		[ContextProperty("Прокси", "Proxy")]
+		[ContextProperty ("Прокси", "Proxy")]
 		public IValue Proxy { get; }
 
-		[ContextProperty("Таймаут", "Timeout")]
+		[ContextProperty ("Таймаут", "Timeout")]
 		public decimal Timeout { get; }
 
-		[ContextProperty("ТочкаПодключения", "Endpoint")]
+		[ContextProperty ("ТочкаПодключения", "Endpoint")]
 		public EndpointImpl Endpoint { get; }
 
-		[ContextProperty("ФабрикаXDTO", "XDTOFactory")]
+		[ContextProperty ("ФабрикаXDTO", "XDTOFactory")]
 		public IValue XdtoFactory { get; }
 
 		private MethodInfo GetMethodInfo (OperationImpl operation)
@@ -83,7 +90,7 @@ namespace OneScript.Soap
 
 		public override int FindMethod (string name)
 		{
-			return _methods.FindIndex((obj) => obj.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+			return _methods.FindIndex ((obj) => obj.Name.Equals (name, StringComparison.InvariantCultureIgnoreCase));
 		}
 
 		public override IEnumerable<MethodInfo> GetMethods ()
@@ -96,12 +103,69 @@ namespace OneScript.Soap
 			return _methods [methodNumber];
 		}
 
+		// TODO: SOAP может работать не только через HTTP/HTTPS
+		private HttpConnectionContext GetConnection (UriBuilder uri)
+		{
+			if (_conn == null) {
+				_conn = new HttpConnectionContext (uri.Host, uri.Port, uri.UserName, uri.Password);
+			}
+
+			return _conn;
+		}
+
 		public override void CallAsFunction (int methodNumber, IValue [] arguments, out IValue retValue)
 		{
 			var operation = _operations [methodNumber];
 			retValue = ValueFactory.Create ();
 
-			throw new NotImplementedException ("WSProxy.[Call]");
+			var uri = new UriBuilder (Endpoint.Location);
+			var conn = GetConnection (uri);
+
+			var headers = new MapImpl ();
+			headers.Insert (ValueFactory.Create ("Content-Type"), ValueFactory.Create ("application/xml"));
+
+			var request = HttpRequestContext.Constructor (ValueFactory.Create(uri.Path), headers);
+
+			var xmlBody = XmlWriterImpl.Create ();
+			xmlBody.SetString ("UTF-8");
+
+			xmlBody.WriteStartElement ("soap:Envelope");
+			xmlBody.WriteNamespaceMapping ("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			xmlBody.WriteNamespaceMapping ("xsd", "http://www.w3.org/2001/XMLSchema");
+			xmlBody.WriteNamespaceMapping ("soap", "http://schemas.xmlsoap.org/soap/envelope/");
+			xmlBody.WriteNamespaceMapping ("s", Endpoint.Interface.NamespaceURI);
+
+			xmlBody.WriteStartElement ("soap:Body");
+
+
+			xmlBody.WriteStartElement ("s:" + operation.Name);
+
+			int paramIndex = 0;
+			foreach (var argValue in arguments) {
+
+				// TODO: отделить выходные параметры от входных и входных-выходных
+				var param = operation.Parameters.Get (paramIndex);
+
+				// TODO: Сериализация по типу параметра
+
+				xmlBody.WriteStartElement ("s:" + param.Name);
+				xmlBody.WriteRaw (XdtoSerializerImpl.XmlString (argValue.GetRawValue ()));
+				xmlBody.WriteEndElement (); // s:<ParamName>
+
+				paramIndex++;
+			}
+
+			xmlBody.WriteEndElement (); // s:<Operation>
+			xmlBody.WriteEndElement (); // soap:Body
+			xmlBody.WriteEndElement (); // soap:Envelope
+
+			var requestString = xmlBody.Close ().ToString();
+			request.SetBodyFromString (requestString);
+
+			// Console.WriteLine ("Request: {0}", requestString);
+			var response = conn.Post (request);
+
+			retValue = response.GetBodyAsString (ValueFactory.Create("UTF-8"));
 		}
 
 		public override void CallAsProcedure (int methodNumber, IValue [] arguments)

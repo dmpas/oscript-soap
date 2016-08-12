@@ -12,7 +12,7 @@ namespace OneScript.Soap
 		{
 			Documentation = portType.Documentation;
 			Name = portType.Name;
-			// TODO: NamespaceURI = 
+			NamespaceURI = portType.ServiceDescription.TargetNamespace;
 			Operations = OperationCollectionImpl.Create (portType.Operations);
 		}
 

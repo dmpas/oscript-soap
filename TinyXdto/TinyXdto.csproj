@@ -64,6 +64,7 @@
     <Compile Include="src\XdtoObjectTypeImpl.cs" />
     <Compile Include="src\XmlDataType.cs" />
     <Compile Include="src\XmlExpandedName.cs" />
+    <Compile Include="src\UndefinedOr.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
