@@ -27,10 +27,9 @@ namespace TinyXdto
 		                      IValue value,
 		                      string localName,
 		                      string namespaceUri,
-		                      XmlTypeAssignmentEnum typeAssignment = null,
-		                      XmlFormEnum xmlForm = null)
+		                      EnumerationValue typeAssignment = null,
+		                      EnumerationValue xmlForm = null)
 		{
-			// TODO: XdtoSerializer.WriteXml
 			xmlWriter.WriteStartElement (localName, namespaceUri);
 			xmlWriter.WriteText (value.ToString ());
 			xmlWriter.WriteEndElement ();

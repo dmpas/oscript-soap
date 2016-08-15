@@ -28,6 +28,8 @@ namespace OneScript.Soap
 			Definitions = definitions;
 			Endpoint = endpoint;
 
+			XdtoFactory = XdtoFactoryImpl.Constructor () as XdtoFactoryImpl;
+
 			FillMethods ();
 		}
 
@@ -62,7 +64,7 @@ namespace OneScript.Soap
 		public EndpointImpl Endpoint { get; }
 
 		[ContextProperty ("ФабрикаXDTO", "XDTOFactory")]
-		public IValue XdtoFactory { get; }
+		public XdtoFactoryImpl XdtoFactory { get; }
 
 		private MethodInfo GetMethodInfo (OperationImpl operation)
 		{
@@ -140,17 +142,15 @@ namespace OneScript.Soap
 
 			xmlBody.WriteStartElement ("s:" + operation.Name);
 
+			var serializer = new XdtoSerializerImpl (XdtoFactory);
+
 			int paramIndex = 0;
 			foreach (var argValue in arguments) {
 
 				// TODO: отделить выходные параметры от входных и входных-выходных
 				var param = operation.Parameters.Get (paramIndex);
 
-				// TODO: Сериализация по типу параметра
-
-				xmlBody.WriteStartElement ("s:" + param.Name);
-				xmlBody.WriteRaw (XdtoSerializerImpl.XmlString (argValue.GetRawValue ()));
-				xmlBody.WriteEndElement (); // s:<ParamName>
+				serializer.WriteXml (xmlBody, argValue, param.Name, Endpoint.Interface.NamespaceURI);
 
 				paramIndex++;
 			}
@@ -162,7 +162,7 @@ namespace OneScript.Soap
 			var requestString = xmlBody.Close ().ToString();
 			request.SetBodyFromString (requestString);
 
-			// Console.WriteLine ("Request: {0}", requestString);
+			Console.WriteLine ("Request: {0}", requestString);
 			var response = conn.Post (request);
 
 			retValue = response.GetBodyAsString (ValueFactory.Create("UTF-8"));

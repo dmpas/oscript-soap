@@ -64,14 +64,15 @@ namespace testsoap
 			int methodIndex = proxy.FindMethod ("DoOp");
 
 			var callParams = new List<IValue> ();
-			callParams.Add (null);
+			var OpParam = Variable.Create (ValueFactory.Create ());
+			callParams.Add (OpParam);
 			callParams.Add (ValueFactory.Create (1));
 			callParams.Add (ValueFactory.Create (2));
 
 			IValue result;
 			proxy.CallAsFunction (methodIndex, callParams.ToArray(), out result);
 
-			Console.WriteLine ("The DoOp result is {0}", result);
+			Console.WriteLine ("The DoOp result is '{0}', Op return is '{1}'", result, OpParam.AsString());
 		}
 
 		private void StartEngine ()
