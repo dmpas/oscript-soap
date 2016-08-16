@@ -1,14 +1,38 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
+using System.Xml.Schema;
+using System.Collections.Generic;
+using ScriptEngine.Machine;
 
 namespace TinyXdto
 {
 	[ContextClass("ТипЗначенияXDTO", "XDTOValueType")]
 	public class XdtoValueTypeImpl : AutoContext<XdtoValueTypeImpl>, IXdtoType
 	{
-		internal XdtoValueTypeImpl ()
+		internal XdtoValueTypeImpl (XmlSchemaSimpleType xmlType)
 		{
+			NamespaceUri = xmlType.QualifiedName.Namespace;
+			Name = xmlType.QualifiedName.Name;
+
+			if (xmlType.BaseXmlSchemaType is XmlSchemaSimpleType) {
+				BaseType = new XdtoValueTypeImpl (xmlType.BaseXmlSchemaType as XmlSchemaSimpleType);
+			}
+
+			var memberTypes = new List<XdtoValueTypeImpl> ();
+			var facets = new List<XdtoFacetImpl> ();
+
+			if (xmlType.Content is XmlSchemaSimpleTypeUnion) {
+			}
+			if (xmlType.Content is XmlSchemaSimpleTypeList) {
+			}
+			if (xmlType.Content is XmlSchemaSimpleTypeRestriction) {
+			}
+
+			MemberTypes = new XdtoValueTypeCollectionImpl (memberTypes);
+			Facets = new XdtoFacetCollectionImpl (facets);
+			ListItemType = new UndefinedOr<XdtoValueTypeImpl> (null);
 		}
+
 
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]
 		public string NamespaceUri { get; }
@@ -23,10 +47,10 @@ namespace TinyXdto
 		public XdtoValueTypeCollectionImpl MemberTypes { get; }
 
 		[ContextProperty("ТипЭлементаСписка", "ListItemType")]
-		public XdtoValueTypeImpl ListItemType { get; }
+		public UndefinedOr<XdtoValueTypeImpl> ListItemType { get; }
 
 		[ContextProperty("Фасеты", "Facets")]
-		public ContextIValueImpl Facets { get; }
+		public IValue Facets { get; }
 
 		[ContextMethod("Проверить", "Validate")]
 		public void Validate (ContextIValueImpl value)
@@ -35,7 +59,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("ЭтоПотомок", "IsDescendant")]
-		public bool IsDescendant ()
+		public bool IsDescendant (XdtoValueTypeImpl type)
 		{
 			throw new NotImplementedException ("XDTOValueType.IsDescendant");
 		}

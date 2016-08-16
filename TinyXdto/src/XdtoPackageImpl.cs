@@ -1,16 +1,36 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
+using System.Xml.Schema;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace TinyXdto
 {
-	[ContextClass("ПакетXDTO", "XDTOPackage")]
-	public class XdtoPackageImpl : AutoContext<XdtoPackageImpl>
+	// TODO: XdtoPackageImpl - CollectionContext
+	[ContextClass ("ПакетXDTO", "XDTOPackage")]
+	public class XdtoPackageImpl : AutoContext<XdtoPackageImpl>, ICollectionContext
 	{
-		// TODO: XdtoPackageImpl - CollectionContext
+		private readonly XmlSchema _schema;
+		private readonly List<IXdtoType> _types = new List<IXdtoType> ();
 
-		internal XdtoPackageImpl ()
+		internal XdtoPackageImpl (XmlSchema schema)
 		{
+			_schema = schema;
+
+			NamespaceUri = schema.TargetNamespace;
+			Dependencies = new XdtoPackageCollectionImpl (new XdtoPackageImpl [] { });
+			RootProperties = new XdtoPropertyCollectionImpl (new XdtoPropertyImpl [] { });
+
+			foreach (var oType in schema.SchemaTypes) {
+				var type = oType as XmlSchemaType;
+				if (type is XmlSchemaSimpleType) {
+					_types.Add (new XdtoValueTypeImpl (type as XmlSchemaSimpleType));
+				} else
+					if (type is XmlSchemaComplexType) {
+					_types.Add (new XdtoObjectTypeImpl (type as XmlSchemaComplexType));
+				}
+			}
 		}
 
 		[ContextProperty ("URIПространстваИмен", "NamespaceURI")]
@@ -22,6 +42,25 @@ namespace TinyXdto
 		[ContextProperty ("КорневыеСвойства", "RootProperties")]
 		public XdtoPropertyCollectionImpl RootProperties { get; }
 
+		public int Count ()
+		{
+			return _types.Count;
+		}
+
+		public CollectionEnumerator GetManagedIterator ()
+		{
+			return new CollectionEnumerator (GetEnumerator ());
+		}
+
+		public IEnumerator<IValue> GetEnumerator ()
+		{
+			return _types.GetEnumerator ();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator ()
+		{
+			return GetEnumerator ();
+		}
 	}
 }
 

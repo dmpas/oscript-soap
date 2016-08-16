@@ -10,17 +10,21 @@ namespace TinyXdto
 	[ContextClass("ФабрикаXDTO", "XDTOFactory")]
 	public class XdtoFactoryImpl : AutoContext<XdtoFactoryImpl>
 	{
-		private List<XmlSchema> _schema = new List<XmlSchema> ();
-
 		public XdtoFactoryImpl ()
 		{
 			
 		}
 
-		public XdtoFactoryImpl (IEnumerable<XmlSchema> schema)
+		public XdtoFactoryImpl (IEnumerable<XmlSchema> schemas)
 		{
-			_schema.AddRange (schema);
+			var packages = new List<XdtoPackageImpl> ();
+			foreach (var schema in schemas) {
+				packages.Add (new XdtoPackageImpl (schema));
+			}
 		}
+
+		[ContextProperty("Пакеты", "Packages")]
+		public XdtoPackageCollectionImpl Packages { get; }
 
 		[ContextMethod ("ЗаписатьXML", "WriteXML")]
 		public void WriteXml (XmlWriterImpl xmlWriter,
@@ -36,9 +40,9 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Тип", "Type")]
-		public IValue Type (string name, string uri)
+		public UndefinedOr<IXdtoType> Type (string name, string uri)
 		{
-			return ValueFactory.Create ();
+			return new UndefinedOr<IXdtoType> (null);
 		}
 
 		[ContextMethod ("Создать", "Create")]

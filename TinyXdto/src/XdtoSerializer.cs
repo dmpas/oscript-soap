@@ -27,13 +27,6 @@ namespace TinyXdto
 						&& value.DataType != DataType.Type;
 		}
 
-		private string GetStringForPrimitiveValue (IValue value)
-		{
-			if (ValueFactory.Create().Equals(value))
-				return null;
-			return XmlString (value);
-		}
-
 		[ContextMethod ("ЗаписатьXML", "WriteXML")]
 		public void WriteXml (XmlWriterImpl xmlWriter,
 							  IValue value,
@@ -44,18 +37,18 @@ namespace TinyXdto
 		{
 
 			IValue rawValue = value.GetRawValue ();
+			var primitive = PrimitiveDataSerializer.Create (rawValue);
 
-			if (!IsPrimitiveValue(rawValue)) {
+			if (primitive == null) {
 				XdtoFactory.WriteXml (xmlWriter, value, localName, namespaceUri, typeAssignment, xmlForm);
 				return;
 			}
-			var primitive = GetStringForPrimitiveValue (rawValue);
 
 			if (xmlForm == null || xmlForm.Equals (XmlForm.Element)) {
 
 				xmlWriter.WriteStartElement (localName, namespaceUri);
 
-				if (primitive == null) {
+				if (primitive.Nil) {
 					xmlWriter.WriteAttribute ("nil", "http://www.w3.org/2001/XMLSchema-instance", "true");
 				} else {
 					if (typeAssignment != null && XmlTypeAssignment.Explicit.Equals (typeAssignment)) {
@@ -70,17 +63,17 @@ namespace TinyXdto
 					}
 				}
 
-				xmlWriter.WriteText (primitive);
+				xmlWriter.WriteText (primitive.SerializedValue);
 				xmlWriter.WriteEndElement ();
 
 			} else
 			if (xmlForm.Equals (XmlForm.Attribute)) {
 
-				xmlWriter.WriteAttribute (localName, namespaceUri, primitive);
+				xmlWriter.WriteAttribute (localName, namespaceUri, primitive.SerializedValue);
 
 			} else if (xmlForm.Equals (XmlForm.Text)) {
 
-				xmlWriter.WriteText (primitive);
+				xmlWriter.WriteText (primitive.SerializedValue);
 
 			} else {
 				throw RuntimeException.InvalidArgumentType ("xmlForm");
@@ -111,13 +104,15 @@ namespace TinyXdto
 			if (value.DataType == DataType.Date)
 				return Define ("dateTime");
 
+			// TODO: Из фабрики
+
 			return Undefined ();
 		}
 
 		[ContextMethod("XMLТип", "XMLType")]
 		public UndefinedOr<XmlDataType> XmlType (IValue type)
 		{
-			return Undefined ();
+			throw new NotImplementedException ("XdtoSerializer.XmlType");
 		}
 
 		[ContextMethod("XMLСтрока", "XMLString")]
@@ -136,6 +131,8 @@ namespace TinyXdto
 
 			if (value.DataType == DataType.Date)
 				return value.AsDate ().ToString ();
+
+			// TODO: Из фабрики
 
 			return "";
 		}

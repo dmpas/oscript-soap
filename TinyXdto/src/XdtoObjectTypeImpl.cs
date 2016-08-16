@@ -1,13 +1,23 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
+using ScriptEngine.Machine;
+using System.Xml.Schema;
+using System.Collections.Generic;
 
 namespace TinyXdto
 {
 	[ContextClass("ТипОбъектаXDTO", "XDTOObjectType")]
 	public class XdtoObjectTypeImpl : AutoContext<XdtoObjectTypeImpl>, IXdtoType
 	{
-		internal XdtoObjectTypeImpl ()
+		internal XdtoObjectTypeImpl (XmlSchemaComplexType xmlType)
 		{
+			Name = xmlType.QualifiedName.Name;
+			NamespaceUri = xmlType.QualifiedName.Namespace;
+
+			Abstract = xmlType.IsAbstract;
+			Mixed = xmlType.IsMixed;
+
+			Properties = new XdtoPropertyCollectionImpl (new List<XdtoPropertyImpl> ());
 		}
 
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]
@@ -38,7 +48,7 @@ namespace TinyXdto
 		public XdtoPropertyCollectionImpl Properties { get; }
 
 		[ContextMethod("Проверить", "Validate")]
-		public void Validate (ContextIValueImpl value)
+		public void Validate (IValue value)
 		{
 			throw new NotImplementedException ("XDTOValueType.Validate");
 		}

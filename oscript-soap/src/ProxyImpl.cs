@@ -27,8 +27,7 @@ namespace OneScript.Soap
 		{
 			Definitions = definitions;
 			Endpoint = endpoint;
-
-			XdtoFactory = XdtoFactoryImpl.Constructor () as XdtoFactoryImpl;
+			XdtoFactory = definitions.XdtoFactory;
 
 			FillMethods ();
 		}

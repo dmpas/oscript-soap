@@ -7,7 +7,7 @@ namespace TinyXdto
 	[ContextClass("ТипДанныхXML", "XMLDataType")]
 	public class XmlDataType : AutoContext<XmlDataType>
 	{
-		internal XmlDataType (string typeName, string namespaceUri)
+		internal XmlDataType (string typeName, string namespaceUri = "http://www.w3.org/2001/XMLSchema")
 		{
 			NamespaceUri = namespaceUri;
 			TypeName = typeName;

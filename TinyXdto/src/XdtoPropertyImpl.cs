@@ -39,13 +39,13 @@ namespace TinyXdto
 		public IValue Type { get; }
 
 		[ContextProperty ("ТипВладелец", "OwnerType")]
-		public IValue OwnerType { get; }
+		public IXdtoType OwnerType { get; }
 
 		[ContextProperty ("Фиксированное", "Fixed")]
 		public bool Fixed { get; }
 
 		[ContextProperty ("Форма", "Form")]
-		public XmlFormEnum Form { get; }
+		public EnumerationValue Form { get; }
 
 	}
 }
