@@ -75,6 +75,32 @@ namespace testsoap
 			Console.WriteLine ("The DoOp result is '{0}', Op return is '{1}'", result, OpParam.AsString());
 		}
 
+		public void TestEchoService ()
+		{
+			var def = new DefinitionsImpl ("http://vm21297.hv8.ru:10080/httpservice/ws/echo.1cws?wsdl");
+			var proxy = ProxyImpl.Constructor (def, "http://dmpas/echo", "EchoService", "EchoServiceSoap");
+
+			decimal testValue = Decimal.Divide (152, 10);
+
+			var calls = new Dictionary<string, IValue> ();
+			calls ["Number"] = ValueFactory.Create (testValue);
+			calls ["Float"] = ValueFactory.Create (testValue);
+			calls ["String"] = ValueFactory.Create ("<&>");
+			calls ["DateTime"] = ValueFactory.Create (DateTime.Now);
+			calls ["Bool"] = ValueFactory.Create (false);
+			calls ["Fault"] = ValueFactory.Create ("123");
+
+
+			foreach (var callData in calls) {
+				int methodIndex = proxy.FindMethod ("Echo" + callData.Key);
+
+				IValue result;
+				proxy.CallAsFunction (methodIndex, new IValue [] { callData.Value }, out result);
+
+				Console.WriteLine ("Result for Echo{0} is {1}", callData.Key, result.AsString());
+			}
+		}
+
 		private void StartEngine ()
 		{
 			var engine = new ScriptEngine.HostedScript.HostedScriptEngine ();
@@ -95,6 +121,7 @@ namespace testsoap
 
 			TestXdto ();
 
+			TestEchoService ();
 			TestWsdlNoAuth ();
 		}
 
