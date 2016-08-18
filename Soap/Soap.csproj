@@ -6,8 +6,9 @@
     <ProjectGuid>{C8020244-D4EA-4277-8F08-176B5C50978C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>OneScript.Soap</RootNamespace>
-    <AssemblyName>oscript-soap</AssemblyName>
+    <AssemblyName>Soap</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <BaseDirectory>..\Soap</BaseDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
