@@ -139,7 +139,7 @@ namespace OneScript.Soap
 			xmlBody.WriteStartElement ("soap:Body");
 
 
-			xmlBody.WriteStartElement ("s:" + operation.Name);
+			xmlBody.WriteStartElement ("s:" + operation.Name); // TODO: part-name вместо operation-name ?
 
 			var serializer = new XdtoSerializerImpl (XdtoFactory);
 
@@ -164,7 +164,24 @@ namespace OneScript.Soap
 			Console.WriteLine ("Request: {0}", requestString);
 			var response = conn.Post (request);
 
-			retValue = response.GetBodyAsString (ValueFactory.Create("UTF-8"));
+			// retValue = response.GetBodyAsString (ValueFactory.Create("UTF-8"));
+			// Envelope/Body/<Op>Response/return
+			var responseText = response.GetBodyAsString(ValueFactory.Create("UTF-8"));
+			var xmlResult = XmlReaderImpl.Create () as XmlReaderImpl;
+
+			// TODO: Отдать на разбор фабрике
+			xmlResult.SetString (responseText.AsString ());
+			while (xmlResult.Read ()) {
+				if (xmlResult.LocalName.Equals ("Fault")) {
+					throw new RuntimeException ("SOAP exception!"); // TODO: Прочитать текст исключения
+				}
+				if (xmlResult.LocalName.Equals ("return")) {
+					xmlResult.Read ();
+					xmlResult.MoveToContent ();
+					retValue = ValueFactory.Create(xmlResult.Value);
+					break;
+				}
+			}
 		}
 
 		public override void CallAsProcedure (int methodNumber, IValue [] arguments)

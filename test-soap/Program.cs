@@ -88,7 +88,7 @@ namespace testsoap
 			calls ["String"] = ValueFactory.Create ("<&>");
 			calls ["DateTime"] = ValueFactory.Create (DateTime.Now);
 			calls ["Bool"] = ValueFactory.Create (false);
-			calls ["Fault"] = ValueFactory.Create ("123");
+			// calls ["Fault"] = ValueFactory.Create ("123");
 
 
 			foreach (var callData in calls) {
