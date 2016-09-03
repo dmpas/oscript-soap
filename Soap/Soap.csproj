@@ -8,7 +8,7 @@
     <RootNamespace>OneScript.Soap</RootNamespace>
     <AssemblyName>Soap</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <BaseDirectory>..\Soap</BaseDirectory>
+    <BaseDirectory>.</BaseDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,6 +60,7 @@
     <Compile Include="src\IWithName.cs" />
     <Compile Include="src\ProxyImpl.cs" />
     <Compile Include="src\WsdlConnector.cs" />
+    <Compile Include="src\MessagePartProxy.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

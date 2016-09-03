@@ -138,23 +138,10 @@ namespace OneScript.Soap
 
 			xmlBody.WriteStartElement ("soap:Body");
 
-
-			xmlBody.WriteStartElement ("s:" + operation.Name); // TODO: part-name вместо operation-name ?
-
 			var serializer = new XdtoSerializerImpl (XdtoFactory);
 
-			int paramIndex = 0;
-			foreach (var argValue in arguments) {
+			operation.WriteRequestBody (xmlBody, Endpoint.Interface.NamespaceURI, serializer, arguments);
 
-				// TODO: отделить выходные параметры от входных и входных-выходных
-				var param = operation.Parameters.Get (paramIndex);
-
-				serializer.WriteXml (xmlBody, argValue, param.Name, Endpoint.Interface.NamespaceURI);
-
-				paramIndex++;
-			}
-
-			xmlBody.WriteEndElement (); // s:<Operation>
 			xmlBody.WriteEndElement (); // soap:Body
 			xmlBody.WriteEndElement (); // soap:Envelope
 
@@ -173,7 +160,7 @@ namespace OneScript.Soap
 			xmlResult.SetString (responseText.AsString ());
 			while (xmlResult.Read ()) {
 				if (xmlResult.LocalName.Equals ("Fault")) {
-					throw new RuntimeException ("SOAP exception!"); // TODO: Прочитать текст исключения
+					throw new RuntimeException (responseText.AsString()); // TODO: Прочитать текст исключения
 				}
 				if (xmlResult.LocalName.Equals ("return")) {
 					xmlResult.Read ();
