@@ -32,7 +32,6 @@ namespace OneScript.Soap
 
 			foreach (var oPart in message.Parts) {
 				var parametersPart = oPart as MessagePart;
-				var elementName = parametersPart.Element.Name;
 
 				var partParameters = new List<ParameterImpl> ();
 				foreach (var oSchema in def.Types.Schemas) {
@@ -53,7 +52,8 @@ namespace OneScript.Soap
 				parts.Add (new MessagePartProxy {
 					Parameters = partParameters,
 					Name = parametersPart.Name,
-					ElementName = elementName
+					ElementName = parametersPart.Element.Name,
+					NamespaceUri = parametersPart.Element.Namespace
 				});
 			}
 

@@ -8,6 +8,7 @@ namespace OneScript.Soap
 		public IList<ParameterImpl> Parameters { get; set; }
 		public string Name { get; set; }
 		public string ElementName { get; set; }
+		public string NamespaceUri { get; set; }
 	}
 }
 

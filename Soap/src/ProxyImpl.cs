@@ -140,7 +140,7 @@ namespace OneScript.Soap
 
 			var serializer = new XdtoSerializerImpl (XdtoFactory);
 
-			operation.WriteRequestBody (xmlBody, Endpoint.Interface.NamespaceURI, serializer, arguments);
+			operation.WriteRequestBody (xmlBody, serializer, arguments);
 
 			xmlBody.WriteEndElement (); // soap:Body
 			xmlBody.WriteEndElement (); // soap:Envelope
@@ -158,17 +158,8 @@ namespace OneScript.Soap
 
 			// TODO: Отдать на разбор фабрике
 			xmlResult.SetString (responseText.AsString ());
-			while (xmlResult.Read ()) {
-				if (xmlResult.LocalName.Equals ("Fault")) {
-					throw new RuntimeException (responseText.AsString()); // TODO: Прочитать текст исключения
-				}
-				if (xmlResult.LocalName.Equals ("return")) {
-					xmlResult.Read ();
-					xmlResult.MoveToContent ();
-					retValue = ValueFactory.Create(xmlResult.Value);
-					break;
-				}
-			}
+
+			retValue = operation.ParseResponse (xmlResult);
 		}
 
 		public override void CallAsProcedure (int methodNumber, IValue [] arguments)

@@ -34,7 +34,7 @@ namespace OneScript.Soap
 		[ContextProperty("Параметры", "Parameters")]
 		public ParameterCollectionImpl Parameters { get; }
 
-		public void WriteRequestBody(XmlWriterImpl writer, string namespaceUri,
+		public void WriteRequestBody(XmlWriterImpl writer,
 			XdtoSerializerImpl serializer,
 			IValue [] arguments)
 		{
@@ -43,14 +43,14 @@ namespace OneScript.Soap
 			foreach (var messagePart in Parameters.Parts) {
 
 				// TODO: namespace ???
-				writer.WriteStartElement (messagePart.ElementName, namespaceUri);
+				writer.WriteStartElement (messagePart.ElementName, messagePart.NamespaceUri);
 
 				foreach (var param in messagePart.Parameters) {
 
 					if (param.ParameterDirection.Equals (directionEnum.Out))
 						continue;
 
-					serializer.WriteXml (writer, arguments [argumentIndex], param.Name, namespaceUri);
+					serializer.WriteXml (writer, arguments [argumentIndex], param.Name, messagePart.NamespaceUri);
 
 					++argumentIndex;
 
@@ -61,5 +61,41 @@ namespace OneScript.Soap
 			}
 
 		}
+
+		public IValue ParseResponse(XmlReaderImpl reader)
+		{
+
+			IValue retValue = ValueFactory.Create ();
+
+			while (reader.Read ()) {
+				if (reader.LocalName.Equals ("Fault")) {
+					var faultString = "Soap Exception!";
+					while (reader.Read ()) {
+						if (reader.LocalName.Equals ("faultString")) {
+							reader.Read ();
+							reader.MoveToContent ();
+							faultString = reader.Value;
+							break;
+						}
+					}
+
+					throw new RuntimeException (faultString);
+				}
+				if (reader.LocalName.Equals ("return")) {
+					reader.Read ();
+					reader.MoveToContent ();
+
+					// отдать фабрике
+					retValue = ValueFactory.Create(reader.Value);
+
+					reader.Read ();
+				}
+
+				// TODO: выходные параметры
+			}
+
+			return retValue;
+		}
+
 	}
 }
