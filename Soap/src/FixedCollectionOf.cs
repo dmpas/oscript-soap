@@ -1,11 +1,12 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace OneScript.Soap
 {
-	public class FixedCollectionOf<Type>: PropertyNameIndexAccessor, ICollectionContext
+	public class FixedCollectionOf<Type>: PropertyNameIndexAccessor, ICollectionContext, IEnumerable<Type>
 		where Type : IWithName
 	{
 		private List<Type> _data;
@@ -50,7 +51,7 @@ namespace OneScript.Soap
 			return _data.Count;
 		}
 
-		public IEnumerator<IValue> GetEnumerator()
+		public IEnumerator<Type> GetEnumerator()
 		{
 			foreach (var value in _data)
 			{
@@ -58,14 +59,21 @@ namespace OneScript.Soap
 			}
 		}
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		private IEnumerator<IValue> GetEngineEnumerator ()
+		{
+			foreach (var value in _data) {
+				yield return value;
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
 		}
 
 		public CollectionEnumerator GetManagedIterator()
 		{
-			return new CollectionEnumerator(GetEnumerator());
+			return new CollectionEnumerator(GetEngineEnumerator());
 		}
 
 	}

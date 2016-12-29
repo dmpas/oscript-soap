@@ -7,9 +7,8 @@ using System.Collections.Generic;
 
 namespace TinyXdto
 {
-	// TODO: XdtoPackageImpl - CollectionContext
 	[ContextClass ("ПакетXDTO", "XDTOPackage")]
-	public class XdtoPackageImpl : AutoContext<XdtoPackageImpl>, ICollectionContext
+	public class XdtoPackageImpl : AutoContext<XdtoPackageImpl>, ICollectionContext, IEnumerable<IXdtoType>
 	{
 		private readonly XmlSchema _schema;
 		private readonly List<IXdtoType> _types = new List<IXdtoType> ();
@@ -52,7 +51,7 @@ namespace TinyXdto
 			return new CollectionEnumerator (GetEnumerator ());
 		}
 
-		public IEnumerator<IValue> GetEnumerator ()
+		public IEnumerator<IXdtoType> GetEnumerator ()
 		{
 			return _types.GetEnumerator ();
 		}

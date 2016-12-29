@@ -1,12 +1,13 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace TinyXdto
 {
 	[ContextClass("СписокXDTO", "XDTOList")]
-	public class XdtoListImpl : PropertyNameIndexAccessor, ICollectionContext
+	public class XdtoListImpl : PropertyNameIndexAccessor, ICollectionContext, IEnumerable<IXdtoValue>
 	{
 		private List<IXdtoValue> _data = new List<IXdtoValue> ();
 
@@ -38,7 +39,7 @@ namespace TinyXdto
 			return _data.Count;
 		}
 
-		public IEnumerator<IValue> GetEnumerator()
+		public IEnumerator<IXdtoValue> GetEnumerator()
 		{
 			foreach (var value in _data)
 			{
@@ -46,7 +47,7 @@ namespace TinyXdto
 			}
 		}
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
 		}
