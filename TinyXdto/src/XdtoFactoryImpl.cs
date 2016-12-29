@@ -31,8 +31,8 @@ namespace TinyXdto
 		                      IValue value,
 		                      string localName,
 		                      string namespaceUri,
-		                      EnumerationValue typeAssignment = null,
-		                      EnumerationValue xmlForm = null)
+		                      XmlTypeAssignmentEnum? typeAssignment = null,
+		                      XmlFormEnum? xmlForm = null)
 		{
 			xmlWriter.WriteStartElement (localName, namespaceUri);
 			xmlWriter.WriteText (value.ToString ());

@@ -1,23 +1,13 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
+using ScriptEngine;
 
 namespace TinyXdto
 {
-	[SystemEnum("ВидФасетаXDTO", "XDTOFacetType")]
-	public class XdtoFacetTypeEnum : EnumerationContext
+	[EnumerationType("ВидФасетаXDTO", "XDTOFacetType")]
+	public enum XdtoFacetTypeEnum
 	{
-		internal XdtoFacetTypeEnum (TypeDescriptor typeRepresentation, TypeDescriptor valuesType)
-			: base(typeRepresentation, valuesType)
-		{
-		}
-
-
-		public static XdtoFacetTypeEnum CreateInstance ()
-		{
-			return EnumContextHelper.CreateEnumInstance<XdtoFacetTypeEnum> ((t, v) => new XdtoFacetTypeEnum (t, v));
-		}
-
 	}
 }
 

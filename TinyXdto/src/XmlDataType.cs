@@ -24,5 +24,21 @@ namespace TinyXdto
 		{
 			return new XmlDataType (typeName.ToString(), namespaceUri.ToString());
 		}
+
+		public override bool Equals (object obj)
+		{
+			var asThis = obj as XmlDataType;
+			if (asThis == null)
+				return false;
+
+			return string.Equals (NamespaceUri, asThis.NamespaceUri, StringComparison.Ordinal)
+						 && string.Equals (TypeName, asThis.TypeName, StringComparison.Ordinal);
+		}
+
+		public override int GetHashCode ()
+		{
+			return (NamespaceUri?.GetHashCode () ?? 0)
+				+ (TypeName?.GetHashCode () ?? 0);
+		}
 	}
 }

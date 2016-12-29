@@ -9,9 +9,6 @@ namespace TinyXdto
 	public class XdtoSerializerImpl : AutoContext<XdtoSerializerImpl>
 	{
 
-		static readonly XmlFormEnum XmlForm = XmlFormEnum.CreateInstance ();
-		static readonly XmlTypeAssignmentEnum XmlTypeAssignment = XmlTypeAssignmentEnum.CreateInstance ();
-
 		public XdtoSerializerImpl (XdtoFactoryImpl factory)
 		{
 			XdtoFactory = factory;
@@ -32,9 +29,11 @@ namespace TinyXdto
 							  IValue value,
 							  string localName,
 							  string namespaceUri,
-							  EnumerationValue typeAssignment = null,
-							  EnumerationValue xmlForm = null)
+		                      XmlTypeAssignmentEnum? typeAssignment = null,
+							  XmlFormEnum? xmlForm = null)
 		{
+			xmlForm = xmlForm ?? XmlFormEnum.Element;
+			typeAssignment = typeAssignment ?? XmlTypeAssignmentEnum.Implicit;
 
 			IValue rawValue = value.GetRawValue ();
 			var primitive = PrimitiveDataSerializer.Create (rawValue);
@@ -44,22 +43,23 @@ namespace TinyXdto
 				return;
 			}
 
-			if (xmlForm == null || xmlForm.Equals (XmlForm.Element)) {
+			if (xmlForm == null || xmlForm == XmlFormEnum.Element) {
 
 				xmlWriter.WriteStartElement (localName, namespaceUri);
 
 				if (primitive.Nil) {
 					xmlWriter.WriteAttribute ("nil", "http://www.w3.org/2001/XMLSchema-instance", "true");
 				} else {
-					if (typeAssignment != null && XmlTypeAssignment.Explicit.Equals (typeAssignment)) {
+					if (typeAssignment == XmlTypeAssignmentEnum.Explicit) {
 						var dataType = XmlTypeOf (rawValue).Value;
-						// TODO: Ждать 15-й версии для НайтиПрефикс
-						// var nsPrefix = xmlWriter.LookupPrefix (dataType.NamespaceUri);
-						// if (ValueFactory.Create().Equals(nsPrefix)) {
-						// 	// TODO: Присвоить новый префикс с хитрым порядком d1p1
-						// }
-						// var typeValue = String.Format("{0}:{1}", nsPrefix, dataType.TypeName);
-						// xmlWriter.WriteAtribute("type", "http://www.w3.org/2001/XMLSchema-instance", typeValue);
+						var nsPrefix = xmlWriter.LookupPrefix (dataType.NamespaceUri);
+						if (ValueFactory.Create().Equals(nsPrefix)) {
+							// TODO: Присвоить новый префикс с хитрым порядком d1p1
+							xmlWriter.WriteAttribute ("d1p1", "xmlns", dataType.NamespaceUri);
+							nsPrefix = ValueFactory.Create ("d1p1");
+						}
+						var typeValue = String.Format("{0}:{1}", nsPrefix, dataType.TypeName);
+						xmlWriter.WriteAttribute("type", "http://www.w3.org/2001/XMLSchema-instance", typeValue);
 					}
 				}
 
@@ -67,16 +67,14 @@ namespace TinyXdto
 				xmlWriter.WriteEndElement ();
 
 			} else
-			if (xmlForm.Equals (XmlForm.Attribute)) {
+			if (xmlForm == XmlFormEnum.Attribute) {
 
 				xmlWriter.WriteAttribute (localName, namespaceUri, primitive.SerializedValue);
-
-			} else if (xmlForm.Equals (XmlForm.Text)) {
+				
+			} else if (xmlForm == XmlFormEnum.Text) {
 
 				xmlWriter.WriteText (primitive.SerializedValue);
 
-			} else {
-				throw RuntimeException.InvalidArgumentType ("xmlForm");
 			}
 		}
 

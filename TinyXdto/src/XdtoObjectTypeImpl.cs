@@ -54,9 +54,15 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("ЭтоПотомок", "IsDescendant")]
-		public bool IsDescendant ()
+		public bool IsDescendant (XdtoObjectTypeImpl type)
 		{
-			throw new NotImplementedException ("XDTOValueType.IsDescendant");
+			if (BaseType == null)
+				return false;
+
+			if (BaseType.Equals (type))
+				return true;
+
+			return BaseType.IsDescendant (type);
 		}
 	}
 }

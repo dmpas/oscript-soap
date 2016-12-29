@@ -9,6 +9,8 @@ namespace TinyXdto
 	{
 		internal XmlExpandedName (string namespaceUri, string localName)
 		{
+			NamespaceUri = namespaceUri;
+			LocalName = localName;
 		}
 
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]
@@ -21,6 +23,22 @@ namespace TinyXdto
 		public static IReflectableContext Constructor (IValue namespaceUri, IValue localName)
 		{
 			return new XmlExpandedName (namespaceUri.ToString (), localName.ToString ());
+		}
+
+		public override bool Equals (object obj)
+		{
+			var asThis = obj as XmlExpandedName;
+			if (asThis == null)
+				return false;
+
+			return string.Equals (NamespaceUri, asThis.NamespaceUri, StringComparison.Ordinal)
+						 && string.Equals (LocalName, asThis.LocalName, StringComparison.Ordinal);
+		}
+
+		public override int GetHashCode ()
+		{
+			return (NamespaceUri?.GetHashCode () ?? 0)
+				+ (LocalName?.GetHashCode () ?? 0);
 		}
 	}
 }

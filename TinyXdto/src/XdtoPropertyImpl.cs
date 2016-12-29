@@ -11,6 +11,17 @@ namespace TinyXdto
 		{
 		}
 
+		internal XdtoPropertyImpl (XdtoDataObjectImpl owner,
+								  XmlFormEnum form,
+								  string namespaceUri,
+								  string localName)
+		{
+			NamespaceURI = namespaceUri;
+			LocalName = localName;
+			Form = form;
+			OwnerObject = owner;
+		}
+
 		[ContextProperty ("URIПространстваИмен", "NamespaceURI")]
 		public string NamespaceURI { get; }
 
@@ -26,17 +37,17 @@ namespace TinyXdto
 		[ContextProperty ("Имя", "Name")]
 		public string Name { get; }
 
-		[ContextProperty ("ЛокальноеИмя", "LocaName")]
-		public string LocaName { get; }
+		[ContextProperty ("ЛокальноеИмя", "LocalName")]
+		public string LocalName { get; }
 
 		[ContextProperty ("НижняяГраница", "LowerBound")]
 		public int LowerBound { get; }
 
 		[ContextProperty ("ОбъектВладелец", "OwnerObject")]
-		public IValue OwnerObject { get; }
+		public XdtoDataObjectImpl OwnerObject { get; }
 
 		[ContextProperty ("Тип", "Type")]
-		public IValue Type { get; }
+		public IXdtoType Type { get; }
 
 		[ContextProperty ("ТипВладелец", "OwnerType")]
 		public IXdtoType OwnerType { get; }
@@ -45,8 +56,19 @@ namespace TinyXdto
 		public bool Fixed { get; }
 
 		[ContextProperty ("Форма", "Form")]
-		public EnumerationValue Form { get; }
+		public XmlFormEnum Form { get; }
 
+		public override bool Equals (object obj)
+		{
+			var asThis = obj as XdtoPropertyImpl;
+			if (asThis == null)
+				return false;
+
+			// TODO: вменяемое сравнение (СвойствоXDTO.Equals())
+
+			return string.Equals (NamespaceURI, asThis.NamespaceURI, StringComparison.Ordinal)
+						 && string.Equals (LocalName, asThis.LocalName, StringComparison.Ordinal);
+		}
 	}
 }
 

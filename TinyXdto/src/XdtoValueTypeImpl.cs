@@ -50,7 +50,7 @@ namespace TinyXdto
 		public UndefinedOr<XdtoValueTypeImpl> ListItemType { get; }
 
 		[ContextProperty("Фасеты", "Facets")]
-		public IValue Facets { get; }
+		public XdtoFacetCollectionImpl Facets { get; }
 
 		[ContextMethod("Проверить", "Validate")]
 		public void Validate (ContextIValueImpl value)
@@ -61,7 +61,13 @@ namespace TinyXdto
 		[ContextMethod ("ЭтоПотомок", "IsDescendant")]
 		public bool IsDescendant (XdtoValueTypeImpl type)
 		{
-			throw new NotImplementedException ("XDTOValueType.IsDescendant");
+			if (BaseType == null)
+				return false;
+			
+			if (BaseType.Equals (type))
+				return true;
+			
+			return BaseType.IsDescendant (type);
 		}
 	}
 }

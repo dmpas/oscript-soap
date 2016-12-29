@@ -16,6 +16,13 @@ namespace TinyXdto
 			return Get (index);
 		}
 
+		[ContextMethod ("Добавить", "Add")]
+		public IXdtoValue Add (IXdtoValue value)
+		{
+			_data.Add (value);
+			return value;
+		}
+
 		[ContextMethod("Получить", "Get")]
 		public IXdtoValue Get(IValue index)
 		{

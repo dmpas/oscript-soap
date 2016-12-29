@@ -7,8 +7,18 @@ namespace TinyXdto
 	[ContextClass("ЗначениеXDTO", "XDTODataValue")]
 	public class XdtoDataValueImpl : AutoContext<XdtoDataValueImpl>
 	{
-		internal XdtoDataValueImpl ()
+
+		private readonly XdtoValueTypeImpl _type;
+
+		internal XdtoDataValueImpl (XdtoValueTypeImpl type,
+		                            string lexicalValue,
+		                            IValue value,
+		                            XdtoDataValueCollectionImpl list)
 		{
+			_type = type;
+			Value = value;
+			LexicalValue = lexicalValue;
+			List = list;
 		}
 
 		[ContextProperty("Значение", "Value")]
@@ -23,7 +33,7 @@ namespace TinyXdto
 		[ContextMethod ("Тип", "Type")]
 		public XdtoValueTypeImpl Type ()
 		{
-			throw new NotImplementedException ("XDTODataValue.Type()");
+			return _type;
 		}
 
 	}

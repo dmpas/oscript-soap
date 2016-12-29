@@ -8,16 +8,14 @@ namespace TinyXdto
 	public class XdtoFacetImpl : AutoContext<XdtoFacetImpl>
 	{
 
-		private static readonly XdtoFacetTypeEnum FacetType = XdtoFacetTypeEnum.CreateInstance ();
-
 		internal XdtoFacetImpl (XdtoFacetTypeEnum type, string value)
 		{
-			// Type = FacetType.
+			Type = type;
 			Value = value;
 		}
 
 		[ContextProperty("Вид", "Type")]
-		public EnumerationValue Type { get; }
+		public XdtoFacetTypeEnum Type { get; }
 
 		[ContextProperty("Значение", "Value")]
 		public string Value { get; }

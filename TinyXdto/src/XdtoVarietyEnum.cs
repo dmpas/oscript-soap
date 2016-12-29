@@ -1,36 +1,18 @@
-﻿using System;
-using ScriptEngine.Machine.Contexts;
-using ScriptEngine.Machine;
+﻿using ScriptEngine;
 
 namespace TinyXdto
 {
-	[SystemEnum("ВариантXDTO", "XDTOVariety")]
-	public class XdtoVarietyEnum : EnumerationContext
+	[EnumerationType("ВариантXDTO", "XDTOVariety")]
+	public enum XdtoVarietyEnum
 	{
-		internal XdtoVarietyEnum (TypeDescriptor typeRepresentation, TypeDescriptor valuesType)
-			: base(typeRepresentation, valuesType)
-		{
-		}
+		[EnumItem ("Аторманый", "Atomic")]
+		Atomic,
 
-		[EnumValue ("Аторманый", "Atomic")]
-		public EnumerationValue Atomic {
-			get { return this ["Atomic"]; }
-		}
+		[EnumItem ("Объединение", "Union")]
+		Union,
 
-		[EnumValue ("Объединение", "Union")]
-		public EnumerationValue Union {
-			get { return this ["Union"]; }
-		}
-
-		[EnumValue ("Список", "List")]
-		public EnumerationValue List {
-			get { return this ["List"]; }
-		}
-
-		public static XdtoVarietyEnum CreateInstance ()
-		{
-			return EnumContextHelper.CreateEnumInstance<XdtoVarietyEnum> ((t, v) => new XdtoVarietyEnum (t, v));
-		}
+		[EnumItem ("Список", "List")]
+		List
 	}
 }
 

@@ -1,40 +1,17 @@
-﻿using System;
-using ScriptEngine.Machine.Contexts;
-using ScriptEngine.Machine;
-
+﻿using ScriptEngine;
 
 namespace TinyXdto
 {
-	[SystemEnum("НазначениеТипаXML", "XMLTypeAssignment")]
-	public class XmlTypeAssignmentEnum : EnumerationContext
+	[EnumerationType("НазначениеТипаXML", "XMLTypeAssignment")]
+	public enum XmlTypeAssignmentEnum
 	{
-		private XmlTypeAssignmentEnum (TypeDescriptor typeRepresentation, TypeDescriptor valuesType)
-			: base(typeRepresentation, valuesType)
-		{
-		}
 
-		[EnumValue ("Неявное", "Implicit")]
-		public EnumerationValue Implicit
-		{
-			get
-			{
-				return this ["Implicit"];
-			}
-		}
+		[EnumItem ("Неявное", "Implicit")]
+		Implicit,
 
-		[EnumValue ("Явное", "Explicit")]
-		public EnumerationValue Explicit
-		{
-			get
-			{
-				return this ["Explicit"];
-			}
-		}
+		[EnumItem ("Явное", "Explicit")]
+		Explicit
 
-		public static XmlTypeAssignmentEnum CreateInstance ()
-		{
-			return EnumContextHelper.CreateEnumInstance<XmlTypeAssignmentEnum> ((t, v) => new XmlTypeAssignmentEnum (t, v));
-		}
 	}
 }
 
