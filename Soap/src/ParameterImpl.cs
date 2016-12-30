@@ -10,14 +10,12 @@ namespace OneScript.Soap
 	[ContextClass("WSПараметр", "WSParameter")]
 	public class ParameterImpl : AutoContext<ParameterImpl>, IWithName
 	{
-		// TODO: проверить, сработает ли
-		private static ParameterDirectionEnum parameterDirection = ParameterDirectionEnum.CreateInstance ();
-
+		
 		internal ParameterImpl (XmlSchemaElement element)
 		{
 			Name = element.Name;
 			Nillable = element.IsNillable;
-			ParameterDirection = parameterDirection.In;
+			ParameterDirection = ParameterDirectionEnum.In;
 			Documentation = "";
 		}
 
@@ -31,7 +29,7 @@ namespace OneScript.Soap
 		public string Name { get; }
 
 		[ContextProperty("НаправлениеПараметра", "ParameterDirection")]
-		public EnumerationValue ParameterDirection { get; }
+		public ParameterDirectionEnum ParameterDirection { get; }
 
 		[ContextProperty("Тип", "Type")]
 		public IXdtoType Type { get; }

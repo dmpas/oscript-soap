@@ -1,50 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using ScriptEngine.Machine.Contexts;
-using ScriptEngine.Machine;
+﻿using ScriptEngine;
 
 namespace OneScript.Soap
 {
-	[SystemEnum("WSНаправлениеПараметра", "WSParameterDirection")]
-	public class ParameterDirectionEnum : EnumerationContext
+	[EnumerationType("WSНаправлениеПараметра", "WSParameterDirection")]
+	public enum ParameterDirectionEnum
 	{
 
-		private ParameterDirectionEnum(TypeDescriptor typeRepresentation, TypeDescriptor valuesType)
-			: base(typeRepresentation, valuesType)
-		{
-		}
+		[EnumItem("Входной", "In")]
+		In,
 
-		[EnumValue("Входной", "In")]
-		public EnumerationValue In
-		{
-			get
-			{
-				return this["In"];
-			}
-		}
+		[EnumItem("ВходнойВыходной", "InOut")]
+		InOut,
 
-		[EnumValue("ВходнойВыходной", "InOut")]
-		public EnumerationValue InOut
-		{
-			get
-			{
-				return this["InOut"];
-			}
-		}
+		[EnumItem("Выходной", "Out")]
+		Out
 
-		[EnumValue("Выходной", "Out")]
-		public EnumerationValue Out
-		{
-			get
-			{
-				return this["Out"];
-			}
-		}
-
-		public static ParameterDirectionEnum CreateInstance()
-		{
-			return EnumContextHelper.CreateEnumInstance<ParameterDirectionEnum>((t, v) => new ParameterDirectionEnum(t, v));
-		}
 	}
 }
 

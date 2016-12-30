@@ -64,6 +64,9 @@
     <Compile Include="src\ProxyImpl.cs" />
     <Compile Include="src\WsdlConnector.cs" />
     <Compile Include="src\MessagePartProxy.cs" />
+    <Compile Include="src\IParsedResponse.cs" />
+    <Compile Include="src\SoapExceptionResponse.cs" />
+    <Compile Include="src\SuccessfulSoapResponse.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

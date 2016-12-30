@@ -11,7 +11,7 @@ namespace OneScript.Soap
 	[ContextClass("WSОперация", "WSOperation")]
 	public class OperationImpl : AutoContext<OperationImpl>, IWithName
 	{
-		private static ParameterDirectionEnum directionEnum = ParameterDirectionEnum.CreateInstance ();
+		private readonly Dictionary<string, int> _indexes;
 
 		internal OperationImpl(Operation operation)
 		{
@@ -20,6 +20,16 @@ namespace OneScript.Soap
 			ReturnValue = new ReturnValueImpl (operation.Messages.Output);
 
 			Parameters = ParameterCollectionImpl.Create (operation.Messages.Input);
+
+			_indexes = new Dictionary<string, int> ();
+
+			int argumentIndex = 0;
+			foreach (var messagePart in Parameters.Parts) {
+				foreach (var param in messagePart.Parameters) {
+					_indexes.Add (param.Name, argumentIndex);
+					++argumentIndex;
+				}
+			}
 		}
 
 		[ContextProperty("ВозвращаемоеЗначение", "ReturnValue")]
@@ -39,20 +49,16 @@ namespace OneScript.Soap
 			IValue [] arguments)
 		{
 
-			int argumentIndex = 0;
 			foreach (var messagePart in Parameters.Parts) {
 
-				// TODO: namespace ???
 				writer.WriteStartElement (messagePart.ElementName, messagePart.NamespaceUri);
 
 				foreach (var param in messagePart.Parameters) {
 
-					if (param.ParameterDirection.Equals (directionEnum.Out))
+					if (param.ParameterDirection == ParameterDirectionEnum.Out)
 						continue;
 
-					serializer.WriteXml (writer, arguments [argumentIndex], param.Name, messagePart.NamespaceUri);
-
-					++argumentIndex;
+					var argumentIndex = _indexes [param.Name];					serializer.WriteXml (writer, arguments [argumentIndex], param.Name, messagePart.NamespaceUri);
 
 				}
 
@@ -62,12 +68,15 @@ namespace OneScript.Soap
 
 		}
 
-		public IValue ParseResponse(XmlReaderImpl reader)
+		public IParsedResponse ParseResponse(XmlReaderImpl reader, XdtoSerializerImpl serializer)
 		{
 
-			IValue retValue = ValueFactory.Create ();
+			var retValue = ValueFactory.Create ();
+			var outputParams = new Dictionary<int, IValue> ();
 
+			// TODO: Разбирать весь ответ через XDTO
 			while (reader.Read ()) {
+
 				if (reader.LocalName.Equals ("Fault")) {
 					var faultString = "Soap Exception!";
 					while (reader.Read ()) {
@@ -79,22 +88,37 @@ namespace OneScript.Soap
 						}
 					}
 
-					throw new RuntimeException (faultString);
+					return new SoapExceptionResponse (faultString);
 				}
+
 				if (reader.LocalName.Equals ("return")) {
 					reader.Read ();
 					reader.MoveToContent ();
 
-					// отдать фабрике
-					retValue = ValueFactory.Create(reader.Value);
+					// TODO: отдать фабрике
+					retValue = ValueFactory.Create (reader.Value);
 
 					reader.Read ();
+					continue;
 				}
 
-				// TODO: выходные параметры
+				// TODO: выходные параметры, отдать фабрике
+
+				var paramName = reader.LocalName;
+				reader.Read ();
+				reader.MoveToContent ();
+
+				// TODO: отдать фабрике
+				var paramValue = ValueFactory.Create (reader.Value);
+				reader.Read ();
+
+				if (_indexes.ContainsKey (paramName)) {
+					var paramIndex = _indexes [paramName];
+					outputParams.Add (paramIndex, paramValue);
+				}
 			}
 
-			return retValue;
+			return new SuccessfulSoapResponse(retValue, outputParams);
 		}
 
 	}

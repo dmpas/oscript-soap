@@ -16,8 +16,6 @@ namespace OneScript.Soap
 	public class ProxyImpl : AutoContext<ProxyImpl>
 	{
 
-		// TODO: проверить, сработает ли
-		private static ParameterDirectionEnum parameterDirection = ParameterDirectionEnum.CreateInstance ();
 		private List<MethodInfo> _methods = new List<MethodInfo> ();
 		private List<OperationImpl> _operations = new List<OperationImpl> ();
 		private HttpConnectionContext _conn = null;
@@ -79,7 +77,7 @@ namespace OneScript.Soap
 				var param = ivParameter as ParameterImpl;
 				var pdef = new ParameterDefinition ();
 
-				if (param.ParameterDirection.Equals (parameterDirection.In)) {
+				if (param.ParameterDirection == ParameterDirectionEnum.In) {
 					pdef.IsByValue = true;
 				}
 				_params.Add (pdef);
@@ -148,18 +146,34 @@ namespace OneScript.Soap
 			var requestString = xmlBody.Close ().ToString();
 			request.SetBodyFromString (requestString);
 
-			Console.WriteLine ("Request: {0}", requestString);
-			var response = conn.Post (request);
+			// Console.WriteLine ("Request: {0}", requestString);
+			var httpResponse = conn.Post (request);
 
 			// retValue = response.GetBodyAsString (ValueFactory.Create("UTF-8"));
 			// Envelope/Body/<Op>Response/return
-			var responseText = response.GetBodyAsString(ValueFactory.Create("UTF-8"));
+			var responseText = httpResponse.GetBodyAsString(ValueFactory.Create("UTF-8"));
 			var xmlResult = XmlReaderImpl.Create () as XmlReaderImpl;
 
 			// TODO: Отдать на разбор фабрике
 			xmlResult.SetString (responseText.AsString ());
 
-			retValue = operation.ParseResponse (xmlResult);
+			var result = operation.ParseResponse (xmlResult, serializer);
+			if (result is SoapExceptionResponse) {
+				throw new RuntimeException ((result as SoapExceptionResponse).FaultMessage);
+			}
+
+			var soapResponse = result as SuccessfulSoapResponse;
+			retValue = soapResponse.RetValue;
+
+			foreach (var outParamData in soapResponse.OutputParameters) {
+				
+				var argument = arguments [outParamData.Key] as IVariable;
+				if (argument == null) {
+					continue;
+				}
+
+				argument.Value = outParamData.Value;
+			}
 		}
 
 		public override void CallAsProcedure (int methodNumber, IValue [] arguments)
