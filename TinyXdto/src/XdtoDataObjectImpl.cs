@@ -36,24 +36,24 @@ namespace TinyXdto
 		[ContextMethod("Добавить", "Add")]
 		public void Add (XmlFormEnum form, string namespaceUri, string localName, IXdtoValue dataElement)
 		{
-			// TODO: Извлекать свойство из Фабрики, потому что оно должно иметь Тип
+			// TODO: Доступно только для открытого типа
 			var customProperty = new XdtoPropertyImpl (this, form, namespaceUri, localName);
+			Add (customProperty, dataElement);
+		}
 
+		public void Add (XdtoPropertyImpl property, IXdtoValue dataElement)
+		{
 			XdtoListImpl list;
-			if (_data.ContainsKey (customProperty)) {
-				
-				list = _data [customProperty] as XdtoListImpl;
+			if (_data.ContainsKey (property)) {
+				list = _data [property] as XdtoListImpl;
 				if (list == null) {
-					
-					// TODO: Копипастъ
-					list = new XdtoListImpl ();
-					_data [customProperty] = list;
+					list = new XdtoListImpl (this, property);
+					_data [property] = list;
 				}
 
 			} else {
-				
-				list = new XdtoListImpl ();
-				_data [customProperty] = list;
+				list = new XdtoListImpl (this, property);
+				_data [property] = list;
 
 			}
 
@@ -63,25 +63,12 @@ namespace TinyXdto
 		[ContextMethod ("Добавить", "Add")]
 		public void Add (string name, IXdtoValue dataElement)
 		{
-			var innerProperty = _type.Properties.Get (name);
-
-			XdtoListImpl list;
-			if (_data.ContainsKey (innerProperty)) {
-				
-				list = _data [innerProperty] as XdtoListImpl;
-				if (list == null) {
-					// TODO: Внятное сообщение об ошибке
-					throw new RuntimeException ("Xdto List error");
-				}
-				
-			} else {
-				
-				list = new XdtoListImpl ();
-				_data [innerProperty] = list;
-
+			var property = Properties ().Get (name);
+			if (property == null) {
+				throw new RuntimeException (String.Format ("Свойство не найдено: {0}", name));
 			}
-			
-			list.Add (dataElement);
+
+			Add (property, dataElement);
 		}
 
 		[ContextMethod("Получить", "Get")]
@@ -98,7 +85,7 @@ namespace TinyXdto
 		public IValue Get (string xpath)
 		{
 			// TODO: xpath не только name
-			var innerProperty = _type.Properties.Get (xpath);
+			var innerProperty = Properties().Get (xpath);
 			return Get (innerProperty);
 		}
 
@@ -148,7 +135,7 @@ namespace TinyXdto
 		public void Unset (string xpath)
 		{
 			// TODO: xpath не только name
-			var innerProperty = _type.Properties.Get (xpath);
+			var innerProperty = Properties().Get (xpath);
 			Unset (innerProperty);
 		}
 
@@ -164,7 +151,6 @@ namespace TinyXdto
 			return _type;
 		}
 
-		// TODO: уточнить правильное объявление метода
 		[ContextMethod ("Установить", "Set")]
 		public void Set (string xpath, IValue value)
 		{

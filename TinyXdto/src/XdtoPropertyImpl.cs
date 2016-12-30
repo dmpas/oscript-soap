@@ -20,6 +20,7 @@ namespace TinyXdto
 			LocalName = localName;
 			Form = form;
 			OwnerObject = owner;
+			UpperBound = -1;
 		}
 
 		[ContextProperty ("URIПространстваИмен", "NamespaceURI")]
@@ -32,7 +33,7 @@ namespace TinyXdto
 		public bool Nillable { get; }
 
 		[ContextProperty ("ЗначениеПоУмолчанию", "DefaultValue")]
-		public IValue DefaultValue { get; }
+		public XdtoDataValueImpl DefaultValue { get; }
 
 		[ContextProperty ("Имя", "Name")]
 		public string Name { get; }
@@ -68,6 +69,11 @@ namespace TinyXdto
 
 			return string.Equals (NamespaceURI, asThis.NamespaceURI, StringComparison.Ordinal)
 						 && string.Equals (LocalName, asThis.LocalName, StringComparison.Ordinal);
+		}
+
+		public override int GetHashCode ()
+		{
+			return (NamespaceURI?.GetHashCode () ?? 0) + (LocalName?.GetHashCode () ?? 0);
 		}
 	}
 }

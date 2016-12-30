@@ -7,9 +7,21 @@ using System.Collections.Generic;
 namespace TinyXdto
 {
 	[ContextClass("СписокXDTO", "XDTOList")]
-	public class XdtoListImpl : PropertyNameIndexAccessor, ICollectionContext, IEnumerable<IXdtoValue>
+	public class XdtoListImpl : AutoContext<XdtoListImpl>, ICollectionContext, IEnumerable<IXdtoValue>
 	{
 		private List<IXdtoValue> _data = new List<IXdtoValue> ();
+
+		internal XdtoListImpl (XdtoDataObjectImpl owner, XdtoPropertyImpl owningProperty)
+		{
+			Owner = owner;
+			OwningProperty = owningProperty;
+		}
+
+		[ContextProperty("Владелец")]
+		public XdtoDataObjectImpl Owner { get; }
+
+		[ContextProperty ("ВладеющееСвойство")]
+		public XdtoPropertyImpl OwningProperty { get; }
 
 		public override IValue GetIndexedValue (IValue index)
 		{
