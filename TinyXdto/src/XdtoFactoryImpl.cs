@@ -4,12 +4,15 @@ using ScriptEngine.Machine;
 using ScriptEngine.HostedScript.Library.Xml;
 using System.Xml.Schema;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TinyXdto
 {
 	[ContextClass("ФабрикаXDTO", "XDTOFactory")]
 	public class XdtoFactoryImpl : AutoContext<XdtoFactoryImpl>
 	{
+
+		private readonly Dictionary<string, IList<XdtoPackageImpl>> _packages = new Dictionary<string, IList<XdtoPackageImpl>> ();
 		public XdtoFactoryImpl ()
 		{
 			
@@ -19,8 +22,16 @@ namespace TinyXdto
 		{
 			var packages = new List<XdtoPackageImpl> ();
 			foreach (var schema in schemas) {
-				packages.Add (new XdtoPackageImpl (schema));
+				var package = new XdtoPackageImpl (schema);
+				packages.Add (package);
 			}
+			Packages = new XdtoPackageCollectionImpl (packages);
+
+			var byUri = Packages.GroupBy ((p) => p.NamespaceUri);
+			foreach (var kv in byUri) {
+				_packages.Add (kv.Key, kv.ToList ());
+			}
+
 		}
 
 		[ContextProperty("Пакеты", "Packages")]
@@ -40,14 +51,32 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Тип", "Type")]
-		public UndefinedOr<IXdtoType> Type (string name, string uri)
+		public IXdtoType Type (string name, string uri)
 		{
-			return new UndefinedOr<IXdtoType> (null);
+
+			if (!_packages.ContainsKey (uri))
+				throw new RuntimeException ("Тип не определён!");
+
+			// считаем, что в пакете все типы в том же пространстве имён, что и сам пакет
+			foreach (var package in _packages [uri]) {
+
+				var type = package.First((t) => t.Name.Equals(name, StringComparison.Ordinal));
+				if (type != null) {
+					return type;
+				}
+
+			}
+
+			return null;
 		}
 
 		[ContextMethod ("Создать", "Create")]
 		public IXdtoValue Create (IXdtoType type, IValue name = null)
 		{
+			if (type is XdtoObjectTypeImpl) {
+				return new XdtoDataObjectImpl (type as XdtoObjectTypeImpl, null, null);
+			}
+
 			throw new NotImplementedException ("XDTOFactory.Create()");
 		}
 

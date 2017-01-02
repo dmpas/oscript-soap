@@ -1,7 +1,7 @@
 ﻿using System;
 using ScriptEngine.Machine.Contexts;
-using ScriptEngine.Machine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TinyXdto
 {
@@ -14,12 +14,7 @@ namespace TinyXdto
 
 		public XdtoPropertyImpl Get (string name)
 		{
-			foreach (var property in this)
-			{
-				if (property.LocalName.Equals (name, StringComparison.Ordinal))
-					return property;
-			}
-			return null;
+			return this.First((p) => p.LocalName.Equals(name, StringComparison.Ordinal));
 		}
 	}
 }

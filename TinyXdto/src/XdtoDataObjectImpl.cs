@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace TinyXdto
 {
 	[ContextClass("ОбъектXDTO", "XDTODataObject")]
-	public class XdtoDataObjectImpl : DynamicPropertiesAccessor
+	public class XdtoDataObjectImpl : DynamicPropertiesAccessor, IXdtoValue
 	{
 		private readonly XdtoDataObjectImpl _owner;
 		private readonly XdtoPropertyImpl _owningProperty;
@@ -36,9 +36,12 @@ namespace TinyXdto
 		[ContextMethod("Добавить", "Add")]
 		public void Add (XmlFormEnum form, string namespaceUri, string localName, IXdtoValue dataElement)
 		{
-			// TODO: Доступно только для открытого типа
-			var customProperty = new XdtoPropertyImpl (this, form, namespaceUri, localName);
-			Add (customProperty, dataElement);
+			if (_type?.Open ?? true) {
+				var customProperty = new XdtoPropertyImpl (this, form, namespaceUri, localName);
+				Add (customProperty, dataElement);
+			}
+
+			throw new RuntimeException ("Добавлять можно только в объекты открытого типа!");
 		}
 
 		public void Add (XdtoPropertyImpl property, IXdtoValue dataElement)
@@ -122,7 +125,7 @@ namespace TinyXdto
 		[ContextMethod ("Проверить", "Validate")]
 		public void Validate ()
 		{
-			throw new NotImplementedException ();
+			_type?.Validate (this);
 		}
 
 		[ContextMethod ("Сбросить", "Unset")]
@@ -175,7 +178,7 @@ namespace TinyXdto
 		[ContextMethod ("Установлено", "IsSet")]
 		public bool IsSet (XdtoPropertyImpl property)
 		{
-			throw new NotImplementedException ();
+			return _data.ContainsKey (property);
 		}
 
 		private static readonly ContextMethodsMapper<XdtoDataObjectImpl> _methods = new ContextMethodsMapper<XdtoDataObjectImpl> ();
