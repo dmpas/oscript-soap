@@ -18,14 +18,14 @@ namespace OneScript.Soap
 
 		private List<MethodInfo> _methods = new List<MethodInfo> ();
 		private List<OperationImpl> _operations = new List<OperationImpl> ();
-		private HttpConnectionContext _conn = null;
+		private ISoapTransport _transport = null;
 
 		// TODO: полный список аргументов
 		public ProxyImpl (DefinitionsImpl definitions, EndpointImpl endpoint)
 		{
 			Definitions = definitions;
 			Endpoint = endpoint;
-			XdtoFactory = definitions.XdtoFactory;
+			XdtoFactory = definitions?.XdtoFactory ?? new XdtoFactoryImpl();
 
 			FillMethods ();
 		}
@@ -100,14 +100,11 @@ namespace OneScript.Soap
 			return _methods [methodNumber];
 		}
 
-		// TODO: SOAP может работать не только через HTTP/HTTPS
-		private HttpConnectionContext GetConnection (UriBuilder uri)
+		private void ConnectIfNeeded ()
 		{
-			if (_conn == null) {
-				_conn = new HttpConnectionContext (uri.Host, uri.Port, uri.UserName, uri.Password);
+			if (_transport == null) {
+				_transport = Endpoint.Connect ();
 			}
-
-			return _conn;
 		}
 
 		public override void CallAsFunction (int methodNumber, IValue [] arguments, out IValue retValue)
@@ -115,13 +112,10 @@ namespace OneScript.Soap
 			var operation = _operations [methodNumber];
 			retValue = ValueFactory.Create ();
 
-			var uri = new UriBuilder (Endpoint.Location);
-			var conn = GetConnection (uri);
+			ConnectIfNeeded ();
 
 			var headers = new MapImpl ();
 			headers.Insert (ValueFactory.Create ("Content-Type"), ValueFactory.Create ("application/xml"));
-
-			var request = HttpRequestContext.Constructor (ValueFactory.Create(uri.Path), headers);
 
 			var xmlBody = XmlWriterImpl.Create ();
 			xmlBody.SetString ("UTF-8");
@@ -142,18 +136,11 @@ namespace OneScript.Soap
 			xmlBody.WriteEndElement (); // soap:Envelope
 
 			var requestString = xmlBody.Close ().ToString();
-			request.SetBodyFromString (requestString);
-
-			// Console.WriteLine ("Request: {0}", requestString);
-			var httpResponse = conn.Post (request);
-
-			// retValue = response.GetBodyAsString (ValueFactory.Create("UTF-8"));
-			// Envelope/Body/<Op>Response/return
-			var responseText = httpResponse.GetBodyAsString(ValueFactory.Create("UTF-8"));
+			var responseText = _transport.Handle (requestString);
 			var xmlResult = XmlReaderImpl.Create () as XmlReaderImpl;
 
 			// TODO: Отдать на разбор фабрике
-			xmlResult.SetString (responseText.AsString ());
+			xmlResult.SetString (responseText);
 
 			var result = operation.ParseResponse (xmlResult, serializer);
 			if (result is SoapExceptionResponse) {
@@ -199,15 +186,14 @@ namespace OneScript.Soap
 			string endpointName
 		)
 		{
-			var service = definitions.Services.First ((it) => {
-					var itService = it as ServiceImpl;
-					return itService.Name.Equals (serviceName) && itService.NamespaceURI.Equals (serviceNamespaceURI);
-				} ) as ServiceImpl;
+			var service = definitions.Services.First ((sv) => {
+					return sv.Name.Equals (serviceName) && sv.NamespaceURI.Equals (serviceNamespaceURI);
+				} );
 			if (service == null) {
 				throw new RuntimeException ("Service not found!");
 			}
 
-			var endpoint = service.Endpoints.Get (endpointName) as EndpointImpl;
+			var endpoint = service.Endpoints.Get (endpointName);
 			if (endpoint == null) {
 				throw new RuntimeException ("Endpoint not found!");
 			}

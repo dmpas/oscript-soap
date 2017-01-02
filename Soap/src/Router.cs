@@ -7,7 +7,7 @@ using ScriptEngine.HostedScript.Library.Xml;
 namespace OneScript.Soap
 {
 	[ContextClass("WSСтрелочник", "WSRouter")]
-	public class Router : AutoContext<Router>
+	public class Router : AutoContext<Router>, ISoapTransport
 	{
 
 		private readonly List<IReflectableContext> handlers = new List<IReflectableContext>();
@@ -260,14 +260,45 @@ namespace OneScript.Soap
 			responseWriter.WriteStartElement ("Envelope");
 			responseWriter.WriteStartElement ("Body");
 			responseWriter.WriteStartElement ("Fault");
-			responseWriter.WriteStartElement ("FaultString");
+			responseWriter.WriteStartElement ("faultString");
 
 			responseWriter.WriteText ("Not implemented!");
 
-			responseWriter.WriteEndElement (); // FaultString
+			responseWriter.WriteEndElement (); // faultString
 			responseWriter.WriteEndElement (); // Fault
 			responseWriter.WriteEndElement (); // Body
 			responseWriter.WriteEndElement (); // Envelope
+		}
+
+		public string Handle (string requestBody)
+		{
+			var reader = new XmlReaderImpl ();
+			reader.SetString (requestBody);
+
+			var writer = new XmlWriterImpl ();
+			writer.SetString ();
+
+			Handle (reader, writer);
+
+			var responseText = writer.Close ().AsString ();
+			return responseText;
+		}
+
+		public InterfaceImpl CreateInterface ()
+		{
+			return new InterfaceImpl (NamespaceUri, "", Name,
+									 new OperationCollectionImpl (operations.Values));
+		}
+
+		public EndpointImpl CreateEndPoint ()
+		{
+			return new EndpointImpl (Name, "", CreateInterface (), this);
+		}
+
+		[ContextMethod("СоздатьПрокси", "CreateProxy")]
+		public ProxyImpl CreateProxy ()
+		{
+			return new ProxyImpl (null, CreateEndPoint ());
 		}
 
 		[ScriptConstructor]

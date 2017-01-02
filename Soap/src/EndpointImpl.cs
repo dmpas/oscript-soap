@@ -2,6 +2,7 @@
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Web.Services.Description;
+using ScriptEngine.HostedScript.Library.Http;
 using System.Linq;
 
 namespace OneScript.Soap
@@ -9,6 +10,8 @@ namespace OneScript.Soap
 	[ContextClass("WSТочкаПодключения", "WSEndpoint")]
 	public class EndpointImpl : AutoContext<EndpointImpl>, IWithName
 	{
+		private readonly ISoapTransport _transport = null;
+
 		internal EndpointImpl(Port port)
 		{
 			Documentation = port.Documentation;
@@ -39,6 +42,18 @@ namespace OneScript.Soap
 
 		}
 
+		internal EndpointImpl (string name,
+							   string documentation,
+							   InterfaceImpl customInterface,
+							   ISoapTransport customTransport)
+		{
+			Documentation = documentation;
+			Name = Name;
+			Interface = customInterface;
+			Location = "";
+			_transport = customTransport;
+		}
+
 		[ContextProperty("Документация", "Documentation")]
 		public string Documentation { get; }
 
@@ -50,6 +65,22 @@ namespace OneScript.Soap
 
 		[ContextProperty("Местоположение", "Location")]
 		public string Location { get; }
+
+		public ISoapTransport Connect ()
+		{
+
+			if (_transport != null)
+				return _transport;
+
+			var uri = new UriBuilder (Location);
+
+			if (uri.Scheme.Equals ("http") || uri.Scheme.Equals ("https")) {
+				var connection = new HttpConnectionContext (uri.Host, uri.Port, uri.UserName, uri.Password);
+				return new HttpTransport (connection, uri.Path);
+			}
+
+			throw new RuntimeException (String.Format ("SOAP transport not supported: {0}", uri.Scheme));
+		}
 	}
 }
 

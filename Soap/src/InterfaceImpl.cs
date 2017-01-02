@@ -16,6 +16,17 @@ namespace OneScript.Soap
 			Operations = OperationCollectionImpl.Create (portType.Operations);
 		}
 
+		internal InterfaceImpl (string namespaceUri,
+							    string documentation,
+							    string name,
+							    OperationCollectionImpl operations)
+		{
+			NamespaceURI = namespaceUri;
+			Documentation = documentation;
+			Name = name;
+			Operations = operations;
+		}
+
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]
 		public string NamespaceURI { get; }
 
