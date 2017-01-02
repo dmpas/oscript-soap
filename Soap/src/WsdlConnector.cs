@@ -38,7 +38,7 @@ namespace OneScript.Soap
 			UriBuilder uri = new UriBuilder(wsdl);
 			if (uri.Scheme == "file")
 			{
-				return new FileStream(wsdl, FileMode.Open);
+				return new FileStream(uri.Path, FileMode.Open);
 			}
 
 			if (uri.Scheme == "http")
