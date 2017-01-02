@@ -32,8 +32,7 @@ namespace OneScript.Soap
 
 		private void FillMethods ()
 		{
-			foreach (var ivOperation in Endpoint.Interface.Operations) {
-				var operation = ivOperation as OperationImpl;
+			foreach (var operation in Endpoint.Interface.Operations) {
 				_operations.Add (operation);
 				_methods.Add (GetMethodInfo (operation));
 			}
@@ -73,8 +72,7 @@ namespace OneScript.Soap
 
 			var _params = new List<ParameterDefinition> ();
 
-			foreach (var ivParameter in operation.Parameters) {
-				var param = ivParameter as ParameterImpl;
+			foreach (var param in operation.Parameters) {
 				var pdef = new ParameterDefinition ();
 
 				if (param.ParameterDirection == ParameterDirectionEnum.In) {
