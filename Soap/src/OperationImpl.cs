@@ -132,6 +132,22 @@ namespace OneScript.Soap
 			var retValue = ValueFactory.Create ();
 			var outputParams = new Dictionary<int, IValue> ();
 
+			if (!reader.Read ()
+				|| !reader.LocalName.Equals ("Envelope")
+			    // TODO: перевести XML на простые перечисления
+			   )
+				return new SoapExceptionResponse ("Wrong response!");
+			
+			reader.MoveToContent ();
+
+			if (!reader.Read ()
+				|| !reader.LocalName.Equals ("Body")
+			    // TODO: перевести XML на простые перечисления
+			   )
+				return new SoapExceptionResponse ("Wrong response!");
+
+			reader.MoveToContent ();
+
 			// TODO: Разбирать весь ответ через XDTO
 			while (reader.Read ()) {
 
