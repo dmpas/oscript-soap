@@ -11,6 +11,8 @@ namespace TinyXdto
 	[ContextClass("ФабрикаXDTO", "XDTOFactory")]
 	public class XdtoFactoryImpl : AutoContext<XdtoFactoryImpl>
 	{
+		const string xmlns_xsi = @"http://www.w3.org/2001/XMLSchema-instance";
+		const string xmlns_xs  = @"http://www.w3.org/2001/XMLSchema";
 
 		private readonly Dictionary<string, IList<XdtoPackageImpl>> _packages = new Dictionary<string, IList<XdtoPackageImpl>> ();
 		public XdtoFactoryImpl ()
@@ -37,17 +39,86 @@ namespace TinyXdto
 		[ContextProperty("Пакеты", "Packages")]
 		public XdtoPackageCollectionImpl Packages { get; }
 
+		private void WriteTypeAttribute (XmlWriterImpl xmlWriter,
+										 IValue value)
+		{
+			string typeName;
+			string typeUri;
+
+			if (value is XdtoDataObjectImpl) {
+				var obj = value as XdtoDataObjectImpl;
+				typeUri = obj.Type ().NamespaceUri;
+				typeName = obj.Type ().Name;
+			} else if (value is XdtoDataValueImpl) {
+				var obj = value as XdtoDataValueImpl;
+				typeUri = obj.Type ().NamespaceUri;
+				typeName = obj.Type ().Name;
+			} else {
+				typeName = "string";
+				typeUri = xmlns_xs;
+			}
+
+			var ns = xmlWriter.LookupPrefix (typeUri);
+			xmlWriter.WriteAttribute ("type", xmlns_xsi, string.Format ("{0}:{1}", ns, typeName));
+		}
+
+		private void WriteXdtoObject (XmlWriterImpl xmlWriter,
+									  XdtoDataObjectImpl obj)
+		{
+			obj.Validate ();
+			foreach (var property in obj.Properties()) {
+
+				var typeAssignment = XmlTypeAssignmentEnum.Explicit;
+
+				var value = obj.Get (property);
+				WriteXml (xmlWriter, value,
+						  property.LocalName,
+						  property.NamespaceURI,
+				          typeAssignment,
+						  property.Form);
+			}
+		}
+
 		[ContextMethod ("ЗаписатьXML", "WriteXML")]
 		public void WriteXml (XmlWriterImpl xmlWriter,
 		                      IValue value,
 		                      string localName,
-		                      string namespaceUri,
+		                      string namespaceUri = null,
 		                      XmlTypeAssignmentEnum? typeAssignment = null,
 		                      XmlFormEnum? xmlForm = null)
 		{
-			xmlWriter.WriteStartElement (localName, namespaceUri);
-			xmlWriter.WriteText (value.ToString ());
-			xmlWriter.WriteEndElement ();
+			xmlForm = xmlForm ?? XmlFormEnum.Element;
+			typeAssignment = typeAssignment ?? XmlTypeAssignmentEnum.Implicit;
+
+			if (xmlForm == XmlFormEnum.Element) {
+
+				xmlWriter.WriteStartElement (localName, namespaceUri);
+
+				if (typeAssignment == XmlTypeAssignmentEnum.Implicit) {
+					WriteTypeAttribute (xmlWriter, value);
+				}
+
+				if (value == null || value.DataType == DataType.Undefined) {
+					xmlWriter.WriteAttribute ("nil", xmlns_xs, "true");
+				} else
+				if (value is XdtoDataObjectImpl) {
+					WriteXdtoObject (xmlWriter, value as XdtoDataObjectImpl);
+				} else {
+					xmlWriter.WriteText (value.ToString ());
+				}
+
+				xmlWriter.WriteEndElement ();
+
+			} else if (xmlForm == XmlFormEnum.Attribute) {
+
+				xmlWriter.WriteAttribute (localName, namespaceUri, value.AsString ());
+
+			} else if (xmlForm == XmlFormEnum.Text) {
+
+				xmlWriter.WriteText (value.AsString ()); // TODO: XmlString ??
+
+			} else
+				throw new NotSupportedException ("Какой-то новый тип для XML");
 		}
 
 		[ContextMethod ("Тип", "Type")]
@@ -71,13 +142,30 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Создать", "Create")]
-		public IXdtoValue Create (IXdtoType type, IValue name = null)
+		public IXdtoValue Create (IXdtoType type, IValue value = null)
 		{
 			if (type is XdtoObjectTypeImpl) {
 				return new XdtoDataObjectImpl (type as XdtoObjectTypeImpl, null, null);
 			}
 
-			throw new NotImplementedException ("XDTOFactory.Create()");
+			var valueType = type as XdtoValueTypeImpl;
+			if (valueType == null) {
+				throw RuntimeException.InvalidArgumentType (nameof (type));
+			}
+
+			if (value == null) {
+				throw RuntimeException.InvalidArgumentType (nameof (value));
+			}
+
+			if (value.DataType == DataType.String) {
+				return new XdtoDataValueImpl (valueType,
+											  value.AsString (),
+											  value);
+			}
+
+			return new XdtoDataValueImpl (valueType,
+										  value.AsString (),
+										  value);
 		}
 
 
