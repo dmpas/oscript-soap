@@ -46,15 +46,13 @@ namespace testsoap
 		{
 			var def = new DefinitionsImpl ("http://vm21297.hv8.ru:10080/httpservice/ws/complex.1cws?wsdl");
 			Console.WriteLine ("Def has {0} services.", def.Services.Count ());
-			foreach (var ivService in def.Services) {
-				var service = ivService as ServiceImpl;
+			foreach (var service in def.Services) {
+				
 				Console.WriteLine ("\tService {0} has {1} endpoints", service.Name, service.Endpoints.Count ());
-
-				foreach (var ivEndpoint in service.Endpoints) {
-					var endpoint = ivEndpoint as EndpointImpl;
+				foreach (var endpoint in service.Endpoints) {
+					
 					Console.WriteLine ("\t\tEndpoint {0} as {1} operations", endpoint.Name, endpoint.Interface.Operations.Count ());
-					foreach (var ivOperation in endpoint.Interface.Operations) {
-						var operation = ivOperation as OperationImpl;
+					foreach (var operation in endpoint.Interface.Operations) {
 						Console.WriteLine ("\t\t\tOperation {0}", operation.Name);
 					}
 				}
