@@ -14,7 +14,7 @@ namespace OneScript.Soap
 
 		private List<MessagePartProxy> _parts = new List<MessagePartProxy> ();
 
-		ParameterCollectionImpl (IEnumerable<ParameterImpl> data, IEnumerable<MessagePartProxy> parts) : base(data)
+		internal ParameterCollectionImpl (IEnumerable<ParameterImpl> data, IEnumerable<MessagePartProxy> parts) : base(data)
 		{
 			_parts.AddRange (parts);
 		}
