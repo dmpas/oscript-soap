@@ -11,17 +11,16 @@ namespace OneScript.Soap
 	[ContextClass("WSОперация", "WSOperation")]
 	public class OperationImpl : AutoContext<OperationImpl>, IWithName
 	{
-		private readonly Dictionary<string, int> _indexes;
+		private readonly Dictionary<string, int> _indexes = new Dictionary<string, int> ();
 
 		internal OperationImpl(Operation operation)
 		{
 			Name = operation.Name;
+			NamespaceUri = operation.PortType.ServiceDescription.TargetNamespace;
 			Documentation = operation.Documentation;
 			ReturnValue = new ReturnValueImpl (operation.Messages.Output);
 
 			Parameters = ParameterCollectionImpl.Create (operation.Messages.Input);
-
-			_indexes = new Dictionary<string, int> ();
 
 			int argumentIndex = 0;
 			foreach (var messagePart in Parameters.Parts) {
@@ -30,6 +29,41 @@ namespace OneScript.Soap
 					++argumentIndex;
 				}
 			}
+		}
+
+		internal OperationImpl (MethodInfo methodInfo, string namespaceUri)
+		{
+			Name = methodInfo.Name;
+			Documentation = "";
+			NamespaceUri = namespaceUri;
+			ReturnValue = new ReturnValueImpl (
+				ValueFactory.Create (), // TODO: Описание типов "Произвольный"
+				string.Format("tns:{0}ResponseMessage", Name),
+				nillable: true);
+
+			var messagePart = new MessagePartProxy ();
+			messagePart.Name = "parameters";
+			messagePart.ElementName = String.Format ("tns:{0}", methodInfo.Name);
+			messagePart.NamespaceUri = namespaceUri;
+			messagePart.Parameters = new List<ParameterImpl> ();
+
+			int argumentIndex = 0;
+			foreach (var paramInfo in methodInfo.Params) {
+				var paramName = string.Format ("p{0}", argumentIndex);
+				var param = new ParameterImpl (paramName,
+											   paramInfo.IsByValue
+				                               	? ParameterDirectionEnum.In
+				                               	: ParameterDirectionEnum.InOut,
+				                               true,
+				                               Documentation);
+
+				messagePart.Parameters.Add (param);
+				_indexes.Add (paramName, argumentIndex);
+				++argumentIndex;
+			}
+
+			Parameters = new ParameterCollectionImpl (messagePart.Parameters,
+													  new MessagePartProxy [] { messagePart });
 		}
 
 		[ContextProperty("ВозвращаемоеЗначение", "ReturnValue")]
@@ -43,6 +77,8 @@ namespace OneScript.Soap
 
 		[ContextProperty("Параметры", "Parameters")]
 		public ParameterCollectionImpl Parameters { get; }
+
+		public string NamespaceUri { get; }
 
 		public void WriteRequestBody(XmlWriterImpl writer,
 			XdtoSerializerImpl serializer,
@@ -66,6 +102,28 @@ namespace OneScript.Soap
 
 			}
 
+		}
+
+		// Особенности реализации: возвращаемое значение и исходящие параметры
+		// передаём ОДНИМ сообщением, хотя протокол разрешает несколько сообщений
+
+		public void WriteResponseBody (XmlWriterImpl writer,
+									   XdtoSerializerImpl serializer,
+									   IValue returnValue,
+									   IValue [] arguments)
+		{
+			writer.WriteStartElement (ReturnValue.MessagePartName, NamespaceUri);
+
+			serializer.WriteXml (writer, returnValue, "return", NamespaceUri);
+			foreach (var param in Parameters) {
+				if (param.ParameterDirection == ParameterDirectionEnum.In)
+					continue;
+
+				var argumentIndex = _indexes [param.Name];
+				serializer.WriteXml (writer, arguments [argumentIndex], param.Name, NamespaceUri);
+			}
+
+			writer.WriteEndElement (); // messagePartName
 		}
 
 		public IParsedResponse ParseResponse(XmlReaderImpl reader, XdtoSerializerImpl serializer)

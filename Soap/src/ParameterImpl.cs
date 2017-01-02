@@ -19,6 +19,17 @@ namespace OneScript.Soap
 			Documentation = "";
 		}
 
+		internal ParameterImpl (string name,
+		                        ParameterDirectionEnum direction = ParameterDirectionEnum.InOut,
+								bool nillable = true,
+								string documentation = "")
+		{
+			Name = name;
+			Nillable = nillable;
+			ParameterDirection = direction;
+			Documentation = documentation;
+		}
+
 		[ContextProperty("ВозможноПустой", "Nillable")]
 		public bool Nillable { get; }
 

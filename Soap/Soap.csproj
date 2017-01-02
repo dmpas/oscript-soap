@@ -67,6 +67,7 @@
     <Compile Include="src\IParsedResponse.cs" />
     <Compile Include="src\SoapExceptionResponse.cs" />
     <Compile Include="src\SuccessfulSoapResponse.cs" />
+    <Compile Include="src\Router.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
