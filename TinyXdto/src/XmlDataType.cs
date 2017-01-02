@@ -22,7 +22,7 @@ namespace TinyXdto
 		[ScriptConstructor]
 		public static IReflectableContext Constructor (IValue typeName, IValue namespaceUri)
 		{
-			return new XmlDataType (typeName.ToString(), namespaceUri.ToString());
+			return new XmlDataType (typeName.AsString (), namespaceUri.AsString ());
 		}
 
 		public override bool Equals (object obj)

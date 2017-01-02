@@ -50,7 +50,11 @@ namespace TinyXdto
 		[ContextMethod("Проверить", "Validate")]
 		public void Validate (IValue value)
 		{
-			throw new NotImplementedException ("XDTOValueType.Validate");
+			if (Open) {
+				return;
+			}
+
+			throw new NotImplementedException ("Validate");
 		}
 
 		[ContextMethod ("ЭтоПотомок", "IsDescendant")]
