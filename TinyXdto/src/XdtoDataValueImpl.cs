@@ -5,7 +5,7 @@ using ScriptEngine.Machine;
 namespace TinyXdto
 {
 	[ContextClass("ЗначениеXDTO", "XDTODataValue")]
-	public class XdtoDataValueImpl : AutoContext<XdtoDataValueImpl>
+	public class XdtoDataValueImpl : AutoContext<XdtoDataValueImpl>, IXdtoValue
 	{
 
 		private readonly XdtoValueTypeImpl _type;
@@ -13,12 +13,12 @@ namespace TinyXdto
 		internal XdtoDataValueImpl (XdtoValueTypeImpl type,
 		                            string lexicalValue,
 		                            IValue value,
-		                            XdtoDataValueCollectionImpl list)
+		                            XdtoDataValueCollectionImpl list = null)
 		{
 			_type = type;
 			Value = value;
 			LexicalValue = lexicalValue;
-			List = list;
+			List = list ?? new XdtoDataValueCollectionImpl();
 		}
 
 		[ContextProperty("Значение", "Value")]
