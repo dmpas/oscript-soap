@@ -46,8 +46,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\XdtoSerializer.cs" />
     <Compile Include="src\XdtoFactoryImpl.cs" />
-    <Compile Include="src\XmlFormEnum.cs" />
-    <Compile Include="src\XmlTypeAssignmentEnum.cs" />
     <Compile Include="src\XdtoDataValueImpl.cs" />
     <Compile Include="src\XdtoDataValueCollectionImpl.cs" />
     <Compile Include="src\XdtoValueTypeImpl.cs" />
@@ -63,20 +61,27 @@
     <Compile Include="src\XdtoVarietyEnum.cs" />
     <Compile Include="src\XdtoDataObjectImpl.cs" />
     <Compile Include="src\XdtoListImpl.cs" />
-    <Compile Include="src\XdtoSequenceImpl.cs" />
     <Compile Include="src\XdtoObjectTypeImpl.cs" />
-    <Compile Include="src\XmlDataType.cs" />
-    <Compile Include="src\XmlExpandedName.cs" />
     <Compile Include="src\UndefinedOr.cs" />
     <Compile Include="src\SerializedPrimitiveValue.cs" />
     <Compile Include="src\XdtoFacetImpl.cs" />
     <Compile Include="src\XdtoFacetCollectionImpl.cs" />
-    <Compile Include="src\XmlNs.cs" />
     <Compile Include="src\XdtoException.cs" />
     <Compile Include="src\UnserializableDataTypeException.cs" />
+    <Compile Include="src\Sequence\IXdtoSequenceElement.cs" />
+    <Compile Include="src\Sequence\XdtoSequenceStringElement.cs" />
+    <Compile Include="src\Sequence\XdtoSequenceImpl.cs" />
+    <Compile Include="src\Xml\XmlDataType.cs" />
+    <Compile Include="src\Xml\XmlExpandedName.cs" />
+    <Compile Include="src\Xml\XmlFormEnum.cs" />
+    <Compile Include="src\Xml\XmlNs.cs" />
+    <Compile Include="src\Xml\XmlTypeAssignmentEnum.cs" />
+    <Compile Include="src\Sequence\XdtoSequenceValueElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
+    <Folder Include="src\Sequence\" />
+    <Folder Include="src\Xml\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

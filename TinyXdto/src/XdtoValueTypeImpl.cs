@@ -89,10 +89,10 @@ namespace TinyXdto
 			return new XmlDataType (Name, NamespaceUri);
 		}
 
-		public IXdtoValue ReadXml (XmlReaderImpl reader)
+		public IXdtoValue ReadXml (XmlReaderImpl reader, XdtoFactoryImpl factory)
 		{
 			var lexicalValue = reader.Value;
-			IValue internalValue = SerializedPrimitiveValue.Convert(AsXmlDataType(), lexicalValue);
+			IValue internalValue = SerializedPrimitiveValue.Convert (AsXmlDataType(), lexicalValue);
 
 			if (internalValue == null) {
 				if (BaseType != null) {

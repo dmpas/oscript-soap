@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using OneScript.Soap;
 using ScriptEngine.Machine;
+using ScriptEngine.HostedScript.Library.Xml;
 using TinyXdto;
 
 namespace testsoap
@@ -110,6 +111,25 @@ namespace testsoap
 
 		public void TestXdto ()
 		{
+			const string anyXml = @"<number>1</number>";
+			var reader = XmlReaderImpl.Create () as XmlReaderImpl;
+			reader.SetString (anyXml);
+
+			var factory = XdtoFactoryImpl.Constructor() as XdtoFactoryImpl;
+
+			var anyValue = factory.ReadXml (reader) as XdtoDataObjectImpl;
+
+			if (anyValue == null)
+				throw new Exception ("XDTO не разобрался!");
+
+			var writer = XmlWriterImpl.Create () as XmlWriterImpl;
+			writer.SetString ();
+
+			factory.WriteXml (writer, anyValue, "number");
+			var serializedResult = writer.Close ();
+
+			Console.WriteLine ("Original : {0}", anyXml);
+			Console.WriteLine ("Generated: {0}", serializedResult);
 		}
 
 		public void Run()

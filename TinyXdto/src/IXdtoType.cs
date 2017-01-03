@@ -9,6 +9,6 @@ namespace TinyXdto
 		string Name { get; }
 		string NamespaceUri { get; }
 
-		IXdtoValue ReadXml (XmlReaderImpl reader);
+		IXdtoValue ReadXml (XmlReaderImpl reader, XdtoFactoryImpl factory);
 	}
 }

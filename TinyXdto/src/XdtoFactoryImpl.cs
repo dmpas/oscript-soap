@@ -60,10 +60,41 @@ namespace TinyXdto
 			xmlWriter.WriteAttribute ("type", XmlNs.xsi, string.Format ("{0}:{1}", ns, typeName));
 		}
 
+		private void WriteXdtoSequence (XmlWriterImpl xmlWriter,
+		                                XdtoSequenceImpl sequence)
+		{
+			foreach (var element in sequence) {
+				
+				if (element == null) {
+					
+					// TODO: надо ли что-нибудь делать???
+
+				} else if (element is XdtoSequenceStringElement) {
+					
+					xmlWriter.WriteText ((element as XdtoSequenceStringElement).Text);
+
+				} else if (element is XdtoSequenceValueElement) {
+
+					var obj = element as XdtoSequenceValueElement;
+					WriteXml (xmlWriter, obj.Value,
+					          obj.Property.LocalName, obj.Property.NamespaceURI,
+							  XmlTypeAssignmentEnum.Explicit,
+							  obj.Property.Form);
+
+				}
+			}
+		}
+
 		private void WriteXdtoObject (XmlWriterImpl xmlWriter,
 									  XdtoDataObjectImpl obj)
 		{
 			obj.Validate ();
+
+			if (obj.Type ().Sequenced) {
+				WriteXdtoSequence (xmlWriter, obj.Sequence ());
+				return;
+			}
+
 			foreach (var property in obj.Properties()) {
 
 				var typeAssignment = XmlTypeAssignmentEnum.Explicit;
@@ -97,12 +128,22 @@ namespace TinyXdto
 				}
 
 				if (value == null || value.DataType == DataType.Undefined) {
+					
 					xmlWriter.WriteAttribute ("nil", XmlNs.xs, "true");
-				} else
-				if (value is XdtoDataObjectImpl) {
+
+				} else if (value is XdtoDataObjectImpl) {
+					
 					WriteXdtoObject (xmlWriter, value as XdtoDataObjectImpl);
+
+				} else if (value is XdtoDataValueImpl) {
+
+					var dataValue = value as XdtoDataValueImpl;
+					xmlWriter.WriteText (dataValue.LexicalValue);
+
 				} else {
+					
 					xmlWriter.WriteText (value.ToString ());
+
 				}
 
 				xmlWriter.WriteEndElement ();
@@ -164,6 +205,37 @@ namespace TinyXdto
 			return new XdtoDataValueImpl (valueType,
 										  value.AsString (),
 										  value);
+		}
+
+		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType type = null)
+		{
+			if (type == null) {
+				var explicitType = reader.GetAttribute (ValueFactory.Create ("type"), XmlNs.xsi);
+				if (explicitType.DataType == DataType.Undefined) {
+
+					type = new XdtoObjectTypeImpl ();
+
+				} else {
+
+					// TODO: defaultNamespace брать из контекста пространств имён
+					var defaultNamespace = XmlNs.xs;
+
+					// Задан тип - пытаемся его распознать
+					var sType = explicitType.AsString ();
+					var nameElements = sType.Split (':');
+
+					var typeUri = nameElements.Count () > 1
+											  ? nameElements [0]
+											  : defaultNamespace;
+					var typeName = nameElements.Count () > 1
+											  ? nameElements [1]
+											  : nameElements [0];
+
+					type = this.Type (typeName, typeUri);
+				}
+			}
+
+			return type.ReadXml (reader, this);
 		}
 
 

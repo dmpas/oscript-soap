@@ -11,6 +11,18 @@ namespace TinyXdto
 	[ContextClass("ТипОбъектаXDTO", "XDTOObjectType")]
 	public class XdtoObjectTypeImpl : AutoContext<XdtoObjectTypeImpl>, IXdtoType
 	{
+		// anyType
+		internal XdtoObjectTypeImpl ()
+		{
+			Name = "anyType";
+			NamespaceUri = XmlNs.xs;
+
+			Open = true;
+			Sequenced = true;
+			Mixed = true;
+			Properties = new XdtoPropertyCollectionImpl (new List<XdtoPropertyImpl> ());
+		}
+
 		internal XdtoObjectTypeImpl (XmlSchemaComplexType xmlType)
 		{
 			Name = xmlType.QualifiedName.Name;
@@ -71,7 +83,7 @@ namespace TinyXdto
 			return BaseType.IsDescendant (type);
 		}
 
-		public IXdtoValue ReadXml (XmlReaderImpl reader)
+		public IXdtoValue ReadXml (XmlReaderImpl reader, XdtoFactoryImpl factory)
 		{
 			// TODO: Чтение атрибутов
 
@@ -94,29 +106,66 @@ namespace TinyXdto
 				if (reader.NodeType.Equals (xmlText)) {
 					// надо найти свойство с Form=Text
 					// оно должно быть одно
-					// TODO: что делать, когда тип смешанный?!
 
-					var textProperty = Properties.First ((p) => p.Form == XmlFormEnum.Text);
+					var textProperty = Properties.FirstOrDefault ((p) => p.Form == XmlFormEnum.Text);
 					IXdtoType type;
+					IValue textValue;
 					if (textProperty == null) {
 						if (!Open)
 							throw new XdtoException ("Ошибка разбора XDTO!");
 
 						textProperty = new XdtoPropertyImpl (result, XmlFormEnum.Text, NamespaceUri, "#text");
 						type = new XdtoValueTypeImpl (new XmlDataType ("string"));
+						textValue = ValueFactory.Create (reader.Value);
+
 					} else {
 						type = textProperty.Type;
+						textValue = type.ReadXml (reader, factory);
 					}
 
-					var textValue = type.ReadXml (reader);
-					result.Set (textProperty, textValue);
+					if (Sequenced) {
+
+						result.Sequence ().Add (textValue.AsString ());
+
+					} else {
+						
+						result.Set (textProperty, textValue);
+
+					}
 
 				} else if (reader.NodeType.Equals (xmlElementStart)) {
 
 					var localName = reader.LocalName;
 					var ns = reader.NamespaceURI;
 
-					// TODO: reader.NamespaceContext
+					IXdtoType type;
+
+					var property = Properties.First ((p) => p.LocalName.Equals(localName)
+					                                 && p.NamespaceURI.Equals(ns));
+					if (property != null) {
+
+						type = property.Type;
+
+					} else {
+						
+						if (!Open)
+							throw new XdtoException ("Ошибка разбора XDTO!");
+
+						property = new XdtoPropertyImpl (result, XmlFormEnum.Element, ns, localName);
+						type = null;
+					}
+
+					var elementValue = factory.ReadXml (reader, type);
+
+					if (Sequenced) {
+
+						result.Sequence ().Add (property, elementValue);
+
+					} else {
+						
+						result.Set (property, elementValue);
+
+					}
 				}
 			}
 

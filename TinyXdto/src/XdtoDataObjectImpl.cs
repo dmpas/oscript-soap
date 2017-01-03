@@ -12,12 +12,14 @@ namespace TinyXdto
 		private readonly XdtoPropertyImpl _owningProperty;
 		private readonly Dictionary<XdtoPropertyImpl, IValue> _data = new Dictionary<XdtoPropertyImpl, IValue> ();
 		private readonly XdtoObjectTypeImpl _type;
+		private readonly XdtoSequenceImpl _sequence;
 
 		internal XdtoDataObjectImpl (XdtoObjectTypeImpl type, XdtoDataObjectImpl owner, XdtoPropertyImpl property)
 		{
 			_type = type;
 			_owner = owner;
 			_owningProperty = property;
+			_sequence = new XdtoSequenceImpl (this, true);
 		}
 
 		[ContextMethod ("Владелец", "Owner")]
@@ -77,7 +79,7 @@ namespace TinyXdto
 		[ContextMethod("Получить", "Get")]
 		public IValue Get (XdtoPropertyImpl property)
 		{
-			if (_data.ContainsKey (property))
+			if (property != null && _data.ContainsKey (property))
 			{
 				return _data [property];
 			}
@@ -119,7 +121,7 @@ namespace TinyXdto
 		[ContextMethod ("Последовательность", "Sequence")]
 		public XdtoSequenceImpl Sequence ()
 		{
-			throw new NotImplementedException ();
+			return _sequence;
 		}
 
 		[ContextMethod ("Проверить", "Validate")]

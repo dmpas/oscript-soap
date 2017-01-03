@@ -14,7 +14,7 @@ namespace TinyXdto
 
 		public XdtoPropertyImpl Get (string name)
 		{
-			return this.First((p) => p.LocalName.Equals(name, StringComparison.Ordinal));
+			return this.FirstOrDefault((p) => p.LocalName.Equals(name, StringComparison.Ordinal));
 		}
 	}
 }
