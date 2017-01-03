@@ -90,6 +90,7 @@ namespace testsoap
 
 
 			foreach (var callData in calls) {
+				
 				int methodIndex = proxy.FindMethod ("Echo" + callData.Key);
 
 				IValue result;

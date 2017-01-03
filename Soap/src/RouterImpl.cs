@@ -10,6 +10,8 @@ namespace OneScript.Soap
 	public class RouterImpl : AutoContext<RouterImpl>, ISoapTransport
 	{
 
+		const string xmlns_soap = @"http://schemas.xmlsoap.org/soap/envelope/";
+
 		private readonly List<IReflectableContext> handlers = new List<IReflectableContext>();
 		private readonly Dictionary<string, OperationImpl> operations = new Dictionary<string, OperationImpl> ();
 		private readonly Dictionary<OperationImpl, IReflectableContext> operationsMapper = new Dictionary<OperationImpl, IReflectableContext> ();
@@ -253,19 +255,27 @@ namespace OneScript.Soap
 			return writer.Close ().AsString();
 		}
 
+		private void WriteFault (XmlWriterImpl writer, string faultString)
+		{
+			writer.WriteStartElement ("Fault", xmlns_soap);
+			writer.WriteStartElement ("faultString", xmlns_soap);
+
+			writer.WriteText (faultString);
+
+			writer.WriteEndElement (); // faultString
+			writer.WriteEndElement (); // Fault
+		}
+
 		public void Handle (XmlReaderImpl requestReader,
 		                    XmlWriterImpl responseWriter)
 		{
 			// TODO: Отдать фабрике
-			responseWriter.WriteStartElement ("Envelope");
-			responseWriter.WriteStartElement ("Body");
-			responseWriter.WriteStartElement ("Fault");
-			responseWriter.WriteStartElement ("faultString");
+			responseWriter.WriteStartElement ("Envelope", xmlns_soap);
+			responseWriter.WriteNamespaceMapping ("soap", xmlns_soap);
+			responseWriter.WriteStartElement ("Body", xmlns_soap);
 
-			responseWriter.WriteText ("Not implemented!");
+			WriteFault (responseWriter, "Not implemented!");
 
-			responseWriter.WriteEndElement (); // faultString
-			responseWriter.WriteEndElement (); // Fault
 			responseWriter.WriteEndElement (); // Body
 			responseWriter.WriteEndElement (); // Envelope
 		}
