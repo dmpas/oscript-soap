@@ -132,8 +132,12 @@ namespace OneScript.Soap
 			var retValue = ValueFactory.Create ();
 			var outputParams = new Dictionary<int, IValue> ();
 
+			var xmlNodeTypeEnum = XmlNodeTypeEnum.CreateInstance ();
+			var xmlElementStart = xmlNodeTypeEnum.FromNativeValue (System.Xml.XmlNodeType.Element);
+
 			if (!reader.Read ()
 				|| !reader.LocalName.Equals ("Envelope")
+			    || !reader.NodeType.Equals(xmlElementStart)
 			    // TODO: перевести XML на простые перечисления
 			   )
 				return new SoapExceptionResponse ("Wrong response!");
@@ -142,30 +146,38 @@ namespace OneScript.Soap
 
 			if (!reader.Read ()
 				|| !reader.LocalName.Equals ("Body")
+				|| !reader.NodeType.Equals (xmlElementStart)
 			    // TODO: перевести XML на простые перечисления
 			   )
 				return new SoapExceptionResponse ("Wrong response!");
 
 			reader.MoveToContent ();
 
+			reader.Read ();
+
+			if (reader.LocalName.Equals ("Fault")
+				&& reader.NodeType.Equals (xmlElementStart)) {
+				var faultString = "Soap Exception!";
+
+				while (reader.Read ()) {
+
+					if (reader.LocalName.Equals ("faultString")
+						&& reader.NodeType.Equals (xmlElementStart)) {
+						reader.Read ();
+						reader.MoveToContent ();
+						faultString = reader.Value;
+						break;
+					}
+				}
+
+				return new SoapExceptionResponse (faultString);
+			}
+
 			// TODO: Разбирать весь ответ через XDTO
 			while (reader.Read ()) {
 
-				if (reader.LocalName.Equals ("Fault")) {
-					var faultString = "Soap Exception!";
-					while (reader.Read ()) {
-						if (reader.LocalName.Equals ("faultString")) {
-							reader.Read ();
-							reader.MoveToContent ();
-							faultString = reader.Value;
-							break;
-						}
-					}
-
-					return new SoapExceptionResponse (faultString);
-				}
-
-				if (reader.LocalName.Equals ("return")) {
+				if (reader.LocalName.Equals ("return")
+					&& reader.NodeType.Equals (xmlElementStart)) {
 					reader.Read ();
 					reader.MoveToContent ();
 
@@ -176,19 +188,22 @@ namespace OneScript.Soap
 					continue;
 				}
 
-				// TODO: выходные параметры, отдать фабрике
 
-				var paramName = reader.LocalName;
-				reader.Read ();
-				reader.MoveToContent ();
+				if (reader.NodeType.Equals (xmlElementStart)) {
+					// TODO: выходные параметры, отдать фабрике
 
-				// TODO: отдать фабрике
-				var paramValue = ValueFactory.Create (reader.Value);
-				reader.Read ();
+					var paramName = reader.LocalName;
+					reader.Read ();
+					reader.MoveToContent ();
 
-				if (_indexes.ContainsKey (paramName)) {
-					var paramIndex = _indexes [paramName];
-					outputParams.Add (paramIndex, paramValue);
+					// TODO: отдать фабрике
+					var paramValue = ValueFactory.Create (reader.Value);
+					reader.Read ();
+
+					if (_indexes.ContainsKey (paramName)) {
+						var paramIndex = _indexes [paramName];
+						outputParams.Add (paramIndex, paramValue);
+					}
 				}
 			}
 

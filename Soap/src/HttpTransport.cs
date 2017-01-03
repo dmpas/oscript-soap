@@ -26,8 +26,9 @@ namespace OneScript.Soap
 			request.SetBodyFromString (requestBody);
 
 			var httpResponse = Connection.Post (request);
+			var stringResponse = httpResponse.GetBodyAsString (ValueFactory.Create ("UTF-8")).AsString ();
 
-			return httpResponse.GetBodyAsString ().AsString ();
+			return stringResponse;
 		}
 
 	}
