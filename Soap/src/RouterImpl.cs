@@ -7,14 +7,14 @@ using ScriptEngine.HostedScript.Library.Xml;
 namespace OneScript.Soap
 {
 	[ContextClass("WSСтрелочник", "WSRouter")]
-	public class Router : AutoContext<Router>, ISoapTransport
+	public class RouterImpl : AutoContext<RouterImpl>, ISoapTransport
 	{
 
 		private readonly List<IReflectableContext> handlers = new List<IReflectableContext>();
 		private readonly Dictionary<string, OperationImpl> operations = new Dictionary<string, OperationImpl> ();
 		private readonly Dictionary<OperationImpl, IReflectableContext> operationsMapper = new Dictionary<OperationImpl, IReflectableContext> ();
 
-		public Router (string name, string targetNamespace)
+		public RouterImpl (string name, string targetNamespace)
 		{
 			Name = name;
 			NamespaceUri = targetNamespace;
@@ -304,7 +304,7 @@ namespace OneScript.Soap
 		[ScriptConstructor]
 		public static IReflectableContext Constructor (IValue name, IValue namespaceUri)
 		{
-			return new Router (name.AsString(), namespaceUri.AsString ());
+			return new RouterImpl (name.AsString(), namespaceUri.AsString ());
 		}
 	}
 }
