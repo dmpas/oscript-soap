@@ -68,9 +68,12 @@
     <Compile Include="src\XmlDataType.cs" />
     <Compile Include="src\XmlExpandedName.cs" />
     <Compile Include="src\UndefinedOr.cs" />
-    <Compile Include="src\PrimitiveDataSerializer.cs" />
+    <Compile Include="src\SerializedPrimitiveValue.cs" />
     <Compile Include="src\XdtoFacetImpl.cs" />
     <Compile Include="src\XdtoFacetCollectionImpl.cs" />
+    <Compile Include="src\XmlNs.cs" />
+    <Compile Include="src\XdtoException.cs" />
+    <Compile Include="src\UnserializableDataTypeException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />

@@ -19,5 +19,20 @@ namespace TinyXdto
 
 		[ContextProperty("Значение", "Value")]
 		public string Value { get; }
+
+		public override bool Equals (object obj)
+		{
+			var asThis = obj as XdtoFacetImpl;
+			if (asThis == null)
+				return false;
+			
+			return asThis.Type == Type
+						 && asThis.Value.Equals (Value, StringComparison.Ordinal);
+		}
+
+		public override int GetHashCode ()
+		{
+			return Type.GetHashCode () + Value.GetHashCode ();
+		}
 	}
 }

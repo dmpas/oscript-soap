@@ -3,6 +3,7 @@ using ScriptEngine.Machine.Contexts;
 using System.Xml.Schema;
 using System.Collections.Generic;
 using ScriptEngine.Machine;
+using ScriptEngine.HostedScript.Library.Xml;
 
 namespace TinyXdto
 {
@@ -27,6 +28,19 @@ namespace TinyXdto
 			}
 			if (xmlType.Content is XmlSchemaSimpleTypeRestriction) {
 			}
+
+			MemberTypes = new XdtoValueTypeCollectionImpl (memberTypes);
+			Facets = new XdtoFacetCollectionImpl (facets);
+			ListItemType = new UndefinedOr<XdtoValueTypeImpl> (null);
+		}
+
+		internal XdtoValueTypeImpl (XmlDataType primitiveType)
+		{
+			Name = primitiveType.TypeName;
+			NamespaceUri = primitiveType.NamespaceUri;
+
+			var memberTypes = new List<XdtoValueTypeImpl> ();
+			var facets = new List<XdtoFacetImpl> ();
 
 			MemberTypes = new XdtoValueTypeCollectionImpl (memberTypes);
 			Facets = new XdtoFacetCollectionImpl (facets);
@@ -68,6 +82,27 @@ namespace TinyXdto
 				return true;
 			
 			return BaseType.IsDescendant (type);
+		}
+
+		public XmlDataType AsXmlDataType ()
+		{
+			return new XmlDataType (Name, NamespaceUri);
+		}
+
+		public IXdtoValue ReadXml (XmlReaderImpl reader)
+		{
+			var lexicalValue = reader.Value;
+			IValue internalValue = SerializedPrimitiveValue.Convert(AsXmlDataType(), lexicalValue);
+
+			if (internalValue == null) {
+				if (BaseType != null) {
+					internalValue = SerializedPrimitiveValue.Convert (BaseType.AsXmlDataType (), lexicalValue);
+				}
+			}
+
+			internalValue = internalValue ?? ValueFactory.Create (lexicalValue);
+
+			return new XdtoDataValueImpl (this, lexicalValue, ValueFactory.Create (lexicalValue));
 		}
 	}
 }

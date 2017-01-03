@@ -36,7 +36,7 @@ namespace TinyXdto
 			typeAssignment = typeAssignment ?? XmlTypeAssignmentEnum.Implicit;
 
 			IValue rawValue = value.GetRawValue ();
-			var primitive = PrimitiveDataSerializer.Create (rawValue);
+			var primitive = SerializedPrimitiveValue.Create (rawValue);
 
 			if (primitive == null) {
 				XdtoFactory.WriteXml (xmlWriter, value, localName, namespaceUri, typeAssignment, xmlForm);
@@ -48,7 +48,7 @@ namespace TinyXdto
 				xmlWriter.WriteStartElement (localName, namespaceUri);
 
 				if (primitive.Nil) {
-					xmlWriter.WriteAttribute ("nil", "http://www.w3.org/2001/XMLSchema-instance", "true");
+					xmlWriter.WriteAttribute ("nil", XmlNs.xsi, "true");
 				} else {
 					if (typeAssignment == XmlTypeAssignmentEnum.Explicit) {
 						var dataType = XmlTypeOf (rawValue).Value;
@@ -59,7 +59,7 @@ namespace TinyXdto
 							nsPrefix = ValueFactory.Create ("d1p1");
 						}
 						var typeValue = String.Format("{0}:{1}", nsPrefix, dataType.TypeName);
-						xmlWriter.WriteAttribute("type", "http://www.w3.org/2001/XMLSchema-instance", typeValue);
+						xmlWriter.WriteAttribute("type", XmlNs.xsi, typeValue);
 					}
 				}
 
@@ -80,7 +80,7 @@ namespace TinyXdto
 
 		private static UndefinedOr<XmlDataType> Define (string xmlType)
 		{
-			return new UndefinedOr<XmlDataType> (new XmlDataType (xmlType, "http://www.w3.org/2001/XMLSchema"));
+			return new UndefinedOr<XmlDataType> (new XmlDataType (xmlType, XmlNs.xs));
 		}
 
 		private static UndefinedOr<XmlDataType> Undefined ()

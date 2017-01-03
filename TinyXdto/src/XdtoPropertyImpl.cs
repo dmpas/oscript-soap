@@ -38,6 +38,9 @@ namespace TinyXdto
 		[ContextProperty ("Имя", "Name")]
 		public string Name { get; }
 
+		[ContextProperty("Квалифицированное", "Qualified")]
+		public bool Qualified { get; }
+
 		[ContextProperty ("ЛокальноеИмя", "LocalName")]
 		public string LocalName { get; }
 

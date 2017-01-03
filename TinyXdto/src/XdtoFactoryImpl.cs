@@ -11,8 +11,6 @@ namespace TinyXdto
 	[ContextClass("ФабрикаXDTO", "XDTOFactory")]
 	public class XdtoFactoryImpl : AutoContext<XdtoFactoryImpl>
 	{
-		const string xmlns_xsi = @"http://www.w3.org/2001/XMLSchema-instance";
-		const string xmlns_xs  = @"http://www.w3.org/2001/XMLSchema";
 
 		private readonly Dictionary<string, IList<XdtoPackageImpl>> _packages = new Dictionary<string, IList<XdtoPackageImpl>> ();
 		public XdtoFactoryImpl ()
@@ -55,11 +53,11 @@ namespace TinyXdto
 				typeName = obj.Type ().Name;
 			} else {
 				typeName = "string";
-				typeUri = xmlns_xs;
+				typeUri = XmlNs.xs;
 			}
 
 			var ns = xmlWriter.LookupPrefix (typeUri);
-			xmlWriter.WriteAttribute ("type", xmlns_xsi, string.Format ("{0}:{1}", ns, typeName));
+			xmlWriter.WriteAttribute ("type", XmlNs.xsi, string.Format ("{0}:{1}", ns, typeName));
 		}
 
 		private void WriteXdtoObject (XmlWriterImpl xmlWriter,
@@ -99,7 +97,7 @@ namespace TinyXdto
 				}
 
 				if (value == null || value.DataType == DataType.Undefined) {
-					xmlWriter.WriteAttribute ("nil", xmlns_xs, "true");
+					xmlWriter.WriteAttribute ("nil", XmlNs.xs, "true");
 				} else
 				if (value is XdtoDataObjectImpl) {
 					WriteXdtoObject (xmlWriter, value as XdtoDataObjectImpl);

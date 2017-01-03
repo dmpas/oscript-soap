@@ -3,6 +3,8 @@ using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Xml.Schema;
 using System.Collections.Generic;
+using ScriptEngine.HostedScript.Library.Xml;
+using System.Linq;
 
 namespace TinyXdto
 {
@@ -67,6 +69,58 @@ namespace TinyXdto
 				return true;
 
 			return BaseType.IsDescendant (type);
+		}
+
+		public IXdtoValue ReadXml (XmlReaderImpl reader)
+		{
+			// TODO: Чтение атрибутов
+
+			var result = new XdtoDataObjectImpl (this, null, null);
+
+			// TODO: Перевести XML на простые перечисления
+			var xmlNodeTypeEnum = XmlNodeTypeEnum.CreateInstance ();
+			var xmlElementStart = xmlNodeTypeEnum.FromNativeValue (System.Xml.XmlNodeType.Element);
+			var xmlText = xmlNodeTypeEnum.FromNativeValue (System.Xml.XmlNodeType.Text);
+			var xmlElementEnd = xmlNodeTypeEnum.FromNativeValue (System.Xml.XmlNodeType.EndElement);
+
+			reader.MoveToContent ();
+			while (reader.Read ()) {
+				
+				if (reader.NodeType.Equals (xmlElementEnd)) {
+					// TODO: result.Validate()
+					return result;
+				}
+
+				if (reader.NodeType.Equals (xmlText)) {
+					// надо найти свойство с Form=Text
+					// оно должно быть одно
+					// TODO: что делать, когда тип смешанный?!
+
+					var textProperty = Properties.First ((p) => p.Form == XmlFormEnum.Text);
+					IXdtoType type;
+					if (textProperty == null) {
+						if (!Open)
+							throw new XdtoException ("Ошибка разбора XDTO!");
+
+						textProperty = new XdtoPropertyImpl (result, XmlFormEnum.Text, NamespaceUri, "#text");
+						type = new XdtoValueTypeImpl (new XmlDataType ("string"));
+					} else {
+						type = textProperty.Type;
+					}
+
+					var textValue = type.ReadXml (reader);
+					result.Set (textProperty, textValue);
+
+				} else if (reader.NodeType.Equals (xmlElementStart)) {
+
+					var localName = reader.LocalName;
+					var ns = reader.NamespaceURI;
+
+					// TODO: reader.NamespaceContext
+				}
+			}
+
+			throw new XdtoException ("Ошибка разбора XDTO!");
 		}
 	}
 }
