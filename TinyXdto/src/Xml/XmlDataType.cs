@@ -7,7 +7,7 @@ namespace TinyXdto
 	[ContextClass("ТипДанныхXML", "XMLDataType")]
 	public class XmlDataType : AutoContext<XmlDataType>
 	{
-		internal XmlDataType (string typeName, string namespaceUri = XmlNs.xs)
+		public XmlDataType (string typeName, string namespaceUri = XmlNs.xs)
 		{
 			NamespaceUri = namespaceUri;
 			TypeName = typeName;

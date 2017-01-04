@@ -77,11 +77,19 @@
     <Compile Include="src\Xml\XmlNs.cs" />
     <Compile Include="src\Xml\XmlTypeAssignmentEnum.cs" />
     <Compile Include="src\Sequence\XdtoSequenceValueElement.cs" />
+    <Compile Include="src\DefaultPackages\XmlSchema\W3OrgXmlSchemaPackage.cs" />
+    <Compile Include="src\DefaultPackages\XmlSchema\StringReader.cs" />
+    <Compile Include="src\Xml\IXdtoReader.cs" />
+    <Compile Include="src\DefaultPackages\XmlSchema\NumericReader.cs" />
+    <Compile Include="src\DefaultPackages\XmlSchema\BooleanReader.cs" />
+    <Compile Include="src\DefaultPackages\XmlSchema\DateTimeReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\Sequence\" />
     <Folder Include="src\Xml\" />
+    <Folder Include="src\DefaultPackages\" />
+    <Folder Include="src\DefaultPackages\XmlSchema\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,7 +8,7 @@ using ScriptEngine.HostedScript.Library.Xml;
 namespace TinyXdto
 {
 	[ContextClass("ТипЗначенияXDTO", "XDTOValueType")]
-	public class XdtoValueTypeImpl : AutoContext<XdtoValueTypeImpl>, IXdtoType
+	public class XdtoValueTypeImpl : AutoContext<XdtoValueTypeImpl>, IXdtoType, IXdtoReader
 	{
 		internal XdtoValueTypeImpl (XmlSchemaSimpleType xmlType)
 		{
@@ -32,9 +32,11 @@ namespace TinyXdto
 			MemberTypes = new XdtoValueTypeCollectionImpl (memberTypes);
 			Facets = new XdtoFacetCollectionImpl (facets);
 			ListItemType = new UndefinedOr<XdtoValueTypeImpl> (null);
+
+			Reader = this;
 		}
 
-		internal XdtoValueTypeImpl (XmlDataType primitiveType)
+		internal XdtoValueTypeImpl (XmlDataType primitiveType, IXdtoReader reader)
 		{
 			Name = primitiveType.TypeName;
 			NamespaceUri = primitiveType.NamespaceUri;
@@ -45,6 +47,8 @@ namespace TinyXdto
 			MemberTypes = new XdtoValueTypeCollectionImpl (memberTypes);
 			Facets = new XdtoFacetCollectionImpl (facets);
 			ListItemType = new UndefinedOr<XdtoValueTypeImpl> (null);
+
+			Reader = reader;
 		}
 
 
@@ -65,6 +69,8 @@ namespace TinyXdto
 
 		[ContextProperty("Фасеты", "Facets")]
 		public XdtoFacetCollectionImpl Facets { get; }
+
+		public IXdtoReader Reader { get; }
 
 		[ContextMethod("Проверить", "Validate")]
 		public void Validate (ContextIValueImpl value)
@@ -89,20 +95,12 @@ namespace TinyXdto
 			return new XmlDataType (Name, NamespaceUri);
 		}
 
-		public IXdtoValue ReadXml (XmlReaderImpl reader, XdtoFactoryImpl factory)
+		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType type, XdtoFactoryImpl factory)
 		{
 			var lexicalValue = reader.Value;
-			IValue internalValue = SerializedPrimitiveValue.Convert (AsXmlDataType(), lexicalValue);
+			var internalValue = ValueFactory.Create (lexicalValue);
 
-			if (internalValue == null) {
-				if (BaseType != null) {
-					internalValue = SerializedPrimitiveValue.Convert (BaseType.AsXmlDataType (), lexicalValue);
-				}
-			}
-
-			internalValue = internalValue ?? ValueFactory.Create (lexicalValue);
-
-			return new XdtoDataValueImpl (this, lexicalValue, ValueFactory.Create (lexicalValue));
+			return new XdtoDataValueImpl (this, lexicalValue, internalValue);
 		}
 	}
 }

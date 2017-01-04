@@ -10,12 +10,12 @@ namespace TinyXdto
 	[ContextClass ("ПакетXDTO", "XDTOPackage")]
 	public class XdtoPackageImpl : AutoContext<XdtoPackageImpl>, ICollectionContext, IEnumerable<IXdtoType>
 	{
-		private readonly XmlSchema _schema;
+		// private readonly XmlSchema _schema;
 		private readonly List<IXdtoType> _types = new List<IXdtoType> ();
 
 		internal XdtoPackageImpl (XmlSchema schema)
 		{
-			_schema = schema;
+			// _schema = schema;
 
 			NamespaceUri = schema.TargetNamespace;
 			Dependencies = new XdtoPackageCollectionImpl (new XdtoPackageImpl [] { });
@@ -30,6 +30,14 @@ namespace TinyXdto
 					_types.Add (new XdtoObjectTypeImpl (type as XmlSchemaComplexType));
 				}
 			}
+		}
+
+		internal XdtoPackageImpl (string namespaceUri, IEnumerable<IXdtoType> types)
+		{
+			NamespaceUri = namespaceUri;
+			_types.AddRange (types);
+			Dependencies = new XdtoPackageCollectionImpl (new XdtoPackageImpl [] { });
+			RootProperties = new XdtoPropertyCollectionImpl (new XdtoPropertyImpl [] { });
 		}
 
 		[ContextProperty ("URIПространстваИмен", "NamespaceURI")]

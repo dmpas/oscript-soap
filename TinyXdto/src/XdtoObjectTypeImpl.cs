@@ -9,7 +9,7 @@ using System.Linq;
 namespace TinyXdto
 {
 	[ContextClass("ТипОбъектаXDTO", "XDTOObjectType")]
-	public class XdtoObjectTypeImpl : AutoContext<XdtoObjectTypeImpl>, IXdtoType
+	public class XdtoObjectTypeImpl : AutoContext<XdtoObjectTypeImpl>, IXdtoType, IXdtoReader
 	{
 		// anyType
 		internal XdtoObjectTypeImpl ()
@@ -61,6 +61,12 @@ namespace TinyXdto
 		[ContextProperty("Свойства", "Properties")]
 		public XdtoPropertyCollectionImpl Properties { get; }
 
+		public IXdtoReader Reader {
+			get {
+				return this;
+			}
+		}
+
 		[ContextMethod("Проверить", "Validate")]
 		public void Validate (IValue value)
 		{
@@ -83,7 +89,7 @@ namespace TinyXdto
 			return BaseType.IsDescendant (type);
 		}
 
-		public IXdtoValue ReadXml (XmlReaderImpl reader, XdtoFactoryImpl factory)
+		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType expectedType, XdtoFactoryImpl factory)
 		{
 			// TODO: Чтение атрибутов
 
@@ -115,12 +121,12 @@ namespace TinyXdto
 							throw new XdtoException ("Ошибка разбора XDTO!");
 
 						textProperty = new XdtoPropertyImpl (result, XmlFormEnum.Text, NamespaceUri, "#text");
-						type = new XdtoValueTypeImpl (new XmlDataType ("string"));
+						type = factory.Type(new XmlDataType ("string"));
 						textValue = ValueFactory.Create (reader.Value);
 
 					} else {
 						type = textProperty.Type;
-						textValue = type.ReadXml (reader, factory);
+						textValue = type.Reader.ReadXml (reader, type, factory);
 					}
 
 					if (Sequenced) {

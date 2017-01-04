@@ -116,8 +116,8 @@ namespace testsoap
 			reader.SetString (anyXml);
 
 			var factory = XdtoFactoryImpl.Constructor() as XdtoFactoryImpl;
-
-			var anyValue = factory.ReadXml (reader) as XdtoDataObjectImpl;
+			var expectedType = factory.Type (new XmlDataType ("int"));
+			var anyValue = factory.ReadXml (reader, expectedType) as XdtoDataValueImpl;
 
 			if (anyValue == null)
 				throw new Exception ("XDTO не разобрался!");
@@ -126,10 +126,18 @@ namespace testsoap
 			writer.SetString ();
 
 			factory.WriteXml (writer, anyValue, "number");
-			var serializedResult = writer.Close ();
+			var serializedResult = writer.Close ().AsString();
 
 			Console.WriteLine ("Original : {0}", anyXml);
 			Console.WriteLine ("Generated: {0}", serializedResult);
+
+			reader = XmlReaderImpl.Create () as XmlReaderImpl;
+			reader.SetString (serializedResult);
+
+			var anyValueTypeExtraction = factory.ReadXml (reader) as XdtoDataValueImpl;
+			if (anyValueTypeExtraction == null)
+				throw new Exception ("Новый XDTO не разобрался!");
+			Console.WriteLine ("Serialized:{0}", anyValueTypeExtraction.Value);
 		}
 
 		public void Run()

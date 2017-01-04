@@ -12,10 +12,14 @@ namespace TinyXdto
 	public class XdtoFactoryImpl : AutoContext<XdtoFactoryImpl>
 	{
 
-		private readonly Dictionary<string, IList<XdtoPackageImpl>> _packages = new Dictionary<string, IList<XdtoPackageImpl>> ();
 		public XdtoFactoryImpl ()
+			: this (new XdtoPackageImpl [] { W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create() } )
 		{
-			
+		}
+
+		public XdtoFactoryImpl (IEnumerable<XdtoPackageImpl> packages)
+		{
+			Packages = new XdtoPackageCollectionImpl (packages);
 		}
 
 		public XdtoFactoryImpl (IEnumerable<XmlSchema> schemas)
@@ -26,19 +30,13 @@ namespace TinyXdto
 				packages.Add (package);
 			}
 			Packages = new XdtoPackageCollectionImpl (packages);
-
-			var byUri = Packages.GroupBy ((p) => p.NamespaceUri);
-			foreach (var kv in byUri) {
-				_packages.Add (kv.Key, kv.ToList ());
-			}
-
 		}
 
 		[ContextProperty("Пакеты", "Packages")]
 		public XdtoPackageCollectionImpl Packages { get; }
 
 		private void WriteTypeAttribute (XmlWriterImpl xmlWriter,
-										 IValue value)
+		                                 IValue value)
 		{
 			string typeName;
 			string typeUri;
@@ -56,7 +54,11 @@ namespace TinyXdto
 				typeUri = XmlNs.xs;
 			}
 
-			var ns = xmlWriter.LookupPrefix (typeUri);
+			var ns = xmlWriter.LookupPrefix (typeUri)?.AsString();
+			if (string.IsNullOrEmpty (ns)) {
+				ns = "tt"; // TODO: d1p1
+				xmlWriter.WriteNamespaceMapping (ns, typeUri);
+			}
 			xmlWriter.WriteAttribute ("type", XmlNs.xsi, string.Format ("{0}:{1}", ns, typeName));
 		}
 
@@ -64,13 +66,13 @@ namespace TinyXdto
 		                                XdtoSequenceImpl sequence)
 		{
 			foreach (var element in sequence) {
-				
+
 				if (element == null) {
-					
+
 					// TODO: надо ли что-нибудь делать???
 
 				} else if (element is XdtoSequenceStringElement) {
-					
+
 					xmlWriter.WriteText ((element as XdtoSequenceStringElement).Text);
 
 				} else if (element is XdtoSequenceValueElement) {
@@ -78,15 +80,15 @@ namespace TinyXdto
 					var obj = element as XdtoSequenceValueElement;
 					WriteXml (xmlWriter, obj.Value,
 					          obj.Property.LocalName, obj.Property.NamespaceURI,
-							  XmlTypeAssignmentEnum.Explicit,
-							  obj.Property.Form);
+					          XmlTypeAssignmentEnum.Explicit,
+					          obj.Property.Form);
 
 				}
 			}
 		}
 
 		private void WriteXdtoObject (XmlWriterImpl xmlWriter,
-									  XdtoDataObjectImpl obj)
+		                              XdtoDataObjectImpl obj)
 		{
 			obj.Validate ();
 
@@ -101,10 +103,10 @@ namespace TinyXdto
 
 				var value = obj.Get (property);
 				WriteXml (xmlWriter, value,
-						  property.LocalName,
-						  property.NamespaceURI,
+				          property.LocalName,
+				          property.NamespaceURI,
 				          typeAssignment,
-						  property.Form);
+				          property.Form);
 			}
 		}
 
@@ -161,23 +163,27 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Тип", "Type")]
-		public IXdtoType Type (string name, string uri)
+		public IXdtoType Type (string uri, string name)
 		{
 
-			if (!_packages.ContainsKey (uri))
-				throw new RuntimeException ("Тип не определён!");
+			var package = Packages.Get (uri);
+			if (package == null)
+				throw new XdtoException (String.Format("Тип не определён: {{{0}}}{1}", uri, name));
 
-			// считаем, что в пакете все типы в том же пространстве имён, что и сам пакет
-			foreach (var package in _packages [uri]) {
+			var type = package.FirstOrDefault((t) => t.Name.Equals(name, StringComparison.Ordinal));
+			return type;
+		}
 
-				var type = package.First((t) => t.Name.Equals(name, StringComparison.Ordinal));
-				if (type != null) {
-					return type;
-				}
+		[ContextMethod("Тип", "Type")]
+		public IXdtoType Type (IValue xmlType)
+		{
+			if (xmlType is XmlDataType)
+				return Type ((xmlType as XmlDataType).NamespaceUri, (xmlType as XmlDataType).TypeName);
 
-			}
+			if (xmlType is XmlExpandedName)
+				return Type ((xmlType as XmlExpandedName).NamespaceUri, (xmlType as XmlExpandedName).LocalName);
 
-			return null;
+			throw RuntimeException.InvalidArgumentType (nameof (xmlType));
 		}
 
 		[ContextMethod ("Создать", "Create")]
@@ -198,17 +204,18 @@ namespace TinyXdto
 
 			if (value.DataType == DataType.String) {
 				return new XdtoDataValueImpl (valueType,
-											  value.AsString (),
-											  value);
+				                              value.AsString (),
+				                              value);
 			}
 
 			return new XdtoDataValueImpl (valueType,
-										  value.AsString (),
-										  value);
+			                              value.AsString (),
+			                              value);
 		}
 
 		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType type = null)
 		{
+			reader.Read ();
 			if (type == null) {
 				var explicitType = reader.GetAttribute (ValueFactory.Create ("type"), XmlNs.xsi);
 				if (explicitType.DataType == DataType.Undefined) {
@@ -225,17 +232,35 @@ namespace TinyXdto
 					var nameElements = sType.Split (':');
 
 					var typeUri = nameElements.Count () > 1
-											  ? nameElements [0]
-											  : defaultNamespace;
+					                          ? nameElements [0]
+					                          : defaultNamespace;
 					var typeName = nameElements.Count () > 1
-											  ? nameElements [1]
-											  : nameElements [0];
+					                          ? nameElements [1]
+					                          : nameElements [0];
 
-					type = this.Type (typeName, typeUri);
+					// TODO: namespace context :'(
+					var nsMapping = reader.AttributeValue (ValueFactory.Create(string.Format("xmlns:{0}", typeUri)));
+					if (nsMapping != null && nsMapping.DataType == DataType.String) {
+						typeUri = nsMapping.AsString ();
+					}
+
+					type = this.Type (typeUri, typeName);
 				}
 			}
 
-			return type.ReadXml (reader, this);
+			if (type is XdtoObjectTypeImpl) {
+				return type.Reader.ReadXml (reader, type, this);
+			}
+
+			if (type is XdtoValueTypeImpl) {
+				reader.Read ();
+				reader.MoveToContent ();
+				var result = type.Reader.ReadXml (reader, type, this);
+				reader.Skip ();
+				return result;
+			}
+
+			throw new NotSupportedException ("Неожиданный тип XDTO!");
 		}
 
 
