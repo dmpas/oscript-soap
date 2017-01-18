@@ -56,7 +56,12 @@ namespace TinyXdto
 
 			var ns = xmlWriter.LookupPrefix (typeUri)?.AsString();
 			if (string.IsNullOrEmpty (ns)) {
-				ns = "tt"; // TODO: d1p1
+
+				// WriteAttribute(name, ns, value) при создании нового префикса
+				//  не опознаёт префиксы, записанные через WriteNamespaceMapping
+				var prefixIndex = xmlWriter.NamespaceContext.NamespaceMappings ().Count () + 2; // TODO: Костыль с +2
+				var prefixDepth = xmlWriter.NamespaceContext.Depth;
+				ns = string.Format ("d{0}p{1}", prefixDepth, prefixIndex);
 				xmlWriter.WriteNamespaceMapping (ns, typeUri);
 			}
 			xmlWriter.WriteAttribute ("type", XmlNs.xsi, string.Format ("{0}:{1}", ns, typeName));
