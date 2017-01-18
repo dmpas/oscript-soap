@@ -1,5 +1,6 @@
 version: 1.0.{build}
 before_build:
+- ps: nuget sources add -Name OneScriptAlpha -Source https://ci.appveyor.com/nuget/onescript
 - ps: nuget restore
 init:
 - ps: Set-WinSystemLocale ru-RU
