@@ -61,7 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Tests\testrunner.os" />
-	<EmbeddedResource Include="Tests\external.os" />
+	<EmbeddedResource Include="Tests\ws.os" />
+	<EmbeddedResource Include="Tests\xdto.os" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

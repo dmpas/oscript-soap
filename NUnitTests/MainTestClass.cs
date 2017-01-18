@@ -11,28 +11,34 @@ using OneScript.Soap;
 
 namespace NUnitTests
 {
-    [TestFixture]
-    public class MainTestClass
-    {
+	[TestFixture]
+	public class MainTestClass
+	{
 
-        private EngineHelpWrapper host;
+		private EngineHelpWrapper host;
 
-        [OneTimeSetUp]
-        public void Initialize()
-        {
-            host = new EngineHelpWrapper();
-            host.StartEngine();
-        }
+		[OneTimeSetUp]
+		public void Initialize ()
+		{
+			host = new EngineHelpWrapper ();
+			host.StartEngine ();
+		}
 
-        [Test]
-        public void TestAsInternalObjects()
-        {
-        }
+		[Test]
+		public void TestAsInternalObjects ()
+		{
+		}
 
-        [Test]
-        public void TestAsExternalObjects()
-        {
-            host.RunTestScript("NUnitTests.Tests.external.os");
-        }
-    }
+		[Test]
+		public void TestXdtoAsExternalObjects ()
+		{
+			host.RunTestScript ("NUnitTests.Tests.xdto.os");
+		}
+
+		[Test]
+		public void TestWsExternalObjects ()
+		{
+			host.RunTestScript ("NUnitTests.Tests.ws.os");
+		}
+	}
 }

@@ -168,7 +168,7 @@ namespace TinyXdto
 
 			var package = Packages.Get (uri);
 			if (package == null)
-				throw new XdtoException (String.Format("Тип не определён: {{{0}}}{1}", uri, name));
+				return null;
 
 			var type = package.FirstOrDefault((t) => t.Name.Equals(name, StringComparison.Ordinal));
 			return type;
