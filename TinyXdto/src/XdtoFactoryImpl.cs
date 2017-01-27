@@ -229,8 +229,7 @@ namespace TinyXdto
 
 				} else {
 
-					// TODO: defaultNamespace брать из контекста пространств имён
-					var defaultNamespace = XmlNs.xs;
+					var defaultNamespace = reader.NamespaceContext.DefaultNamespace;
 
 					// Задан тип - пытаемся его распознать
 					var sType = explicitType.AsString ();
