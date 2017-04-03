@@ -12,15 +12,17 @@ namespace TinyXdto
 		}
 
 		internal XdtoPropertyImpl (XdtoDataObjectImpl owner,
-								  XmlFormEnum form,
-								  string namespaceUri,
-								  string localName)
+								   XmlFormEnum form,
+								   string namespaceUri,
+								   string localName,
+								   IXdtoType type = null)
 		{
 			NamespaceURI = namespaceUri;
 			LocalName = localName;
 			Form = form;
 			OwnerObject = owner;
 			UpperBound = -1;
+			Type = type;
 		}
 
 		[ContextProperty ("URIПространстваИмен", "NamespaceURI")]

@@ -1,4 +1,5 @@
 ﻿using ScriptEngine;
+using System.Xml.Schema;
 
 namespace TinyXdto
 {
@@ -13,6 +14,7 @@ namespace TinyXdto
 
 		[EnumItem ("Элемент", "Element")]
 		Element
+
 	}
 }
 

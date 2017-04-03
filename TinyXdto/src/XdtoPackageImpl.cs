@@ -2,6 +2,7 @@
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Xml.Schema;
+using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -19,7 +20,6 @@ namespace TinyXdto
 
 			NamespaceUri = schema.TargetNamespace;
 			Dependencies = new XdtoPackageCollectionImpl (new XdtoPackageImpl [] { });
-			RootProperties = new XdtoPropertyCollectionImpl (new XdtoPropertyImpl [] { });
 
 			foreach (var oType in schema.SchemaTypes) {
 				var type = oType as XmlSchemaType;
@@ -30,6 +30,34 @@ namespace TinyXdto
 					_types.Add (new XdtoObjectTypeImpl (type as XmlSchemaComplexType));
 				}
 			}
+
+			var rootProperties = new List<XdtoPropertyImpl> ();
+			foreach (var oElement in schema.Elements) {
+
+				var elPair = (DictionaryEntry)oElement;
+				var element = elPair.Value as XmlSchemaElement;
+
+				// в XDTO под элемент создаётся свой тип с таким же именем
+				IXdtoType elementType;
+				if (element.SchemaType is XmlSchemaSimpleType) {
+
+					elementType = new XdtoValueTypeImpl (element.SchemaType as XmlSchemaSimpleType);
+
+				} else if (element.SchemaType is XmlSchemaComplexType) {
+
+					elementType = new XdtoObjectTypeImpl (element.SchemaType as XmlSchemaComplexType);
+
+				} else {
+					// TODO: Присвоить anyType					throw new NotImplementedException ();				}
+
+				var property = new XdtoPropertyImpl (null, XmlFormEnum.Element,
+				                                     element.QualifiedName.Namespace,
+				                                     element.QualifiedName.Name,
+				                                     elementType);
+				rootProperties.Add (property);
+			}
+
+			RootProperties = new XdtoPropertyCollectionImpl (rootProperties);
 		}
 
 		internal XdtoPackageImpl (string namespaceUri, IEnumerable<IXdtoType> types)

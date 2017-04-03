@@ -156,6 +156,8 @@ namespace testsoap
 		{
 			var main = new MainClass();
 			main.Run();
+			Console.Write ("Press any key...");
+			Console.ReadKey ();
 		}
 	}
 }
