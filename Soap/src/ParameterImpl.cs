@@ -11,12 +11,27 @@ namespace OneScript.Soap
 	public class ParameterImpl : AutoContext<ParameterImpl>, IWithName
 	{
 		
-		internal ParameterImpl (XmlSchemaElement element)
+		internal ParameterImpl (XmlSchemaElement element, XdtoFactoryImpl factory)
 		{
 			Name = element.Name;
 			Nillable = element.IsNillable;
 			ParameterDirection = ParameterDirectionEnum.In;
 			Documentation = "";
+			if (element.SchemaType is XmlSchemaSimpleType) {
+
+				Type = new XdtoValueTypeImpl (element.SchemaType as XmlSchemaSimpleType);
+
+			} else if (element.SchemaType is XmlSchemaComplexType) {
+
+				Type = new XdtoObjectTypeImpl (element.SchemaType as XmlSchemaComplexType);
+
+			} else {
+
+				if (element.SchemaTypeName != null) {
+					Type = factory.Type (element.SchemaTypeName.Namespace, element.SchemaTypeName.Name);
+				}
+
+			}
 		}
 
 		internal ParameterImpl (string name,

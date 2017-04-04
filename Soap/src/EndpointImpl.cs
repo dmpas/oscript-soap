@@ -12,7 +12,7 @@ namespace OneScript.Soap
 	{
 		private readonly ISoapTransport _transport = null;
 
-		internal EndpointImpl(Port port)
+		internal EndpointImpl(Port port, TinyXdto.XdtoFactoryImpl factory)
 		{
 			Documentation = port.Documentation;
 			Name = port.Name;
@@ -33,7 +33,7 @@ namespace OneScript.Soap
 					foreach (var oPortType in port.Service.ServiceDescription.PortTypes) {
 						var portType = oPortType as PortType;
 						if (portType.Name.Equals (binding.Type.Name)) {
-							Interface = new InterfaceImpl (portType);
+							Interface = new InterfaceImpl (portType, factory);
 							break;
 						}
 					}

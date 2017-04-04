@@ -10,7 +10,7 @@ namespace TinyXdto
 	[ContextClass("ТипЗначенияXDTO", "XDTOValueType")]
 	public class XdtoValueTypeImpl : AutoContext<XdtoValueTypeImpl>, IXdtoType, IXdtoReader
 	{
-		internal XdtoValueTypeImpl (XmlSchemaSimpleType xmlType)
+		public XdtoValueTypeImpl (XmlSchemaSimpleType xmlType)
 		{
 			NamespaceUri = xmlType.QualifiedName.Namespace;
 			Name = xmlType.QualifiedName.Name;
@@ -101,6 +101,24 @@ namespace TinyXdto
 			var internalValue = ValueFactory.Create (lexicalValue);
 
 			return new XdtoDataValueImpl (this, lexicalValue, internalValue);
+		}
+		public override bool Equals (object obj)
+		{
+			var asThis = obj as XdtoObjectTypeImpl;
+			if (asThis == null)
+				return false;
+			return asThis.NamespaceUri.Equals (NamespaceUri, StringComparison.Ordinal)
+						 && asThis.Name.Equals (Name, StringComparison.Ordinal);
+		}
+
+		public override int GetHashCode ()
+		{
+			return NamespaceUri.GetHashCode () + Name.GetHashCode ();
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("{{{0}}}{1}", NamespaceUri, Name);
 		}
 	}
 }

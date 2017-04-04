@@ -13,14 +13,14 @@ namespace OneScript.Soap
 	{
 		private readonly Dictionary<string, int> _indexes = new Dictionary<string, int> ();
 
-		internal OperationImpl(Operation operation)
+		internal OperationImpl(Operation operation, XdtoFactoryImpl factory)
 		{
 			Name = operation.Name;
 			NamespaceUri = operation.PortType.ServiceDescription.TargetNamespace;
 			Documentation = operation.Documentation;
 			ReturnValue = new ReturnValueImpl (operation.Messages.Output);
 
-			Parameters = ParameterCollectionImpl.Create (operation.Messages.Input);
+			Parameters = ParameterCollectionImpl.Create (operation.Messages.Input, factory);
 
 			int argumentIndex = 0;
 			foreach (var messagePart in Parameters.Parts) {
@@ -94,7 +94,12 @@ namespace OneScript.Soap
 					if (param.ParameterDirection == ParameterDirectionEnum.Out)
 						continue;
 
-					var argumentIndex = _indexes [param.Name];					serializer.WriteXml (writer, arguments [argumentIndex], param.Name, messagePart.NamespaceUri);
+					var argumentIndex = _indexes [param.Name];
+					var typeAssignment = XmlTypeAssignmentEnum.Implicit;
+
+					if (param.Type is XdtoValueTypeImpl)
+						typeAssignment = XmlTypeAssignmentEnum.Explicit;
+					serializer.WriteXml (writer, arguments [argumentIndex], param.Name, messagePart.NamespaceUri, typeAssignment);
 
 				}
 

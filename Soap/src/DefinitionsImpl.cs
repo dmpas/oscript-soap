@@ -40,7 +40,7 @@ namespace OneScript.Soap
 
 			XdtoFactory = new XdtoFactoryImpl (_wsd.Types.Schemas);
 
-			Services = ServiceCollectionImpl.Create(_wsd.Services);
+			Services = ServiceCollectionImpl.Create(_wsd.Services, XdtoFactory);
 			InitializeStructures();
 		}
 

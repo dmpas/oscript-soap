@@ -14,12 +14,12 @@ namespace OneScript.Soap
 		{
 		}
 
-		internal static ServiceCollectionImpl Create(ServiceCollection collection)
+		internal static ServiceCollectionImpl Create(ServiceCollection collection, TinyXdto.XdtoFactoryImpl factory)
 		{
 			IList<ServiceImpl> list = new List<ServiceImpl>();
 			foreach (Service service in collection)
 			{
-				list.Add(new ServiceImpl(service));
+				list.Add(new ServiceImpl(service, factory));
 			}
 			return new ServiceCollectionImpl(list);
 		}

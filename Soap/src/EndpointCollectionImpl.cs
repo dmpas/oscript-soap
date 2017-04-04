@@ -14,12 +14,12 @@ namespace OneScript.Soap
 		{
 		}
 
-		internal static EndpointCollectionImpl Create(PortCollection portCollection)
+		internal static EndpointCollectionImpl Create(PortCollection portCollection, TinyXdto.XdtoFactoryImpl factory)
 		{
 			var ports = new List<EndpointImpl> ();
 			foreach (var mPort in portCollection) {
 				var port = mPort as Port;
-				ports.Add (new EndpointImpl (port));
+				ports.Add (new EndpointImpl (port, factory));
 			}
 			return new EndpointCollectionImpl (ports);
 		}

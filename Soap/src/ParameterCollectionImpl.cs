@@ -21,7 +21,7 @@ namespace OneScript.Soap
 
 		public IEnumerable<MessagePartProxy> Parts { get { return _parts; } }
 
-		internal static ParameterCollectionImpl Create (OperationInput operation)
+		internal static ParameterCollectionImpl Create (OperationInput operation, TinyXdto.XdtoFactoryImpl factory)
 		{
 			var data = new List<ParameterImpl> ();
 			var parts = new List<MessagePartProxy> ();
@@ -44,7 +44,7 @@ namespace OneScript.Soap
 					var items = ((type.SchemaType as XmlSchemaComplexType).Particle as XmlSchemaSequence).Items;
 
 					foreach (var item in items) {
-						partParameters.Add (new ParameterImpl (item as XmlSchemaElement));
+						partParameters.Add (new ParameterImpl (item as XmlSchemaElement, factory));
 					}
 				}
 

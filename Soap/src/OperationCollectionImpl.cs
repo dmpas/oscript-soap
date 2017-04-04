@@ -14,13 +14,13 @@ namespace OneScript.Soap
 		{
 		}
 
-		internal static OperationCollectionImpl Create (OperationCollection data)
+		internal static OperationCollectionImpl Create (OperationCollection data, TinyXdto.XdtoFactoryImpl factory)
 		{
 			var operations = new List<OperationImpl> ();
 
 			foreach (var oOperation in data) {
 				var operation = oOperation as Operation;
-				operations.Add (new OperationImpl (operation));
+				operations.Add (new OperationImpl (operation, factory));
 			}
 
 			return new OperationCollectionImpl (operations);

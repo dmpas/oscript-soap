@@ -147,7 +147,7 @@ namespace TinyXdto
 
 				if (value == null || value.DataType == DataType.Undefined) {
 					
-					xmlWriter.WriteAttribute ("nil", XmlNs.xs, "true");
+					xmlWriter.WriteAttribute ("nil", XmlNs.xsi, "true");
 
 				} else if (value is XdtoDataObjectImpl) {
 					

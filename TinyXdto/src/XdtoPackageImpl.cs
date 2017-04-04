@@ -22,7 +22,8 @@ namespace TinyXdto
 			Dependencies = new XdtoPackageCollectionImpl (new XdtoPackageImpl [] { });
 
 			foreach (var oType in schema.SchemaTypes) {
-				var type = oType as XmlSchemaType;
+				var dElement = (DictionaryEntry)oType;
+				var type = dElement.Value;
 				if (type is XmlSchemaSimpleType) {
 					_types.Add (new XdtoValueTypeImpl (type as XmlSchemaSimpleType));
 				} else

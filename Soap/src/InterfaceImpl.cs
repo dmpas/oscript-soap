@@ -8,12 +8,12 @@ namespace OneScript.Soap
 	[ContextClass("WSИнтерфейс", "WSInterface")]
 	public class InterfaceImpl : AutoContext<InterfaceImpl>, IWithName
 	{
-		internal InterfaceImpl(PortType portType)
+		internal InterfaceImpl(PortType portType, TinyXdto.XdtoFactoryImpl factory)
 		{
 			Documentation = portType.Documentation;
 			Name = portType.Name;
 			NamespaceURI = portType.ServiceDescription.TargetNamespace;
-			Operations = OperationCollectionImpl.Create (portType.Operations);
+			Operations = OperationCollectionImpl.Create (portType.Operations, factory);
 		}
 
 		internal InterfaceImpl (string namespaceUri,

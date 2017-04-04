@@ -8,12 +8,12 @@ namespace OneScript.Soap
 	[ContextClass ("WSСервис", "WSService")]
 	public class ServiceImpl : AutoContext<ServiceImpl>, IWithName
 	{
-		internal ServiceImpl (Service service)
+		internal ServiceImpl (Service service, TinyXdto.XdtoFactoryImpl factory)
 		{
 			Name = service.Name;
 			NamespaceURI = service.ServiceDescription.TargetNamespace;
 			Documentation = service.Documentation;
-			Endpoints = EndpointCollectionImpl.Create (service.Ports);
+			Endpoints = EndpointCollectionImpl.Create (service.Ports, factory);
 		}
 
 		[ContextProperty ("Имя", "Name")]

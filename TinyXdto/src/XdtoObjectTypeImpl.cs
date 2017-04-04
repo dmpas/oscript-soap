@@ -23,7 +23,7 @@ namespace TinyXdto
 			Properties = new XdtoPropertyCollectionImpl (new List<XdtoPropertyImpl> ());
 		}
 
-		internal XdtoObjectTypeImpl (XmlSchemaComplexType xmlType)
+		public XdtoObjectTypeImpl (XmlSchemaComplexType xmlType)
 		{
 			Name = xmlType.QualifiedName.Name;
 			NamespaceUri = xmlType.QualifiedName.Namespace;
@@ -176,6 +176,25 @@ namespace TinyXdto
 			}
 
 			throw new XdtoException ("Ошибка разбора XDTO!");
+		}
+
+		public override bool Equals (object obj)
+		{
+			var asThis = obj as XdtoObjectTypeImpl;
+			if (asThis == null)
+				return false;
+			return asThis.NamespaceUri.Equals (NamespaceUri, StringComparison.Ordinal)
+						 && asThis.Name.Equals (Name, StringComparison.Ordinal);
+		}
+
+		public override int GetHashCode ()
+		{
+			return NamespaceUri.GetHashCode () + Name.GetHashCode ();
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("{{{0}}}{1}", NamespaceUri, Name);
 		}
 	}
 }
