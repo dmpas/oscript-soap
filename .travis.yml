@@ -1,6 +1,6 @@
 language: csharp
 install:
-    - nuget sources add -Name OneScriptAlpha -Source https://ci.appveyor.com/nuget/onescript
+    - nuget sources add -Name OneScriptAlpha -Source https://ci.appveyor.com/nuget/dmpas-onescript
     - nuget restore
     - nuget install NUnit.Runners -Version 3.5.0 -OutputDirectory testrunner
 script:
