@@ -84,7 +84,14 @@ namespace TinyXdto
 
 		public CollectionEnumerator GetManagedIterator ()
 		{
-			return new CollectionEnumerator (GetEnumerator ());
+			return new CollectionEnumerator (GetIValueEnumerator ());
+		}
+
+		public IEnumerator<IValue> GetIValueEnumerator ()
+		{
+			foreach (var _type in _types) {
+				yield return ValueFactory.Create (_type);
+			}
 		}
 
 		public IEnumerator<IXdtoType> GetEnumerator ()
