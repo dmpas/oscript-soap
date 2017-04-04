@@ -13,21 +13,32 @@ namespace TinyXdto
 	{
 
 		public XdtoFactoryImpl ()
-			: this (new XdtoPackageImpl [] { W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create() } )
+			: this (new XdtoPackageImpl [] { } )
 		{
 		}
 
 		public XdtoFactoryImpl (IEnumerable<XdtoPackageImpl> packages)
 		{
-			Packages = new XdtoPackageCollectionImpl (packages);
+			var _packages = new List<XdtoPackageImpl> ();
+			_packages.Add (W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create ());
+			foreach (var package in packages) {
+				if (!_packages.Contains (package)) {
+					_packages.Add (package);
+				}
+			}
+
+			Packages = new XdtoPackageCollectionImpl (_packages);
 		}
 
 		public XdtoFactoryImpl (IEnumerable<XmlSchema> schemas)
 		{
 			var packages = new List<XdtoPackageImpl> ();
+			packages.Add (W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create ());
 			foreach (var schema in schemas) {
 				var package = new XdtoPackageImpl (schema);
-				packages.Add (package);
+				if (!packages.Contains (package)) {
+					packages.Add (package);
+				}
 			}
 			Packages = new XdtoPackageCollectionImpl (packages);
 		}
@@ -106,7 +117,7 @@ namespace TinyXdto
 
 				var typeAssignment = XmlTypeAssignmentEnum.Explicit;
 
-				var value = obj.Get (property);
+				var value = obj.Get (property) as IXdtoValue;
 				WriteXml (xmlWriter, value,
 				          property.LocalName,
 				          property.NamespaceURI,
@@ -117,7 +128,7 @@ namespace TinyXdto
 
 		[ContextMethod ("ЗаписатьXML", "WriteXML")]
 		public void WriteXml (XmlWriterImpl xmlWriter,
-		                      IValue value,
+		                      IXdtoValue value,
 		                      string localName,
 		                      string namespaceUri = null,
 		                      XmlTypeAssignmentEnum? typeAssignment = null,
@@ -266,7 +277,6 @@ namespace TinyXdto
 
 			throw new NotSupportedException ("Неожиданный тип XDTO!");
 		}
-
 
 		[ScriptConstructor]
 		static public IRuntimeContextInstance Constructor ()

@@ -83,6 +83,9 @@
     <Compile Include="src\DefaultPackages\XmlSchema\NumericReader.cs" />
     <Compile Include="src\DefaultPackages\XmlSchema\BooleanReader.cs" />
     <Compile Include="src\DefaultPackages\XmlSchema\DateTimeReader.cs" />
+    <Compile Include="src\IXdtoSerializer.cs" />
+    <Compile Include="src\IXdtoDeserializer.cs" />
+    <Compile Include="src\PrimitiveValuesSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />

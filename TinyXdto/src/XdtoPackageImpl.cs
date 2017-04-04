@@ -103,6 +103,24 @@ namespace TinyXdto
 		{
 			return GetEnumerator ();
 		}
+
+		public override bool Equals (object obj)
+		{
+			var asThis = obj as XdtoPackageImpl;
+			if (asThis == null)
+				return false;
+			return asThis.NamespaceUri.Equals (NamespaceUri, StringComparison.Ordinal);
+		}
+
+		public override int GetHashCode ()
+		{
+			return NamespaceUri.GetHashCode ();
+		}
+
+		public override string ToString ()
+		{
+			return string.Format("{{{0}}}", NamespaceUri);
+		}
 	}
 }
 

@@ -233,6 +233,11 @@ namespace TinyXdto
 				yield return _methods.GetMethodInfo (i);
 			}
 		}
+
+		public XmlDataType XmlType ()
+		{
+			return new XmlDataType (_type.Name, _type.NamespaceUri);
+		}
 	}
 }
 

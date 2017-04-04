@@ -40,5 +40,10 @@ namespace TinyXdto
 			return (NamespaceUri?.GetHashCode () ?? 0)
 				+ (TypeName?.GetHashCode () ?? 0);
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("{{{0}}}{1}", NamespaceUri, TypeName);
+		}
 	}
 }

@@ -36,6 +36,10 @@ namespace TinyXdto
 			return _type;
 		}
 
+		public XmlDataType XmlType ()
+		{
+			return new XmlDataType (_type.Name, _type.NamespaceUri);
+		}
 	}
 }
 

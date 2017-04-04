@@ -5,6 +5,7 @@ namespace TinyXdto
 {
 	public interface IXdtoValue : IValue
 	{
+		XmlDataType XmlType ();
 	}
 }
 

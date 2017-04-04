@@ -128,7 +128,7 @@ namespace OneScript.Soap
 
 			xmlBody.WriteStartElement ("soap:Body");
 
-			var serializer = new XdtoSerializerImpl (XdtoFactory);
+			var serializer = XdtoSerializerImpl.Constructor (XdtoFactory) as XdtoSerializerImpl;
 
 			operation.WriteRequestBody (xmlBody, serializer, arguments);
 

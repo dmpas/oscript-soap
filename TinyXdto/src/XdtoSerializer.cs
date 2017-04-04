@@ -2,12 +2,16 @@
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using ScriptEngine.HostedScript.Library.Xml;
+using System.Collections.Generic;
 
 namespace TinyXdto
 {
 	[ContextClass ("СериализаторXDTO", "XDTOSerializer")]
 	public class XdtoSerializerImpl : AutoContext<XdtoSerializerImpl>
 	{
+
+		private readonly Dictionary<TypeDescriptor, IXdtoSerializer>   serializers = new Dictionary<TypeDescriptor, IXdtoSerializer> ();
+		private readonly Dictionary<TypeDescriptor, IXdtoDeserializer> deserializers = new Dictionary<TypeDescriptor, IXdtoDeserializer> ();
 
 		public XdtoSerializerImpl (XdtoFactoryImpl factory)
 		{
@@ -35,6 +39,10 @@ namespace TinyXdto
 			xmlForm = xmlForm ?? XmlFormEnum.Element;
 			typeAssignment = typeAssignment ?? XmlTypeAssignmentEnum.Implicit;
 
+			var xdtoValue = WriteXdto (value);
+			XdtoFactory.WriteXml (xmlWriter, xdtoValue, localName, namespaceUri, typeAssignment, xmlForm);
+
+			/*
 			IValue rawValue = value.GetRawValue ();
 			var primitive = SerializedPrimitiveValue.Create (rawValue);
 
@@ -51,7 +59,7 @@ namespace TinyXdto
 					xmlWriter.WriteAttribute ("nil", XmlNs.xsi, "true");
 				} else {
 					if (typeAssignment == XmlTypeAssignmentEnum.Explicit) {
-						var dataType = XmlTypeOf (rawValue).Value;
+						var dataType = XmlTypeOf (rawValue);
 						var nsPrefix = xmlWriter.LookupPrefix (dataType.NamespaceUri);
 						if (ValueFactory.Create().Equals(nsPrefix)) {
 							var prefixIndex = xmlWriter.NamespaceContext.NamespaceMappings ().Count () + 1;
@@ -78,8 +86,10 @@ namespace TinyXdto
 				xmlWriter.WriteText (primitive.SerializedValue);
 
 			}
+			*/
 		}
 
+		/*
 		private static UndefinedOr<XmlDataType> Define (string xmlType)
 		{
 			return new UndefinedOr<XmlDataType> (new XmlDataType (xmlType, XmlNs.xs));
@@ -89,24 +99,26 @@ namespace TinyXdto
 		{
 			return new UndefinedOr<XmlDataType> (null);
 		}
+		*/
+		[ContextMethod("ЗаписатьXDTO")]
+		public IXdtoValue WriteXdto (IValue inValue)
+		{
+			var value = inValue.GetRawValue ();
+			var td = value.SystemType;
+
+			if (serializers.ContainsKey (td)) {
+				var s = serializers [td];
+				var xdtoType = XdtoFactory.Type (s.GetPossibleType (inValue));
+				return s.SerializeXdto (inValue, xdtoType);
+			}
+			return null;
+		}
 
 		[ContextMethod("XMLТипЗнч", "XMLTypeOf")]
-		public UndefinedOr<XmlDataType> XmlTypeOf (IValue inValue)
+		public XmlDataType XmlTypeOf (IValue inValue)
 		{
-			IValue value = inValue.GetRawValue ();
-
-			if (value.DataType == DataType.Number)
-				return Define ("decimal");
-			if (value.DataType == DataType.String)
-				return Define ("string");
-			if (value.DataType == DataType.Boolean)
-				return Define ("boolean");
-			if (value.DataType == DataType.Date)
-				return Define ("dateTime");
-
-			// TODO: Из фабрики
-
-			return Undefined ();
+			var xdtoValue = WriteXdto (inValue);
+			return xdtoValue?.XmlType ();
 		}
 
 		[ContextMethod("XMLТип", "XMLType")]
@@ -118,23 +130,20 @@ namespace TinyXdto
 		[ContextMethod("XMLСтрока", "XMLString")]
 		public string XmlString (IValue inValue)
 		{
-			IValue value = inValue.GetRawValue ();
+			var xdtoValue = WriteXdto (inValue);
+			return (xdtoValue as XdtoDataValueImpl).LexicalValue;
+		}
 
-			if (value.DataType == DataType.Number)
-				return string.Format ("{0}", value.AsNumber ());
+		public void RegisterXdtoType (TypeDescriptor type, object processor)
+		{
+			if (processor is IXdtoSerializer) {
+				serializers [type] = processor as IXdtoSerializer;
+			}
 
-			if (value.DataType == DataType.String)
-				return value.ToString ();
+			if (processor is IXdtoDeserializer) {
+				deserializers [type] = processor as IXdtoDeserializer;
+			}
 
-			if (value.DataType == DataType.Boolean)
-				return value.AsBoolean () ? "true" : "false";
-
-			if (value.DataType == DataType.Date)
-				return value.AsDate ().ToString ();
-
-			// TODO: Из фабрики
-
-			return "";
 		}
 
 		[ContextMethod("XMLЗначение", "XMLValue")]
@@ -150,7 +159,14 @@ namespace TinyXdto
 			if (rawFactory == null)
 				throw RuntimeException.InvalidArgumentType ("factory");
 
-			return new XdtoSerializerImpl (rawFactory);
+			var primitiveSerializer = new PrimitiveValuesSerializer ();
+			var serializer = new XdtoSerializerImpl (rawFactory);
+			serializer.RegisterXdtoType (TypeManager.GetTypeByName ("Число"), primitiveSerializer);
+			serializer.RegisterXdtoType (TypeManager.GetTypeByName ("Булево"), primitiveSerializer);
+			serializer.RegisterXdtoType (TypeManager.GetTypeByName ("Строка"), primitiveSerializer);
+			serializer.RegisterXdtoType (TypeManager.GetTypeByName ("Дата"), primitiveSerializer);
+
+			return serializer;
 		}
 	}
 }
