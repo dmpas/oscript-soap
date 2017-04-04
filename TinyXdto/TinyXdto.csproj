@@ -63,7 +63,6 @@
     <Compile Include="src\XdtoListImpl.cs" />
     <Compile Include="src\XdtoObjectTypeImpl.cs" />
     <Compile Include="src\UndefinedOr.cs" />
-    <Compile Include="src\SerializedPrimitiveValue.cs" />
     <Compile Include="src\XdtoFacetImpl.cs" />
     <Compile Include="src\XdtoFacetCollectionImpl.cs" />
     <Compile Include="src\XdtoException.cs" />

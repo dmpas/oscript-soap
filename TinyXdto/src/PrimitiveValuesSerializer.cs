@@ -12,11 +12,6 @@ namespace TinyXdto
 			throw new NotImplementedException ();
 		}
 
-		public static string Date (DateTime value)
-		{
-			return value.ToString ("o");
-		}
-
 		public IXdtoValue SerializeXdto (IValue value, IXdtoType requestedType)
 		{
 			var rawValue = value.GetRawValue ();

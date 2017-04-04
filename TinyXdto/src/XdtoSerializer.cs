@@ -41,65 +41,7 @@ namespace TinyXdto
 
 			var xdtoValue = WriteXdto (value);
 			XdtoFactory.WriteXml (xmlWriter, xdtoValue, localName, namespaceUri, typeAssignment, xmlForm);
-
-			/*
-			IValue rawValue = value.GetRawValue ();
-			var primitive = SerializedPrimitiveValue.Create (rawValue);
-
-			if (primitive == null) {
-				XdtoFactory.WriteXml (xmlWriter, value, localName, namespaceUri, typeAssignment, xmlForm);
-				return;
-			}
-
-			if (xmlForm == null || xmlForm == XmlFormEnum.Element) {
-
-				xmlWriter.WriteStartElement (localName, namespaceUri);
-
-				if (primitive.Nil) {
-					xmlWriter.WriteAttribute ("nil", XmlNs.xsi, "true");
-				} else {
-					if (typeAssignment == XmlTypeAssignmentEnum.Explicit) {
-						var dataType = XmlTypeOf (rawValue);
-						var nsPrefix = xmlWriter.LookupPrefix (dataType.NamespaceUri);
-						if (ValueFactory.Create().Equals(nsPrefix)) {
-							var prefixIndex = xmlWriter.NamespaceContext.NamespaceMappings ().Count () + 1;
-							var prefixDepth = xmlWriter.NamespaceContext.Depth;
-							var prefix = string.Format ("d{0}p{1}", prefixDepth, prefixIndex);
-							xmlWriter.WriteNamespaceMapping (prefix, dataType.NamespaceUri);
-							nsPrefix = ValueFactory.Create (prefix);
-						}
-						var typeValue = String.Format("{0}:{1}", nsPrefix, dataType.TypeName);
-						xmlWriter.WriteAttribute("type", XmlNs.xsi, typeValue);
-					}
-				}
-
-				xmlWriter.WriteText (primitive.SerializedValue);
-				xmlWriter.WriteEndElement ();
-
-			} else
-			if (xmlForm == XmlFormEnum.Attribute) {
-
-				xmlWriter.WriteAttribute (localName, namespaceUri, primitive.SerializedValue);
-				
-			} else if (xmlForm == XmlFormEnum.Text) {
-
-				xmlWriter.WriteText (primitive.SerializedValue);
-
-			}
-			*/
 		}
-
-		/*
-		private static UndefinedOr<XmlDataType> Define (string xmlType)
-		{
-			return new UndefinedOr<XmlDataType> (new XmlDataType (xmlType, XmlNs.xs));
-		}
-
-		private static UndefinedOr<XmlDataType> Undefined ()
-		{
-			return new UndefinedOr<XmlDataType> (null);
-		}
-		*/
 		[ContextMethod("ЗаписатьXDTO")]
 		public IXdtoValue WriteXdto (IValue inValue)
 		{
