@@ -5,6 +5,7 @@ using ScriptEngine.HostedScript.Library.Xml;
 using System.Xml.Schema;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 
 namespace TinyXdto
 {
@@ -35,7 +36,7 @@ namespace TinyXdto
 			var packages = new List<XdtoPackageImpl> ();
 			packages.Add (W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create ());
 			foreach (var schema in schemas) {
-				var package = new XdtoPackageImpl (schema);
+				var package = new XdtoPackageImpl (schema, this); // TODO: фабрика ещё не сформирована!
 				if (!packages.Contains (package)) {
 					packages.Add (package);
 				}
@@ -190,6 +191,11 @@ namespace TinyXdto
 			return type;
 		}
 
+		public IXdtoType Type (XmlQualifiedName xmlType)
+		{
+			return Type (new XmlDataType (xmlType.Name, xmlType.Namespace));
+		}
+
 		[ContextMethod("Тип", "Type")]
 		public IXdtoType Type (IValue xmlType)
 		{
@@ -267,9 +273,12 @@ namespace TinyXdto
 				return type.Reader.ReadXml (reader, type, this);
 			}
 
+			var xmlNodeTypeEnum = XmlNodeTypeEnum.CreateInstance ();
+			var xmlElementStart = xmlNodeTypeEnum.FromNativeValue (XmlNodeType.Element);
 			if (type is XdtoValueTypeImpl) {
-				reader.Read ();
-				reader.MoveToContent ();
+				if (reader.NodeType.Equals (xmlElementStart)) {
+					reader.Read ();
+				}
 				var result = type.Reader.ReadXml (reader, type, this);
 				reader.Skip ();
 				return result;

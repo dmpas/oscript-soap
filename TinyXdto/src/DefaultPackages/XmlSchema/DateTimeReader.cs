@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml;
 using ScriptEngine.HostedScript.Library.Xml;
 using ScriptEngine.Machine;
 
@@ -9,7 +10,8 @@ namespace TinyXdto.W3Org.XmlSchema
 		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType expectedType, XdtoFactoryImpl factory)
 		{
 			var lexicalValue = reader.Value;
-			var value = ValueFactory.Parse (lexicalValue, DataType.Date); // TODO: Xml parse
+			var xmlDateTimeValue = XmlConvert.ToDateTime (lexicalValue, XmlDateTimeSerializationMode.Unspecified);
+			var value = ValueFactory.Create (xmlDateTimeValue);
 			return new XdtoDataValueImpl (expectedType as XdtoValueTypeImpl, lexicalValue, value);
 		}
 	}

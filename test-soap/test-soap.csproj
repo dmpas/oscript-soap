@@ -41,6 +41,7 @@
     <Reference Include="ScriptEngine">
       <HintPath>..\packages\OneScript.1.0.17-alpha127\lib\net40\ScriptEngine.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />

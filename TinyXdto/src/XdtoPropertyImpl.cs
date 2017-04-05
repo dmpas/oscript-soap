@@ -7,6 +7,8 @@ namespace TinyXdto
 	[ContextClass("СвойствоXDTO", "XDTOProperty")]
 	public class XdtoPropertyImpl : AutoContext<XdtoPropertyImpl>
 	{
+		private IXdtoType _type;
+
 		internal XdtoPropertyImpl ()
 		{
 		}
@@ -22,7 +24,7 @@ namespace TinyXdto
 			Form = form;
 			OwnerObject = owner;
 			UpperBound = -1;
-			Type = type;
+			_type = type;
 		}
 
 		[ContextProperty ("URIПространстваИмен", "NamespaceURI")]
@@ -53,7 +55,14 @@ namespace TinyXdto
 		public XdtoDataObjectImpl OwnerObject { get; }
 
 		[ContextProperty ("Тип", "Type")]
-		public IXdtoType Type { get; }
+		public IXdtoType Type {
+			get {
+				if (_type is TypeResolver) {
+					_type = (_type as TypeResolver).Resolve ();
+				}
+				return _type;
+			}
+		}
 
 		[ContextProperty ("ТипВладелец", "OwnerType")]
 		public IXdtoType OwnerType { get; }

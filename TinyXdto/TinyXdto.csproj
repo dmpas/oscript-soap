@@ -85,6 +85,7 @@
     <Compile Include="src\IXdtoSerializer.cs" />
     <Compile Include="src\IXdtoDeserializer.cs" />
     <Compile Include="src\PrimitiveValuesSerializer.cs" />
+    <Compile Include="src\TypeResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />

@@ -97,7 +97,7 @@ namespace testsoap
 				IValue result;
 				proxy.CallAsFunction (methodIndex, new IValue [] { callData.Value }, out result);
 
-				Console.WriteLine ("Result for Echo{0}({2}) is {1}", callData.Key, result.AsString (), callData.Value);
+				Console.WriteLine ("Result for Echo{0}({2}) is {1} ({3})", callData.Key, result.AsString (), callData.Value, result.DataType);
 			}
 		}
 

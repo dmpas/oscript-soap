@@ -133,6 +133,10 @@ namespace TinyXdto
 			serializer.RegisterXdtoDeserializer (new XmlDataType ("int"), primitiveSerializer);
 			serializer.RegisterXdtoDeserializer (new XmlDataType ("decimal"), primitiveSerializer);
 			serializer.RegisterXdtoDeserializer (new XmlDataType ("float"), primitiveSerializer);
+			serializer.RegisterXdtoDeserializer (new XmlDataType ("boolean"), primitiveSerializer);
+			serializer.RegisterXdtoDeserializer (new XmlDataType ("string"), primitiveSerializer);
+			serializer.RegisterXdtoDeserializer (new XmlDataType ("date"), primitiveSerializer);
+			serializer.RegisterXdtoDeserializer (new XmlDataType ("dateTime"), primitiveSerializer);
 
 			return serializer;
 		}

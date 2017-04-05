@@ -23,7 +23,7 @@ namespace TinyXdto
 			Properties = new XdtoPropertyCollectionImpl (new List<XdtoPropertyImpl> ());
 		}
 
-		public XdtoObjectTypeImpl (XmlSchemaComplexType xmlType)
+		public XdtoObjectTypeImpl (XmlSchemaComplexType xmlType, XdtoFactoryImpl factory)
 		{
 			Name = xmlType.QualifiedName.Name;
 			NamespaceUri = xmlType.QualifiedName.Namespace;
@@ -31,20 +31,37 @@ namespace TinyXdto
 			Abstract = xmlType.IsAbstract;
 			Mixed = xmlType.IsMixed;
 
-			Properties = new XdtoPropertyCollectionImpl (new List<XdtoPropertyImpl> ());
+			var properties = new List<XdtoPropertyImpl> ();
+
+			if (xmlType.Particle is XmlSchemaSequence) {
+
+				var sequence = xmlType.Particle as XmlSchemaSequence;
+
+				foreach (var item in sequence.Items) {
+					var element = item as XmlSchemaElement;
+					var propertyType = new TypeResolver(factory, element.SchemaTypeName);
+
+					properties.Add (new XdtoPropertyImpl (null,
+					                                      XmlFormEnum.Element,
+					                                      element.QualifiedName.Namespace,
+					                                      element.QualifiedName.Name,
+					                                      propertyType));
+
+				}
+
+
+			} else {
+				throw new NotImplementedException ("Недоработочка в XDTO-объекте");
+			}
+
+			Properties = new XdtoPropertyCollectionImpl (properties);
 		}
 
-		public XdtoObjectTypeImpl (XmlSchemaElement element)
+		public XdtoObjectTypeImpl (XmlSchemaElement element, XdtoFactoryImpl factory)
+			: this(element.SchemaType as XmlSchemaComplexType, factory)
 		{
-			var xmlType = element.SchemaType as XmlSchemaComplexType;
-
 			Name = element.QualifiedName.Name;
 			NamespaceUri = element.QualifiedName.Namespace;
-
-			Abstract = xmlType.IsAbstract;
-			Mixed = xmlType.IsMixed;
-
-			Properties = new XdtoPropertyCollectionImpl (new List<XdtoPropertyImpl> ());
 		}
 
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]

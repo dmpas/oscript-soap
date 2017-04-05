@@ -9,6 +9,9 @@ namespace TinyXdto
 
 		public IValue DeserializeXdto (IXdtoValue xdtoValue)
 		{
+			if (xdtoValue is XdtoDataValueImpl) {
+				return (xdtoValue as XdtoDataValueImpl).Value;
+			}
 			throw new NotImplementedException ();
 		}
 

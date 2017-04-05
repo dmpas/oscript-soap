@@ -23,7 +23,7 @@ namespace OneScript.Soap
 
 			} else if (element.SchemaType is XmlSchemaComplexType) {
 
-				Type = new XdtoObjectTypeImpl (element.SchemaType as XmlSchemaComplexType);
+				Type = new XdtoObjectTypeImpl (element.SchemaType as XmlSchemaComplexType, factory);
 
 			} else {
 

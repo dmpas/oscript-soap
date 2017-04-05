@@ -37,7 +37,7 @@ namespace OneScript.Soap
 			Documentation = "";
 			NamespaceUri = namespaceUri;
 			ReturnValue = new ReturnValueImpl (
-				ValueFactory.Create (), // TODO: Описание типов "Произвольный"
+				null,
 				string.Format("tns:{0}ResponseMessage", Name),
 				nillable: true);
 
@@ -142,43 +142,30 @@ namespace OneScript.Soap
 
 			if (!reader.Read ()
 				|| !reader.LocalName.Equals ("Envelope")
-			    || !reader.NodeType.Equals(xmlElementStart)
-			    // TODO: перевести XML на простые перечисления
-			   )
+				|| !reader.NodeType.Equals (xmlElementStart)
+			   // TODO: перевести XML на простые перечисления
+			   ) {
 				return new SoapExceptionResponse ("Wrong response!");
+			}
 			
 			reader.MoveToContent ();
 
 			if (!reader.Read ()
 				|| !reader.LocalName.Equals ("Body")
 				|| !reader.NodeType.Equals (xmlElementStart)
-			    // TODO: перевести XML на простые перечисления
-			   )
+			   // TODO: перевести XML на простые перечисления			   ) {
 				return new SoapExceptionResponse ("Wrong response!");
-
-			reader.MoveToContent ();
-
-			reader.Read ();
-
-			if (reader.LocalName.Equals ("Fault")
-				&& reader.NodeType.Equals (xmlElementStart)) {
-				var faultString = "Soap Exception!";
-
-				while (reader.Read ()) {
-
-					if (reader.LocalName.Equals ("faultString")
-						&& reader.NodeType.Equals (xmlElementStart)) {
-						reader.Read ();
-						reader.MoveToContent ();
-						faultString = reader.Value;
-						break;
-					}
-				}
-
-				return new SoapExceptionResponse (faultString);
 			}
 
-			retValue = serializer.ReadXml (reader);
+			var xdtoResult = serializer.XdtoFactory.ReadXml (reader, ReturnValue.Type as IXdtoType) as XdtoDataObjectImpl;
+			var xdtoReturnValue = xdtoResult.Get ("return");
+			// TODO: Выходные параметры
+
+			if (xdtoReturnValue is IXdtoValue) {
+				retValue = serializer.ReadXdto (xdtoReturnValue as IXdtoValue);
+			} else {
+				retValue = xdtoReturnValue;
+			}
 
 			return new SuccessfulSoapResponse(retValue, outputParams);
 		}

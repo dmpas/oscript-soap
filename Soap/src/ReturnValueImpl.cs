@@ -2,6 +2,7 @@
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Web.Services.Description;
+using TinyXdto;
 
 namespace OneScript.Soap
 {
@@ -10,7 +11,6 @@ namespace OneScript.Soap
 	{
 		internal ReturnValueImpl (OperationOutput returnValue, TinyXdto.XdtoFactoryImpl factory)
 		{
-			Type = ValueFactory.Create ();
 			Documentation = returnValue.Documentation;
 			MessagePartName = "";
 
@@ -27,13 +27,13 @@ namespace OneScript.Soap
 				if (type == null) {
 					continue;
 				}
-				Type = ValueFactory.Create(type);
+				Type = type;
 				break;
 			}
 
 		}
 
-		internal ReturnValueImpl (IValue type = null,
+		internal ReturnValueImpl (IXdtoType type = null,
 		                          string messagePartName = "",
 		                          bool nillable = false,
 		                          string documentation = "")
@@ -51,7 +51,7 @@ namespace OneScript.Soap
 		public string Documentation { get; }
 
 		[ContextProperty("Тип", "Type")]
-		public IValue Type { get; }
+		public IXdtoType Type { get; }
 
 		public string MessagePartName { get; }
 	}

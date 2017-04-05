@@ -15,7 +15,7 @@ namespace TinyXdto
 		// private readonly XmlSchema _schema;
 		private readonly List<IXdtoType> _types = new List<IXdtoType> ();
 
-		internal XdtoPackageImpl (XmlSchema schema)
+		internal XdtoPackageImpl (XmlSchema schema, XdtoFactoryImpl factory)
 		{
 			// _schema = schema;
 
@@ -29,7 +29,7 @@ namespace TinyXdto
 					_types.Add (new XdtoValueTypeImpl (type as XmlSchemaSimpleType));
 				} else
 					if (type is XmlSchemaComplexType) {
-					_types.Add (new XdtoObjectTypeImpl (type as XmlSchemaComplexType));
+					_types.Add (new XdtoObjectTypeImpl (type as XmlSchemaComplexType, factory));
 				}
 			}
 
@@ -47,7 +47,7 @@ namespace TinyXdto
 
 				} else if (element.SchemaType is XmlSchemaComplexType) {
 
-					elementType = new XdtoObjectTypeImpl (element);
+					elementType = new XdtoObjectTypeImpl (element, factory);
 
 				} else {
 					// TODO: Присвоить anyType					throw new NotImplementedException ();				}
