@@ -5,6 +5,7 @@ using System.Xml.Schema;
 using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TinyXdto
 {
@@ -46,10 +47,12 @@ namespace TinyXdto
 
 				} else if (element.SchemaType is XmlSchemaComplexType) {
 
-					elementType = new XdtoObjectTypeImpl (element.SchemaType as XmlSchemaComplexType);
+					elementType = new XdtoObjectTypeImpl (element);
 
 				} else {
 					// TODO: Присвоить anyType					throw new NotImplementedException ();				}
+
+				_types.Add (elementType);
 
 				var property = new XdtoPropertyImpl (null, XmlFormEnum.Element,
 				                                     element.QualifiedName.Namespace,
@@ -78,9 +81,33 @@ namespace TinyXdto
 		[ContextProperty ("КорневыеСвойства", "RootProperties")]
 		public XdtoPropertyCollectionImpl RootProperties { get; }
 
+		[ContextMethod("Количество")]
 		public int Count ()
 		{
 			return _types.Count;
+		}
+
+		public IXdtoType Get (string name)
+		{
+			return _types.FirstOrDefault((arg) => arg.Name.Equals(name, StringComparison.Ordinal));
+		}
+
+		public IXdtoType Get (int index)
+		{
+			return _types [index];
+		}
+
+		[ContextMethod("Получить")]
+		public IXdtoType Get (IValue index)
+		{
+			var rawIndex = index.GetRawValue ();
+			if (rawIndex.DataType == DataType.String) {
+				return Get (rawIndex.AsString ());
+			}
+			if (rawIndex.DataType == DataType.Number) {
+				return Get ((int)rawIndex.AsNumber());
+			}
+			throw RuntimeException.InvalidArgumentType (nameof (index));
 		}
 
 		public CollectionEnumerator GetManagedIterator ()

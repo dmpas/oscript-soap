@@ -34,6 +34,19 @@ namespace TinyXdto
 			Properties = new XdtoPropertyCollectionImpl (new List<XdtoPropertyImpl> ());
 		}
 
+		public XdtoObjectTypeImpl (XmlSchemaElement element)
+		{
+			var xmlType = element.SchemaType as XmlSchemaComplexType;
+
+			Name = element.QualifiedName.Name;
+			NamespaceUri = element.QualifiedName.Namespace;
+
+			Abstract = xmlType.IsAbstract;
+			Mixed = xmlType.IsMixed;
+
+			Properties = new XdtoPropertyCollectionImpl (new List<XdtoPropertyImpl> ());
+		}
+
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]
 		public string NamespaceUri { get; }
 

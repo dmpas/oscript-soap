@@ -18,7 +18,7 @@ namespace OneScript.Soap
 			Name = operation.Name;
 			NamespaceUri = operation.PortType.ServiceDescription.TargetNamespace;
 			Documentation = operation.Documentation;
-			ReturnValue = new ReturnValueImpl (operation.Messages.Output);
+			ReturnValue = new ReturnValueImpl (operation.Messages.Output, factory);
 
 			Parameters = ParameterCollectionImpl.Create (operation.Messages.Input, factory);
 
@@ -178,39 +178,7 @@ namespace OneScript.Soap
 				return new SoapExceptionResponse (faultString);
 			}
 
-			// TODO: Разбирать весь ответ через XDTO
-			while (reader.Read ()) {
-
-				if (reader.LocalName.Equals ("return")
-					&& reader.NodeType.Equals (xmlElementStart)) {
-					reader.Read ();
-					reader.MoveToContent ();
-
-					// TODO: отдать фабрике
-					retValue = ValueFactory.Create (reader.Value);
-
-					reader.Read ();
-					continue;
-				}
-
-
-				if (reader.NodeType.Equals (xmlElementStart)) {
-					// TODO: выходные параметры, отдать фабрике
-
-					var paramName = reader.LocalName;
-					reader.Read ();
-					reader.MoveToContent ();
-
-					// TODO: отдать фабрике
-					var paramValue = ValueFactory.Create (reader.Value);
-					reader.Read ();
-
-					if (_indexes.ContainsKey (paramName)) {
-						var paramIndex = _indexes [paramName];
-						outputParams.Add (paramIndex, paramValue);
-					}
-				}
-			}
+			retValue = serializer.ReadXml (reader);
 
 			return new SuccessfulSoapResponse(retValue, outputParams);
 		}
