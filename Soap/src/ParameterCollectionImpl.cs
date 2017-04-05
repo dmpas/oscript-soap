@@ -21,7 +21,7 @@ namespace OneScript.Soap
 
 		public IEnumerable<MessagePartProxy> Parts { get { return _parts; } }
 
-		internal static ParameterCollectionImpl Create (OperationInput operation, TinyXdto.XdtoFactoryImpl factory)
+		internal static ParameterCollectionImpl Create (OperationInput operation, ReturnValueImpl returnValue, TinyXdto.XdtoFactoryImpl factory)
 		{
 			var data = new List<ParameterImpl> ();
 			var parts = new List<MessagePartProxy> ();
@@ -44,7 +44,13 @@ namespace OneScript.Soap
 					var items = ((type.SchemaType as XmlSchemaComplexType).Particle as XmlSchemaSequence).Items;
 
 					foreach (var item in items) {
-						partParameters.Add (new ParameterImpl (item as XmlSchemaElement, factory));
+						var element = item as XmlSchemaElement;
+						var direction = returnValue.OutputParamNames.Contains (element.Name)
+												   ? ParameterDirectionEnum.InOut
+												   : ParameterDirectionEnum.In
+												   ;
+
+						partParameters.Add (new ParameterImpl (element, direction, factory));
 					}
 				}
 
@@ -56,6 +62,8 @@ namespace OneScript.Soap
 					NamespaceUri = parametersPart.Element.Namespace
 				});
 			}
+
+			// TODO: добавить ТОЛЬКО выходные параметры
 
 			return new ParameterCollectionImpl (data, parts);
 		}

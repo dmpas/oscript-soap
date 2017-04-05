@@ -3,6 +3,7 @@ using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Web.Services.Description;
 using TinyXdto;
+using System.Collections.Generic;
 
 namespace OneScript.Soap
 {
@@ -13,6 +14,8 @@ namespace OneScript.Soap
 		{
 			Documentation = returnValue.Documentation;
 			MessagePartName = "";
+
+			OutputParamNames = new List<string> ();
 
 			var message = returnValue.Operation.PortType.ServiceDescription.Messages [returnValue.Message.Name];
 			foreach (var oPart in message.Parts) {
@@ -27,7 +30,20 @@ namespace OneScript.Soap
 				if (type == null) {
 					continue;
 				}
-				Type = type;
+
+				ResponseType = type as XdtoObjectTypeImpl;
+
+				foreach (var property in ResponseType.Properties) {
+					
+					if (property.LocalName == "return") {
+						Type = property.Type;
+					} else {
+						OutputParamNames.Add (property.LocalName);
+					}
+
+				}
+
+				// Поддерживаем сообщения только из одной части
 				break;
 			}
 
@@ -53,7 +69,11 @@ namespace OneScript.Soap
 		[ContextProperty("Тип", "Type")]
 		public IXdtoType Type { get; }
 
+		public XdtoObjectTypeImpl ResponseType { get; }
+
 		public string MessagePartName { get; }
+
+		public IList<string> OutputParamNames { get; }
 	}
 }
 

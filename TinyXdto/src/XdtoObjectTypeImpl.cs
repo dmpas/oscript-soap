@@ -176,7 +176,7 @@ namespace TinyXdto
 
 					IXdtoType type;
 
-					var property = Properties.First ((p) => p.LocalName.Equals(localName)
+					var property = Properties.FirstOrDefault ((p) => p.LocalName.Equals(localName)
 					                                 && p.NamespaceURI.Equals(ns));
 					if (property != null) {
 

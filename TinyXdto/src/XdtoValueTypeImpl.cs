@@ -10,13 +10,15 @@ namespace TinyXdto
 	[ContextClass("ТипЗначенияXDTO", "XDTOValueType")]
 	public class XdtoValueTypeImpl : AutoContext<XdtoValueTypeImpl>, IXdtoType, IXdtoReader
 	{
-		public XdtoValueTypeImpl (XmlSchemaSimpleType xmlType)
+		private IXdtoType _baseType;
+
+		public XdtoValueTypeImpl (XmlSchemaSimpleType xmlType, XdtoFactoryImpl factory)
 		{
 			NamespaceUri = xmlType.QualifiedName.Namespace;
 			Name = xmlType.QualifiedName.Name;
 
 			if (xmlType.BaseXmlSchemaType is XmlSchemaSimpleType) {
-				BaseType = new XdtoValueTypeImpl (xmlType.BaseXmlSchemaType as XmlSchemaSimpleType);
+				_baseType = new XdtoValueTypeImpl (xmlType.BaseXmlSchemaType as XmlSchemaSimpleType, factory);
 			}
 
 			var memberTypes = new List<XdtoValueTypeImpl> ();
@@ -27,6 +29,8 @@ namespace TinyXdto
 			if (xmlType.Content is XmlSchemaSimpleTypeList) {
 			}
 			if (xmlType.Content is XmlSchemaSimpleTypeRestriction) {
+				var restriction = xmlType.Content as XmlSchemaSimpleTypeRestriction;
+				_baseType = new TypeResolver (factory, restriction.BaseTypeName);
 			}
 
 			MemberTypes = new XdtoValueTypeCollectionImpl (memberTypes);
@@ -55,8 +59,15 @@ namespace TinyXdto
 		[ContextProperty("URIПространстваИмен", "NamespaceURI")]
 		public string NamespaceUri { get; }
 
-		[ContextProperty("БазовыйТип", "BaseType")]
-		public XdtoValueTypeImpl BaseType { get; }
+		[ContextProperty ("БазовыйТип", "BaseType")]
+		public XdtoValueTypeImpl BaseType {
+			get {
+				if (_baseType is TypeResolver) {
+					_baseType = (_baseType as TypeResolver).Resolve ();
+				}
+				return _baseType as XdtoValueTypeImpl;
+			}
+		}
 
 		[ContextProperty("Имя", "Name")]
 		public string Name { get; }

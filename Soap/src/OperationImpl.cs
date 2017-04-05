@@ -20,7 +20,9 @@ namespace OneScript.Soap
 			Documentation = operation.Documentation;
 			ReturnValue = new ReturnValueImpl (operation.Messages.Output, factory);
 
-			Parameters = ParameterCollectionImpl.Create (operation.Messages.Input, factory);
+			Parameters = ParameterCollectionImpl.Create (operation.Messages.Input,
+			                                             ReturnValue,
+			                                             factory);
 
 			int argumentIndex = 0;
 			foreach (var messagePart in Parameters.Parts) {
@@ -157,14 +159,23 @@ namespace OneScript.Soap
 				return new SoapExceptionResponse ("Wrong response!");
 			}
 
-			var xdtoResult = serializer.XdtoFactory.ReadXml (reader, ReturnValue.Type as IXdtoType) as XdtoDataObjectImpl;
-			var xdtoReturnValue = xdtoResult.Get ("return");
-			// TODO: Выходные параметры
+			var xdtoResult = serializer.XdtoFactory.ReadXml (reader, ReturnValue.ResponseType) as XdtoDataObjectImpl;
+			retValue = xdtoResult.Get ("return");
 
-			if (xdtoReturnValue is IXdtoValue) {
-				retValue = serializer.ReadXdto (xdtoReturnValue as IXdtoValue);
-			} else {
-				retValue = xdtoReturnValue;
+			if (retValue is IXdtoValue) {
+				retValue = serializer.ReadXdto (retValue as IXdtoValue);
+			}
+
+			foreach (var param in Parameters) {
+				if (param.ParameterDirection == ParameterDirectionEnum.In)
+					continue;
+
+				var argumentIndex = _indexes [param.Name];
+				IValue paramValue = xdtoResult.Get (param.Name);
+				if (paramValue is IXdtoValue) {
+					paramValue = serializer.ReadXdto (paramValue as IXdtoValue);
+				}
+				outputParams.Add (argumentIndex, paramValue);
 			}
 
 			return new SuccessfulSoapResponse(retValue, outputParams);

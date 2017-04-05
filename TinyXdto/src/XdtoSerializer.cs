@@ -102,11 +102,26 @@ namespace TinyXdto
 		public IValue ReadXdto (IXdtoValue xdtoObject)
 		{
 			var t = xdtoObject.XmlType ();
-			if (!deserializers.ContainsKey (t)) {
+			if (deserializers.ContainsKey (t)) {
+				var d = deserializers [t];
+				return d.DeserializeXdto (xdtoObject);
+			}
+			var xdtoType = XdtoFactory.Type (t);
+			if (xdtoType == null) {
 				throw new XdtoException (String.Format ("Не поддерживается сериализация для {0}", t));
 			}
-			var d = deserializers [t];
-			return d.DeserializeXdto (xdtoObject);
+
+			// TODO: Значения XDTO не из примитивных типов
+			if (xdtoType is XdtoValueTypeImpl) {
+				var baseType = (xdtoType as XdtoValueTypeImpl).BaseType;
+				t = new XmlDataType (baseType.Name, baseType.NamespaceUri);
+				if (deserializers.ContainsKey (t)) {
+					var d = deserializers [t];
+					return d.DeserializeXdto (xdtoObject);
+				}
+			}
+
+			throw new XdtoException (String.Format ("Не поддерживается сериализация для {0}", t));
 		}
 
 		[ContextMethod("ПрочитатьXML")]

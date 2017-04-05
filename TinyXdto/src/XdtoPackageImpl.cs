@@ -26,7 +26,7 @@ namespace TinyXdto
 				var dElement = (DictionaryEntry)oType;
 				var type = dElement.Value;
 				if (type is XmlSchemaSimpleType) {
-					_types.Add (new XdtoValueTypeImpl (type as XmlSchemaSimpleType));
+					_types.Add (new XdtoValueTypeImpl (type as XmlSchemaSimpleType, factory));
 				} else
 					if (type is XmlSchemaComplexType) {
 					_types.Add (new XdtoObjectTypeImpl (type as XmlSchemaComplexType, factory));
@@ -43,7 +43,7 @@ namespace TinyXdto
 				IXdtoType elementType;
 				if (element.SchemaType is XmlSchemaSimpleType) {
 
-					elementType = new XdtoValueTypeImpl (element.SchemaType as XmlSchemaSimpleType);
+					elementType = new XdtoValueTypeImpl (element.SchemaType as XmlSchemaSimpleType, factory);
 
 				} else if (element.SchemaType is XmlSchemaComplexType) {
 
