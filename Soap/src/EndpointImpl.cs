@@ -66,7 +66,11 @@ namespace OneScript.Soap
 		[ContextProperty("Местоположение", "Location")]
 		public string Location { get; }
 
-		public ISoapTransport Connect ()
+		public ISoapTransport Connect (string userName,
+		                               string password,
+		                               InternetProxyContext internetProxy,
+		                               int timeout,
+		                               IValue ssl)
 		{
 
 			if (_transport != null)
@@ -75,7 +79,13 @@ namespace OneScript.Soap
 			var uri = new UriBuilder (Location);
 
 			if (uri.Scheme.Equals ("http") || uri.Scheme.Equals ("https")) {
-				var connection = new HttpConnectionContext (uri.Host, uri.Port, uri.UserName, uri.Password);
+				var connection = new HttpConnectionContext (uri.Host,
+				                                            uri.Port,
+				                                            userName,
+				                                            password,
+				                                            internetProxy,
+				                                            timeout,
+				                                            ssl);
 				return new HttpTransport (connection, uri.Path);
 			}
 

@@ -51,7 +51,7 @@ namespace OneScript.Soap
 		public string User { get; set; }
 
 		[ContextProperty ("Прокси", "Proxy")]
-		public IValue Proxy { get; }
+		public InternetProxyContext Proxy { get; }
 
 		[ContextProperty ("Таймаут", "Timeout")]
 		public decimal Timeout { get; }
@@ -102,9 +102,7 @@ namespace OneScript.Soap
 
 		private void ConnectIfNeeded ()
 		{
-			if (_transport == null) {
-				_transport = Endpoint.Connect ();
-			}
+			_transport = Endpoint.Connect (User, Password, Proxy, (int)Timeout, SecuredConnection);
 		}
 
 		public override void CallAsFunction (int methodNumber, IValue [] arguments, out IValue retValue)
