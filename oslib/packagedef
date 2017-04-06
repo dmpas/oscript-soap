@@ -1,0 +1,13 @@
+Описание
+	.Имя("soap")
+	.Версия("0.1.0")
+	.Автор("Sergey Batanov")
+	.АдресАвтора("sergey.batanov@dmpas.ru")
+	.Описание("SOAP-клиент")
+	.ВерсияСреды("1.0.17")
+	.ВключитьФайл("lib.config")
+	.ВключитьФайл("bin")
+	.ВключитьФайл("package-loader.os")
+;
+
+// vim: filetype=onescript

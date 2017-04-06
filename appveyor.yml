@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 0.1.0.{build}
 before_build:
 - ps: nuget sources add -Name OneScriptAlpha -Source https://ci.appveyor.com/nuget/dmpas-onescript
 - ps: nuget restore
@@ -8,5 +8,31 @@ init:
 - ps: Restart-Computer
 build:
   verbosity: minimal
+install:
+- cmd: >-
+    choco install onescript.cli -source https://www.myget.org/F/onescript -y
+
+    refreshenv
+
+    opm update opm
+
+after_build:
+- cmd: >-
+    cd oslib
+
+    mkdir bin
+
+    copy ..\Soap\bin\Debug\TinyXdto.dll bin
+
+    copy ..\Soap\bin\Debug\Soap.dll bin
+
+    opm build .
+
+    cd ..
+
 test_script:
-- ps: nunit3-console --x86 NUnitTests\bin\Debug\NUnitTests.dll
+- ps: nunit3-console --x86 NUnitTests/bin/Debug/NUnitTests.dll
+
+artifacts:
+- path: oslib\*.ospx
+  name: soap
