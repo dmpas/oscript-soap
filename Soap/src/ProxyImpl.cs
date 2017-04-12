@@ -142,7 +142,7 @@ namespace OneScript.Soap
 
 			var result = operation.ParseResponse (xmlResult, serializer);
 			if (result is SoapExceptionResponse) {
-				throw new RuntimeException ((result as SoapExceptionResponse).FaultMessage);
+				throw new ScriptEngine.Machine.RuntimeException ((result as SoapExceptionResponse).FaultMessage);
 			}
 
 			var soapResponse = result as SuccessfulSoapResponse;

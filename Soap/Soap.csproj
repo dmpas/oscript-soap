@@ -70,6 +70,7 @@
     <Compile Include="src\RouterImpl.cs" />
     <Compile Include="src\ISoapTransport.cs" />
     <Compile Include="src\HttpTransport.cs" />
+    <Compile Include="src\HttpTransportException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

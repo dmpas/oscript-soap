@@ -43,9 +43,9 @@ namespace testsoap
 			CheckIValueFor<ProxyImpl>();
 		}
 
-		public void TestWsdlNoAuth ()
+		public void TestWsdl ()
 		{
-			var def = new DefinitionsImpl ("http://vm21297.hv8.ru:10080/httpservice/ws/complex.1cws?wsdl");
+			var def = new DefinitionsImpl ("http://vm21297.hv8.ru:10080/httpservice/ws/complex.1cws?wsdl", "default");
 			Console.WriteLine ("Def has {0} services.", def.Services.Count ());
 			foreach (var service in def.Services) {
 				
@@ -59,7 +59,8 @@ namespace testsoap
 				}
 			}
 
-			var proxy = ProxyImpl.Constructor (def, "http://dmpas/complex", "Complex", "ComplexSoap");
+			var proxy = ProxyImpl.Constructor (def, "http://dmpas/complex", "Complex", "ComplexSoap") as ProxyImpl;
+			proxy.User = "default";
 			int methodIndex = proxy.FindMethod ("DoOp");
 
 			var callParams = new List<IValue> ();
@@ -76,8 +77,9 @@ namespace testsoap
 
 		public void TestEchoService ()
 		{
-			var def = new DefinitionsImpl ("http://vm21297.hv8.ru:10080/httpservice/ws/echo.1cws?wsdl");
-			var proxy = ProxyImpl.Constructor (def, "http://dmpas/echo", "EchoService", "EchoServiceSoap");
+			var def = new DefinitionsImpl ("http://vm21297.hv8.ru:10080/httpservice/ws/echo.1cws?wsdl", "default", "");
+			var proxy = ProxyImpl.Constructor (def, "http://dmpas/echo", "EchoService", "EchoServiceSoap") as ProxyImpl;
+			proxy.User = "default";
 
 			decimal testValue = Decimal.Divide (152, 10);
 
@@ -149,7 +151,7 @@ namespace testsoap
 			TestXdto ();
 
 			TestEchoService ();
-			TestWsdlNoAuth ();
+			TestWsdl ();
 		}
 
 		public static void Main(string[] args)
