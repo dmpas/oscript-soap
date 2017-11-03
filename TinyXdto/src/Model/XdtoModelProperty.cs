@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System.Xml;
+using System.Xml.Serialization;
 
 namespace TinyXdto.Model
 {
@@ -9,7 +10,7 @@ namespace TinyXdto.Model
 		public string Name;
 
 		[XmlAttribute("ref")]
-		public string Ref;
+		public XmlQualifiedName Ref;
 
 		[XmlAttribute("type")]
 		public string Type;
