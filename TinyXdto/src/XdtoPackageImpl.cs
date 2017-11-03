@@ -50,11 +50,13 @@ namespace TinyXdto
 					elementType = new XdtoObjectTypeImpl (element, factory);
 
 				} else {
-					// TODO: Присвоить anyType					throw new NotImplementedException ();				}
+					// TODO: Присвоить anyType
+					throw new NotImplementedException ();
+				}
 
 				_types.Add (elementType);
 
-				var property = new XdtoPropertyImpl (null, XmlFormEnum.Element,
+				var property = new XdtoPropertyImpl (XmlFormEnum.Element,
 				                                     element.QualifiedName.Namespace,
 				                                     element.QualifiedName.Name,
 				                                     elementType);

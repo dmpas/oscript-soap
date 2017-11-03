@@ -33,25 +33,81 @@ namespace TinyXdto
 
 			var properties = new List<XdtoPropertyImpl> ();
 
-			if (xmlType.Particle is XmlSchemaSequence) {
+			if (xmlType.Particle is XmlSchemaSequence)
+			{
 
 				var sequence = xmlType.Particle as XmlSchemaSequence;
 
-				foreach (var item in sequence.Items) {
+				foreach (var item in sequence.Items)
+				{
 					var element = item as XmlSchemaElement;
-					var propertyType = new TypeResolver(factory, element.SchemaTypeName);
+					IXdtoType propertyType;
+					if (!element.SchemaTypeName.IsEmpty)
+					{
+						propertyType = new TypeResolver(factory, element.SchemaTypeName);
+					}
+					else
+					{
+						var type = element.SchemaType;
+						if (type is XmlSchemaSimpleType)
+						{
+							propertyType = new XdtoValueTypeImpl(type as XmlSchemaSimpleType, factory);
+						}
+						else if (type is XmlSchemaComplexType)
+						{
+							propertyType = new XdtoObjectTypeImpl(type as XmlSchemaComplexType, factory);
+						}
+						else
+						{
+							throw new NotImplementedException("Anonymous type...");
+						}
+					}
 
-					properties.Add (new XdtoPropertyImpl (null,
-					                                      XmlFormEnum.Element,
-					                                      element.QualifiedName.Namespace,
-					                                      element.QualifiedName.Name,
-					                                      propertyType));
+					properties.Add(new XdtoPropertyImpl(
+						XmlFormEnum.Element,
+						element.QualifiedName.Namespace,
+						element.QualifiedName.Name,
+						propertyType));
 
 				}
+			} else if (xmlType.Particle is XmlSchemaChoice)
+			{
+				var choice = xmlType.Particle as XmlSchemaChoice;
+				foreach (var item in choice.Items)
+				{
+					var element = item as XmlSchemaElement;
+					// TODO: копипаста
+					IXdtoType propertyType;
+					if (!element.SchemaTypeName.IsEmpty)
+					{
+						propertyType = new TypeResolver(factory, element.SchemaTypeName);
+					}
+					else
+					{
+						var type = element.SchemaType;
+						if (type is XmlSchemaSimpleType)
+						{
+							propertyType = new XdtoValueTypeImpl(type as XmlSchemaSimpleType, factory);
+						}
+						else if (type is XmlSchemaComplexType)
+						{
+							propertyType = new XdtoObjectTypeImpl(type as XmlSchemaComplexType, factory);
+						}
+						else
+						{
+							throw new NotImplementedException("Anonymous type...");
+						}
+					}
 
+					properties.Add(new XdtoPropertyImpl(this,
+						XmlFormEnum.Element,
+						element.QualifiedName.Namespace,
+						element.QualifiedName.Name,
+						propertyType));
 
+				}
 			} else {
-				throw new NotImplementedException ("Недоработочка в XDTO-объекте");
+				throw new NotImplementedException("Недоработочка в XDTO-объекте");
 			}
 
 			Properties = new XdtoPropertyCollectionImpl (properties);
@@ -104,7 +160,8 @@ namespace TinyXdto
 				return;
 			}
 
-			throw new NotImplementedException ("Validate");
+			// TODO: Validate
+			// throw new NotImplementedException ("Validate");
 		}
 
 		[ContextMethod ("ЭтоПотомок", "IsDescendant")]

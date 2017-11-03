@@ -6,6 +6,7 @@ using ScriptEngine.Machine.Contexts;
 
 namespace TinyXdto
 {
+	// TODO: убить это недоразумение
 	sealed class TypeResolver : IXdtoType
 	{
 		private readonly XdtoFactoryImpl _factory;

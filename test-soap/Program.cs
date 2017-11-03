@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using OneScript.Soap;
 using ScriptEngine.Machine;
@@ -180,11 +180,61 @@ namespace testsoap
 			Console.WriteLine(model);
 		}
 
+		private static XmlSchemas LoadSchema(string fileName)
+		{
+			var schemas = new XmlSchemas();
+			using (var fs = new FileStream(fileName, FileMode.Open))
+			using (var r = XmlReader.Create(fs))
+			{
+				var sset = new XmlSchemaSet();
+				sset.Add(null, r);
+				
+				foreach (var schema in sset.Schemas())
+				{
+					schemas.Add(schema as XmlSchema);
+				}
+			}
+			return schemas;
+		}
+
+		public void TestUnnamedComplexType()
+		{
+			var ss = LoadSchema(@"TestData/Schema01.xsd");
+			var f = new XdtoFactoryImpl(ss);
+			var t = f.Type(uri: "unnamedComplexType", name: "TheComplexType") as XdtoObjectTypeImpl;
+			var v = f.Create(t) as XdtoDataObjectImpl;
+			var p = t.Properties.Get("Element");
+			var pv = f.Create(p.Type) as XdtoDataObjectImpl;
+			var var1Value = f.Create(f.Type(XmlNs.xs, "string"), ValueFactory.Create("value of var1"));
+			pv.Set("var1", var1Value);
+			
+			v.Set("Element", pv);
+			
+			var w = new XmlWriterImpl();
+			w.SetString();
+
+			f.WriteXml(w, v, "value");
+
+			var serialized = w.Close().AsString();
+			
+			Console.WriteLine(serialized);
+			
+			var r = new XmlReaderImpl();
+			r.SetString(serialized);
+
+			var checkObject = f.ReadXml(r) as XdtoDataObjectImpl;
+			var checkValue = (checkObject.Get("Element") as XdtoDataObjectImpl).Get("var1").AsString();
+			
+			Console.WriteLine($"got {checkValue}");
+		}
+
 		public void Run()
 		{
 			Check_AllClassesAreIValues();
 
 			StartEngine ();
+
+			TestUnnamedComplexType();
 			
 			TestModel();
 			TestAllModels();

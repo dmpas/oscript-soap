@@ -8,11 +8,24 @@ namespace TinyXdto
 	public class XdtoPropertyImpl : AutoContext<XdtoPropertyImpl>
 	{
 		private IXdtoType _type;
+		private IXdtoType _ownerType;
 
 		internal XdtoPropertyImpl ()
 		{
 		}
 
+		internal XdtoPropertyImpl (XmlFormEnum form,
+			string namespaceUri,
+			string localName,
+			IXdtoType type = null)
+		{
+			NamespaceURI = namespaceUri;
+			LocalName = localName;
+			Form = form;
+			UpperBound = -1;
+			_type = type;
+		}
+		
 		internal XdtoPropertyImpl (XdtoDataObjectImpl owner,
 								   XmlFormEnum form,
 								   string namespaceUri,
@@ -27,6 +40,20 @@ namespace TinyXdto
 			_type = type;
 		}
 
+		internal XdtoPropertyImpl (IXdtoType owner,
+			XmlFormEnum form,
+			string namespaceUri,
+			string localName,
+			IXdtoType type = null)
+		{
+			NamespaceURI = namespaceUri;
+			LocalName = localName;
+			Form = form;
+			_ownerType = owner;
+			UpperBound = -1;
+			_type = type;
+		}
+		
 		[ContextProperty ("URIПространстваИмен", "NamespaceURI")]
 		public string NamespaceURI { get; }
 
@@ -65,7 +92,14 @@ namespace TinyXdto
 		}
 
 		[ContextProperty ("ТипВладелец", "OwnerType")]
-		public IXdtoType OwnerType { get; }
+		public IXdtoType OwnerType {
+			get {
+				if (_ownerType is TypeResolver) {
+					_ownerType = (_ownerType as TypeResolver).Resolve ();
+				}
+				return _ownerType;
+			}
+		}
 
 		[ContextProperty ("Фиксированное", "Fixed")]
 		public bool Fixed { get; }

@@ -50,14 +50,16 @@ namespace TinyXdto
 		{
 			XdtoListImpl list;
 			if (_data.ContainsKey (property)) {
-				list = _data [property] as XdtoListImpl;
+
+				list = _data [property] as XdtoListImpl;
 				if (list == null) {
 					list = new XdtoListImpl (this, property);
 					_data [property] = list;
 				}
 
 			} else {
-				list = new XdtoListImpl (this, property);
+
+				list = new XdtoListImpl (this, property);
 				_data [property] = list;
 
 			}

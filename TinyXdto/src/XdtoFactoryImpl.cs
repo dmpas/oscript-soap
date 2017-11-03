@@ -29,6 +29,35 @@ namespace TinyXdto
 			}
 
 			Packages = new XdtoPackageCollectionImpl (_packages);
+
+			ResoveTypes();
+		}
+
+		private void ResoveTypes()
+		{
+			// TODO: убрать это недоразумение
+			foreach (var package in Packages)
+			{
+				foreach (var type in package)
+				{
+					if (!(type is XdtoObjectTypeImpl))
+					{
+						return;
+					}
+					var objectType = type as XdtoObjectTypeImpl;
+					foreach (var prop in objectType.Properties)
+					{
+						if (prop.Type is TypeResolver)
+						{
+							throw new RuntimeException("unresolved types!");
+						}
+						if (prop.OwnerType is TypeResolver)
+						{
+							throw new RuntimeException("unresolved types!");
+						}
+					}
+				}
+			}
 		}
 
 		public XdtoFactoryImpl (IEnumerable<XmlSchema> schemas)
