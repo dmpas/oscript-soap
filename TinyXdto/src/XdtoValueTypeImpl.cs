@@ -125,7 +125,8 @@ namespace TinyXdto
 				return object.ReferenceEquals(this, obj);
 			}
 			return asThis.NamespaceUri.Equals (NamespaceUri, StringComparison.Ordinal)
-			       && asThis.Name.Equals (Name, StringComparison.Ordinal);		}
+			       && asThis.Name.Equals (Name, StringComparison.Ordinal);
+		}
 
 		public override int GetHashCode ()
 		{

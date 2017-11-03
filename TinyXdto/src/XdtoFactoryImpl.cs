@@ -266,7 +266,11 @@ namespace TinyXdto
 
 		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType type = null)
 		{
-			reader.Read ();
+			if (reader.MoveToContent() == null)
+			{
+				// TODO: бросить исключение??
+				return null;
+			}
 			if (type == null) {
 				var explicitType = reader.GetAttribute (ValueFactory.Create ("type"), XmlNs.xsi);
 				if (explicitType.DataType == DataType.Undefined) {

@@ -176,21 +176,48 @@ namespace TinyXdto
 			return BaseType.IsDescendant (type);
 		}
 
-		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType expectedType, XdtoFactoryImpl factory)
+		public IXdtoValue ReadXml(XmlReaderImpl reader, IXdtoType expectedType, XdtoFactoryImpl factory)
 		{
-			// TODO: Чтение атрибутов
+			// TODO: дублирование кода в трёх ветках
 
-			var result = new XdtoDataObjectImpl (this, null, null);
+			var result = new XdtoDataObjectImpl(this, null, null);
 
 			// TODO: Перевести XML на простые перечисления
-			var xmlNodeTypeEnum = XmlNodeTypeEnum.CreateInstance ();
-			var xmlElementStart = xmlNodeTypeEnum.FromNativeValue (System.Xml.XmlNodeType.Element);
-			var xmlText = xmlNodeTypeEnum.FromNativeValue (System.Xml.XmlNodeType.Text);
-			var xmlElementEnd = xmlNodeTypeEnum.FromNativeValue (System.Xml.XmlNodeType.EndElement);
+			var xmlNodeTypeEnum = XmlNodeTypeEnum.CreateInstance();
+			var xmlElementStart = xmlNodeTypeEnum.FromNativeValue(System.Xml.XmlNodeType.Element);
+			var xmlText = xmlNodeTypeEnum.FromNativeValue(System.Xml.XmlNodeType.Text);
+			var xmlElementEnd = xmlNodeTypeEnum.FromNativeValue(System.Xml.XmlNodeType.EndElement);
 
-			reader.MoveToContent ();
-			while (reader.Read ()) {
-				
+			while (reader.ReadAttribute())
+			{
+				if (reader.NamespaceURI.Equals("http://www.w3.org/2000/xmlns/")
+				    || reader.NamespaceURI.Equals(XmlNs.xsi) && reader.LocalName.Equals("type"))
+				{
+					continue;
+				}
+				var propertyName = reader.LocalName;
+				var attributeNamespace = reader.NamespaceURI;
+				var attributeProperty =
+					Properties.FirstOrDefault(p => p.Form == XmlFormEnum.Attribute
+					                               && p.LocalName.Equals(propertyName)
+					                               && p.NamespaceURI.Equals(attributeNamespace));
+
+				if (attributeProperty == null)
+				{
+					if (!Open)
+					{
+						throw new XdtoException($"Ошиба разбора XDTO: Получили неизвестный атрибут {propertyName}");
+					}
+					var type = factory.Type(new XmlDataType("string"));
+					attributeProperty = new XdtoPropertyImpl(result, XmlFormEnum.Attribute, NamespaceUri, propertyName, type);
+				}
+
+				IValue attributeValue = attributeProperty.Type.Reader.ReadXml(reader, attributeProperty.Type, factory);
+				result.Set(attributeProperty, attributeValue);
+			}
+
+			while (reader.Read()) {
+
 				if (reader.NodeType.Equals (xmlElementEnd)) {
 					// TODO: result.Validate()
 					return result;
@@ -205,7 +232,7 @@ namespace TinyXdto
 					IValue textValue;
 					if (textProperty == null) {
 						if (!Open)
-							throw new XdtoException ("Ошибка разбора XDTO!");
+							throw new XdtoException ($"Ошибка разбора XDTO: Текст {reader.Value} в неположенном месте при разборе типа {this}!");
 
 						textProperty = new XdtoPropertyImpl (result, XmlFormEnum.Text, NamespaceUri, "#text");
 						type = factory.Type(new XmlDataType ("string"));
@@ -221,7 +248,7 @@ namespace TinyXdto
 						result.Sequence ().Add (textValue.AsString ());
 
 					} else {
-						
+
 						result.Set (textProperty, textValue);
 
 					}
@@ -231,34 +258,28 @@ namespace TinyXdto
 					var localName = reader.LocalName;
 					var ns = reader.NamespaceURI;
 
-					IXdtoType type;
-
 					var property = Properties.FirstOrDefault ((p) => p.LocalName.Equals(localName)
-					                                 && p.NamespaceURI.Equals(ns));
-					if (property != null) {
-
-						type = property.Type;
-
-					} else {
-						
+					                                 && p.NamespaceURI.Equals(ns)
+					                                 && p.Form == XmlFormEnum.Element);
+					if (property == null) {
 						if (!Open)
-							throw new XdtoException ("Ошибка разбора XDTO!");
+							throw new XdtoException ($"Ошибка разбора XDTO: Получили неизвестный элемент {localName}");
 
 						property = new XdtoPropertyImpl (result, XmlFormEnum.Element, ns, localName);
-						type = null;
 					}
 
-					var elementValue = factory.ReadXml (reader, type);
+					var elementValue = factory.ReadXml (reader, property.Type);
 
 					if (Sequenced) {
 
 						result.Sequence ().Add (property, elementValue);
 
 					} else {
-						
+
 						result.Set (property, elementValue);
 
 					}
+
 				}
 			}
 
