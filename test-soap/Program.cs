@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
 using OneScript.Soap;
 using ScriptEngine.Machine;
 using ScriptEngine.HostedScript.Library.Xml;
@@ -142,16 +145,54 @@ namespace testsoap
 			Console.WriteLine ("Serialized:{0}", anyValueTypeExtraction.Value);
 		}
 
+		public void TestAllModels()
+		{
+			foreach (var fileName in Directory.EnumerateFiles(@"D:\temp\jar\v8.3.10\xdto"))
+			{
+				Console.Write($"trying {fileName}... ");
+				var s = new XmlSerializer(typeof(TinyXdto.Model.XdtoModel), new XmlRootAttribute("model") {Namespace = "http://v8.1c.ru/8.1/xdto"});
+				using (var fs = new FileStream(fileName, FileMode.Open))
+				{
+					var r = XmlReader.Create(fs);
+					if (s.CanDeserialize(r))
+					{
+						var model = s.Deserialize(r) as TinyXdto.Model.XdtoModel;
+						Console.WriteLine($"found {model.Packages?.Length} packages");
+					}
+					else
+					{
+						Console.WriteLine(" CANNOT DESERIALIZE!");
+					}
+				}
+			}
+		}
+
+		public void TestModel()
+		{
+			var s = new XmlSerializer(typeof(TinyXdto.Model.XdtoModel));
+
+			TinyXdto.Model.XdtoModel model;
+			using (var fs = new FileStream(@"D:\temp\Model.xsd", FileMode.Open))
+			{
+				var r = XmlReader.Create(fs);
+				model = s.Deserialize(r) as TinyXdto.Model.XdtoModel;
+			}
+			Console.WriteLine(model);
+		}
+
 		public void Run()
 		{
 			Check_AllClassesAreIValues();
 
 			StartEngine ();
+			
+			TestModel();
+			TestAllModels();
 
 			TestXdto ();
 
-			TestEchoService ();
-			TestWsdl ();
+			// TestEchoService ();
+			// TestWsdl ();
 		}
 
 		public static void Main(string[] args)

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,6 +44,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Model\XdtoModel.cs" />
+    <Compile Include="src\Model\XdtoModelAbstractType.cs" />
+    <Compile Include="src\Model\XdtoModelBuilder.cs" />
+    <Compile Include="src\Model\XdtoModelForm.cs" />
+    <Compile Include="src\Model\XdtoModelImport.cs" />
+    <Compile Include="src\Model\XdtoModelObjectType.cs" />
+    <Compile Include="src\Model\XdtoModelPackage.cs" />
+    <Compile Include="src\Model\XdtoModelProperty.cs" />
+    <Compile Include="src\Model\XdtoModelValueType.cs" />
+    <Compile Include="src\Model\XdtoModelVariety.cs" />
+    <Compile Include="src\Model\XdtoModelWhitespace.cs" />
     <Compile Include="src\XdtoSerializer.cs" />
     <Compile Include="src\XdtoFactoryImpl.cs" />
     <Compile Include="src\XdtoDataValueImpl.cs" />
