@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using ScriptEngine.HostedScript.Library.Xml;
@@ -14,13 +20,13 @@ namespace TinyXdto
 		private readonly Dictionary<TypeDescriptor, IXdtoSerializer>   serializers = new Dictionary<TypeDescriptor, IXdtoSerializer> ();
 		private readonly Dictionary<XmlDataType, IXdtoDeserializer> deserializers = new Dictionary<XmlDataType, IXdtoDeserializer> ();
 
-		public XdtoSerializerImpl (XdtoFactoryImpl factory)
+		public XdtoSerializerImpl (XdtoFactory factory)
 		{
 			XdtoFactory = factory;
 		}
 
 		[ContextProperty ("ФабрикаXDTO", "XDTOFactory")]
-		public XdtoFactoryImpl XdtoFactory { get; }
+		public XdtoFactory XdtoFactory { get; }
 
 		private bool IsPrimitiveValue (IValue value)
 		{
@@ -43,7 +49,8 @@ namespace TinyXdto
 			var xdtoValue = WriteXdto (value);
 			XdtoFactory.WriteXml (xmlWriter, xdtoValue, localName, namespaceUri, typeAssignment, xmlForm);
 		}
-		[ContextMethod("ЗаписатьXDTO")]
+
+		[ContextMethod("ЗаписатьXDTO")]
 		public IXdtoValue WriteXdto (IValue inValue)
 		{
 			var value = inValue.GetRawValue ();
@@ -74,7 +81,7 @@ namespace TinyXdto
 		public string XmlString (IValue inValue)
 		{
 			var xdtoValue = WriteXdto (inValue);
-			return (xdtoValue as XdtoDataValueImpl).LexicalValue;
+			return (xdtoValue as XdtoDataValue).LexicalValue;
 		}
 
 		public void RegisterXdtoSerializer (TypeDescriptor type, IXdtoSerializer processor)
@@ -112,8 +119,8 @@ namespace TinyXdto
 			}
 
 			// TODO: Значения XDTO не из примитивных типов
-			if (xdtoType is XdtoValueTypeImpl) {
-				var baseType = (xdtoType as XdtoValueTypeImpl).BaseType;
+			if (xdtoType is XdtoValueType) {
+				var baseType = (xdtoType as XdtoValueType).BaseType;
 				t = new XmlDataType (baseType.Name, baseType.NamespaceUri);
 				if (deserializers.ContainsKey (t)) {
 					var d = deserializers [t];
@@ -134,7 +141,7 @@ namespace TinyXdto
 		[ScriptConstructor]
 		public static IRuntimeContextInstance Constructor (IValue factory)
 		{
-			XdtoFactoryImpl rawFactory = factory.GetRawValue () as XdtoFactoryImpl;
+			XdtoFactory rawFactory = factory.GetRawValue () as XdtoFactory;
 			if (rawFactory == null)
 				throw RuntimeException.InvalidArgumentType ("factory");
 

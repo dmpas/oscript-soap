@@ -5,16 +5,17 @@ was not distributed with this file, You can obtain one
 at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------*/
 using System;
+using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
-using ScriptEngine.HostedScript.Library.Xml;
 
 namespace TinyXdto
 {
-	public interface IXdtoType : IRuntimeContextInstance
+	[ContextClass("КоллекцияЗначенийXDTO", "XDTODataValueCollection")]
+	public class XdtoDataValueCollection : AutoContext<XdtoDataValueCollection>
 	{
-		string Name { get; }
-		string NamespaceUri { get; }
-
-		IXdtoReader Reader { get; }
+		internal XdtoDataValueCollection ()
+		{
+		}
 	}
 }
+

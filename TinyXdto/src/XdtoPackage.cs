@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Xml.Schema;
@@ -10,30 +16,30 @@ using System.Linq;
 namespace TinyXdto
 {
 	[ContextClass ("ПакетXDTO", "XDTOPackage")]
-	public class XdtoPackageImpl : AutoContext<XdtoPackageImpl>, ICollectionContext, IEnumerable<IXdtoType>
+	public class XdtoPackage : AutoContext<XdtoPackage>, ICollectionContext, IEnumerable<IXdtoType>
 	{
 		// private readonly XmlSchema _schema;
 		private readonly List<IXdtoType> _types = new List<IXdtoType> ();
 
-		internal XdtoPackageImpl (XmlSchema schema, XdtoFactoryImpl factory)
+		internal XdtoPackage (XmlSchema schema, XdtoFactory factory)
 		{
 			// _schema = schema;
 
 			NamespaceUri = schema.TargetNamespace;
-			Dependencies = new XdtoPackageCollectionImpl (new XdtoPackageImpl [] { });
+			Dependencies = new XdtoPackageCollection (new XdtoPackage [] { });
 
 			foreach (var oType in schema.SchemaTypes) {
 				var dElement = (DictionaryEntry)oType;
 				var type = dElement.Value;
 				if (type is XmlSchemaSimpleType) {
-					_types.Add (new XdtoValueTypeImpl (type as XmlSchemaSimpleType, factory));
+					_types.Add (new XdtoValueType (type as XmlSchemaSimpleType, factory));
 				} else
 					if (type is XmlSchemaComplexType) {
-					_types.Add (new XdtoObjectTypeImpl (type as XmlSchemaComplexType, factory));
+					_types.Add (new XdtoObjectType (type as XmlSchemaComplexType, factory));
 				}
 			}
 
-			var rootProperties = new List<XdtoPropertyImpl> ();
+			var rootProperties = new List<XdtoProperty> ();
 			foreach (var oElement in schema.Elements) {
 
 				var elPair = (DictionaryEntry)oElement;
@@ -43,11 +49,11 @@ namespace TinyXdto
 				IXdtoType elementType;
 				if (element.SchemaType is XmlSchemaSimpleType) {
 
-					elementType = new XdtoValueTypeImpl (element.SchemaType as XmlSchemaSimpleType, factory);
+					elementType = new XdtoValueType (element.SchemaType as XmlSchemaSimpleType, factory);
 
 				} else if (element.SchemaType is XmlSchemaComplexType) {
 
-					elementType = new XdtoObjectTypeImpl (element, factory);
+					elementType = new XdtoObjectType (element, factory);
 
 				} else {
 					// TODO: Присвоить anyType
@@ -56,32 +62,32 @@ namespace TinyXdto
 
 				_types.Add (elementType);
 
-				var property = new XdtoPropertyImpl (XmlFormEnum.Element,
+				var property = new XdtoProperty (XmlFormEnum.Element,
 				                                     element.QualifiedName.Namespace,
 				                                     element.QualifiedName.Name,
 				                                     elementType);
 				rootProperties.Add (property);
 			}
 
-			RootProperties = new XdtoPropertyCollectionImpl (rootProperties);
+			RootProperties = new XdtoPropertyCollection (rootProperties);
 		}
 
-		internal XdtoPackageImpl (string namespaceUri, IEnumerable<IXdtoType> types)
+		internal XdtoPackage (string namespaceUri, IEnumerable<IXdtoType> types)
 		{
 			NamespaceUri = namespaceUri;
 			_types.AddRange (types);
-			Dependencies = new XdtoPackageCollectionImpl (new XdtoPackageImpl [] { });
-			RootProperties = new XdtoPropertyCollectionImpl (new XdtoPropertyImpl [] { });
+			Dependencies = new XdtoPackageCollection (new XdtoPackage [] { });
+			RootProperties = new XdtoPropertyCollection (new XdtoProperty [] { });
 		}
 
 		[ContextProperty ("URIПространстваИмен", "NamespaceURI")]
 		public string NamespaceUri { get; }
 
 		[ContextProperty ("Зависимости", "Dependencies")]
-		public XdtoPackageCollectionImpl Dependencies { get; }
+		public XdtoPackageCollection Dependencies { get; }
 
 		[ContextProperty ("КорневыеСвойства", "RootProperties")]
-		public XdtoPropertyCollectionImpl RootProperties { get; }
+		public XdtoPropertyCollection RootProperties { get; }
 
 		[ContextMethod("Количество")]
 		public int Count ()
@@ -136,7 +142,7 @@ namespace TinyXdto
 
 		public override bool Equals (object obj)
 		{
-			var asThis = obj as XdtoPackageImpl;
+			var asThis = obj as XdtoPackage;
 			if (asThis == null)
 				return false;
 			return asThis.NamespaceUri.Equals (NamespaceUri, StringComparison.Ordinal);

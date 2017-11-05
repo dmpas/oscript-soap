@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Web.Services.Description;
@@ -9,18 +15,18 @@ using TinyXdto;
 namespace OneScript.Soap
 {
 	[ContextClass("WSОперация", "WSOperation")]
-	public class OperationImpl : AutoContext<OperationImpl>, IWithName
+	public class Operation : AutoContext<Operation>, IWithName
 	{
 		private readonly Dictionary<string, int> _indexes = new Dictionary<string, int> ();
 
-		internal OperationImpl(Operation operation, XdtoFactoryImpl factory)
+		internal Operation(System.Web.Services.Description.Operation operation, XdtoFactory factory)
 		{
 			Name = operation.Name;
 			NamespaceUri = operation.PortType.ServiceDescription.TargetNamespace;
 			Documentation = operation.Documentation;
-			ReturnValue = new ReturnValueImpl (operation.Messages.Output, factory);
+			ReturnValue = new ReturnValue (operation.Messages.Output, factory);
 
-			Parameters = ParameterCollectionImpl.Create (operation.Messages.Input,
+			Parameters = ParameterCollection.Create (operation.Messages.Input,
 			                                             ReturnValue,
 			                                             factory);
 
@@ -33,12 +39,12 @@ namespace OneScript.Soap
 			}
 		}
 
-		internal OperationImpl (MethodInfo methodInfo, string namespaceUri)
+		internal Operation (MethodInfo methodInfo, string namespaceUri)
 		{
 			Name = methodInfo.Name;
 			Documentation = "";
 			NamespaceUri = namespaceUri;
-			ReturnValue = new ReturnValueImpl (
+			ReturnValue = new ReturnValue (
 				null,
 				string.Format("tns:{0}ResponseMessage", Name),
 				nillable: true);
@@ -47,12 +53,12 @@ namespace OneScript.Soap
 			messagePart.Name = "parameters";
 			messagePart.ElementName = String.Format ("tns:{0}", methodInfo.Name);
 			messagePart.NamespaceUri = namespaceUri;
-			messagePart.Parameters = new List<ParameterImpl> ();
+			messagePart.Parameters = new List<Parameter> ();
 
 			int argumentIndex = 0;
 			foreach (var paramInfo in methodInfo.Params) {
 				var paramName = string.Format ("p{0}", argumentIndex);
-				var param = new ParameterImpl (paramName,
+				var param = new Parameter (paramName,
 											   paramInfo.IsByValue
 				                               	? ParameterDirectionEnum.In
 				                               	: ParameterDirectionEnum.InOut,
@@ -64,12 +70,12 @@ namespace OneScript.Soap
 				++argumentIndex;
 			}
 
-			Parameters = new ParameterCollectionImpl (messagePart.Parameters,
+			Parameters = new ParameterCollection (messagePart.Parameters,
 													  new MessagePartProxy [] { messagePart });
 		}
 
 		[ContextProperty("ВозвращаемоеЗначение", "ReturnValue")]
-		public ReturnValueImpl ReturnValue { get; }
+		public ReturnValue ReturnValue { get; }
 
 		[ContextProperty("Документация", "Documentation")]
 		public string Documentation { get; }
@@ -78,7 +84,7 @@ namespace OneScript.Soap
 		public string Name { get; }
 
 		[ContextProperty("Параметры", "Parameters")]
-		public ParameterCollectionImpl Parameters { get; }
+		public ParameterCollection Parameters { get; }
 
 		public string NamespaceUri { get; }
 
@@ -99,7 +105,7 @@ namespace OneScript.Soap
 					var argumentIndex = _indexes [param.Name];
 					var typeAssignment = XmlTypeAssignmentEnum.Implicit;
 
-					if (param.Type is XdtoValueTypeImpl)
+					if (param.Type is XdtoValueType)
 						typeAssignment = XmlTypeAssignmentEnum.Explicit;
 					serializer.WriteXml (writer, arguments [argumentIndex], param.Name, messagePart.NamespaceUri, typeAssignment);
 
@@ -155,11 +161,12 @@ namespace OneScript.Soap
 			if (!reader.Read ()
 				|| !reader.LocalName.Equals ("Body")
 				|| !reader.NodeType.Equals (xmlElementStart)
-			   // TODO: перевести XML на простые перечисления			   ) {
+			   // TODO: перевести XML на простые перечисления
+			   ) {
 				return new SoapExceptionResponse ("Wrong response!");
 			}
 
-			var xdtoResult = serializer.XdtoFactory.ReadXml (reader, ReturnValue.ResponseType) as XdtoDataObjectImpl;
+			var xdtoResult = serializer.XdtoFactory.ReadXml (reader, ReturnValue.ResponseType) as XdtoDataObject;
 			retValue = xdtoResult.Get ("return");
 
 			if (retValue is IXdtoValue) {

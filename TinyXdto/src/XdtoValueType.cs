@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using System.Xml.Schema;
 using System.Collections.Generic;
@@ -8,21 +14,21 @@ using ScriptEngine.HostedScript.Library.Xml;
 namespace TinyXdto
 {
 	[ContextClass("ТипЗначенияXDTO", "XDTOValueType")]
-	public class XdtoValueTypeImpl : AutoContext<XdtoValueTypeImpl>, IXdtoType, IXdtoReader
+	public class XdtoValueType : AutoContext<XdtoValueType>, IXdtoType, IXdtoReader
 	{
 		private IXdtoType _baseType;
 
-		public XdtoValueTypeImpl (XmlSchemaSimpleType xmlType, XdtoFactoryImpl factory)
+		public XdtoValueType (XmlSchemaSimpleType xmlType, XdtoFactory factory)
 		{
 			NamespaceUri = xmlType.QualifiedName.Namespace;
 			Name = xmlType.QualifiedName.Name;
 
 			if (xmlType.BaseXmlSchemaType is XmlSchemaSimpleType) {
-				_baseType = new XdtoValueTypeImpl (xmlType.BaseXmlSchemaType as XmlSchemaSimpleType, factory);
+				_baseType = new XdtoValueType (xmlType.BaseXmlSchemaType as XmlSchemaSimpleType, factory);
 			}
 
-			var memberTypes = new List<XdtoValueTypeImpl> ();
-			var facets = new List<XdtoFacetImpl> ();
+			var memberTypes = new List<XdtoValueType> ();
+			var facets = new List<XdtoFacet> ();
 
 			if (xmlType.Content is XmlSchemaSimpleTypeUnion) {
 			}
@@ -33,24 +39,24 @@ namespace TinyXdto
 				_baseType = new TypeResolver (factory, restriction.BaseTypeName);
 			}
 
-			MemberTypes = new XdtoValueTypeCollectionImpl (memberTypes);
-			Facets = new XdtoFacetCollectionImpl (facets);
-			ListItemType = new UndefinedOr<XdtoValueTypeImpl> (null);
+			MemberTypes = new XdtoValueTypeCollection (memberTypes);
+			Facets = new XdtoFacetCollection (facets);
+			ListItemType = new UndefinedOr<XdtoValueType> (null);
 
 			Reader = this;
 		}
 
-		internal XdtoValueTypeImpl (XmlDataType primitiveType, IXdtoReader reader)
+		internal XdtoValueType (XmlDataType primitiveType, IXdtoReader reader)
 		{
 			Name = primitiveType.TypeName;
 			NamespaceUri = primitiveType.NamespaceUri;
 
-			var memberTypes = new List<XdtoValueTypeImpl> ();
-			var facets = new List<XdtoFacetImpl> ();
+			var memberTypes = new List<XdtoValueType> ();
+			var facets = new List<XdtoFacet> ();
 
-			MemberTypes = new XdtoValueTypeCollectionImpl (memberTypes);
-			Facets = new XdtoFacetCollectionImpl (facets);
-			ListItemType = new UndefinedOr<XdtoValueTypeImpl> (null);
+			MemberTypes = new XdtoValueTypeCollection (memberTypes);
+			Facets = new XdtoFacetCollection (facets);
+			ListItemType = new UndefinedOr<XdtoValueType> (null);
 
 			Reader = reader;
 		}
@@ -60,12 +66,12 @@ namespace TinyXdto
 		public string NamespaceUri { get; }
 
 		[ContextProperty ("БазовыйТип", "BaseType")]
-		public XdtoValueTypeImpl BaseType {
+		public XdtoValueType BaseType {
 			get {
 				if (_baseType is TypeResolver) {
 					_baseType = (_baseType as TypeResolver).Resolve ();
 				}
-				return _baseType as XdtoValueTypeImpl;
+				return _baseType as XdtoValueType;
 			}
 		}
 
@@ -73,13 +79,13 @@ namespace TinyXdto
 		public string Name { get; }
 
 		[ContextProperty("ТипыЧленовОбъединения", "MemberTypes")]
-		public XdtoValueTypeCollectionImpl MemberTypes { get; }
+		public XdtoValueTypeCollection MemberTypes { get; }
 
 		[ContextProperty("ТипЭлементаСписка", "ListItemType")]
-		public UndefinedOr<XdtoValueTypeImpl> ListItemType { get; }
+		public UndefinedOr<XdtoValueType> ListItemType { get; }
 
 		[ContextProperty("Фасеты", "Facets")]
-		public XdtoFacetCollectionImpl Facets { get; }
+		public XdtoFacetCollection Facets { get; }
 
 		public IXdtoReader Reader { get; }
 
@@ -90,7 +96,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("ЭтоПотомок", "IsDescendant")]
-		public bool IsDescendant (XdtoValueTypeImpl type)
+		public bool IsDescendant (XdtoValueType type)
 		{
 			if (BaseType == null)
 				return false;
@@ -106,16 +112,16 @@ namespace TinyXdto
 			return new XmlDataType (Name, NamespaceUri);
 		}
 
-		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType type, XdtoFactoryImpl factory)
+		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType type, XdtoFactory factory)
 		{
 			var lexicalValue = reader.Value;
 			var internalValue = ValueFactory.Create (lexicalValue);
 
-			return new XdtoDataValueImpl (this, lexicalValue, internalValue);
+			return new XdtoDataValue (this, lexicalValue, internalValue);
 		}
 		public override bool Equals (object obj)
 		{
-			var asThis = obj as XdtoValueTypeImpl;
+			var asThis = obj as XdtoValueType;
 			if (asThis == null)
 			{
 				return false;

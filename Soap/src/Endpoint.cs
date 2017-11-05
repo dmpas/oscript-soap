@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Web.Services.Description;
@@ -8,11 +14,11 @@ using System.Linq;
 namespace OneScript.Soap
 {
 	[ContextClass("WSТочкаПодключения", "WSEndpoint")]
-	public class EndpointImpl : AutoContext<EndpointImpl>, IWithName
+	public class Endpoint : AutoContext<Endpoint>, IWithName
 	{
 		private readonly ISoapTransport _transport = null;
 
-		internal EndpointImpl(Port port, TinyXdto.XdtoFactoryImpl factory)
+		internal Endpoint(Port port, TinyXdto.XdtoFactory factory)
 		{
 			Documentation = port.Documentation;
 			Name = port.Name;
@@ -33,7 +39,7 @@ namespace OneScript.Soap
 					foreach (var oPortType in port.Service.ServiceDescription.PortTypes) {
 						var portType = oPortType as PortType;
 						if (portType.Name.Equals (binding.Type.Name)) {
-							Interface = new InterfaceImpl (portType, factory);
+							Interface = new Interface (portType, factory);
 							break;
 						}
 					}
@@ -42,9 +48,9 @@ namespace OneScript.Soap
 
 		}
 
-		internal EndpointImpl (string name,
+		internal Endpoint (string name,
 							   string documentation,
-							   InterfaceImpl customInterface,
+							   Interface customInterface,
 							   ISoapTransport customTransport)
 		{
 			Documentation = documentation;
@@ -61,7 +67,7 @@ namespace OneScript.Soap
 		public string Name { get; }
 
 		[ContextProperty("Интерфейс", "Interface")]
-		public InterfaceImpl Interface { get; }
+		public Interface Interface { get; }
 
 		[ContextProperty("Местоположение", "Location")]
 		public string Location { get; }

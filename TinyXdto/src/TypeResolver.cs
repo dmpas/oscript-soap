@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using System.Xml;
 using System.Collections.Generic;
 using ScriptEngine.Machine;
@@ -9,10 +15,10 @@ namespace TinyXdto
 	// TODO: убить это недоразумение
 	sealed class TypeResolver : IXdtoType
 	{
-		private readonly XdtoFactoryImpl _factory;
+		private readonly XdtoFactory _factory;
 		private readonly XmlQualifiedName _xmlType;
 
-		public TypeResolver (XdtoFactoryImpl factory, XmlQualifiedName xmlType)
+		public TypeResolver (XdtoFactory factory, XmlQualifiedName xmlType)
 		{
 			_factory = factory;
 			_xmlType = xmlType;

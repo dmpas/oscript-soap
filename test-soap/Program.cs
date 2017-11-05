@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -26,29 +32,29 @@ namespace testsoap
 		// В случае неправильного наследования код не скомпилируется
 		void Check_AllClassesAreIValues()
 		{
-			CheckIValueFor<ParameterImpl>();
-			CheckIValueFor<ParameterCollectionImpl>();
+			CheckIValueFor<Parameter>();
+			CheckIValueFor<ParameterCollection>();
 
-			CheckIValueFor<ServiceImpl>();
-			CheckIValueFor<ServiceCollectionImpl>();
+			CheckIValueFor<Service>();
+			CheckIValueFor<ServiceCollection>();
 
-			CheckIValueFor<ReturnValueImpl>();
+			CheckIValueFor<ReturnValue>();
 
-			CheckIValueFor<DefinitionsImpl>();
+			CheckIValueFor<Definitions>();
 
-			CheckIValueFor<EndpointImpl>();
-			CheckIValueFor<EndpointCollectionImpl>();
+			CheckIValueFor<Endpoint>();
+			CheckIValueFor<EndpointCollection>();
 
-			CheckIValueFor<OperationImpl>();
-			CheckIValueFor<OperationCollectionImpl>();
+			CheckIValueFor<Operation>();
+			CheckIValueFor<OperationCollection>();
 
-			CheckIValueFor<InterfaceImpl>();
-			CheckIValueFor<ProxyImpl>();
+			CheckIValueFor<Interface>();
+			CheckIValueFor<Proxy>();
 		}
 
 		public void TestWsdl ()
 		{
-			var def = new DefinitionsImpl ("http://vm21297.hv8.ru:10080/httpservice/ws/complex.1cws?wsdl", "default");
+			var def = new Definitions ("http://vm21297.hv8.ru:10080/httpservice/ws/complex.1cws?wsdl", "default");
 			Console.WriteLine ("Def has {0} services.", def.Services.Count ());
 			foreach (var service in def.Services) {
 				
@@ -62,7 +68,7 @@ namespace testsoap
 				}
 			}
 
-			var proxy = ProxyImpl.Constructor (def, "http://dmpas/complex", "Complex", "ComplexSoap") as ProxyImpl;
+			var proxy = Proxy.Constructor (def, "http://dmpas/complex", "Complex", "ComplexSoap") as Proxy;
 			proxy.User = "default";
 			int methodIndex = proxy.FindMethod ("DoOp");
 
@@ -80,8 +86,8 @@ namespace testsoap
 
 		public void TestEchoService ()
 		{
-			var def = new DefinitionsImpl ("http://vm21297.hv8.ru:10080/httpservice/ws/echo.1cws?wsdl", "default", "");
-			var proxy = ProxyImpl.Constructor (def, "http://dmpas/echo", "EchoService", "EchoServiceSoap") as ProxyImpl;
+			var def = new Definitions ("http://vm21297.hv8.ru:10080/httpservice/ws/echo.1cws?wsdl", "default", "");
+			var proxy = Proxy.Constructor (def, "http://dmpas/echo", "EchoService", "EchoServiceSoap") as Proxy;
 			proxy.User = "default";
 
 			decimal testValue = Decimal.Divide (152, 10);
@@ -110,8 +116,8 @@ namespace testsoap
 		{
 			var engine = new ScriptEngine.HostedScript.HostedScriptEngine ();
 			engine.Initialize ();
-			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (XdtoObjectTypeImpl)));
-			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (DefinitionsImpl)));
+			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (XdtoObjectType)));
+			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (Definitions)));
 		}
 
 		public void TestXdto ()
@@ -120,9 +126,9 @@ namespace testsoap
 			var reader = XmlReaderImpl.Create () as XmlReaderImpl;
 			reader.SetString (anyXml);
 
-			var factory = XdtoFactoryImpl.Constructor() as XdtoFactoryImpl;
+			var factory = XdtoFactory.Constructor() as XdtoFactory;
 			var expectedType = factory.Type (new XmlDataType ("int"));
-			var anyValue = factory.ReadXml (reader, expectedType) as XdtoDataValueImpl;
+			var anyValue = factory.ReadXml (reader, expectedType) as XdtoDataValue;
 
 			if (anyValue == null)
 				throw new Exception ("XDTO не разобрался!");
@@ -139,7 +145,7 @@ namespace testsoap
 			reader = XmlReaderImpl.Create () as XmlReaderImpl;
 			reader.SetString (serializedResult);
 
-			var anyValueTypeExtraction = factory.ReadXml (reader) as XdtoDataValueImpl;
+			var anyValueTypeExtraction = factory.ReadXml (reader) as XdtoDataValue;
 			if (anyValueTypeExtraction == null)
 				throw new Exception ("Новый XDTO не разобрался!");
 			Console.WriteLine ("Serialized:{0}", anyValueTypeExtraction.Value);
@@ -200,11 +206,11 @@ namespace testsoap
 		public void TestUnnamedComplexType()
 		{
 			var ss = LoadSchema(@"TestData/Schema01.xsd");
-			var f = new XdtoFactoryImpl(ss);
-			var t = f.Type(uri: "unnamedComplexType", name: "TheComplexType") as XdtoObjectTypeImpl;
-			var v = f.Create(t) as XdtoDataObjectImpl;
+			var f = new XdtoFactory(ss);
+			var t = f.Type(uri: "unnamedComplexType", name: "TheComplexType") as XdtoObjectType;
+			var v = f.Create(t) as XdtoDataObject;
 			var p = t.Properties.Get("Element");
-			var pv = f.Create(p.Type) as XdtoDataObjectImpl;
+			var pv = f.Create(p.Type) as XdtoDataObject;
 			var var1Value = f.Create(f.Type(XmlNs.xs, "string"), ValueFactory.Create("value of var1"));
 			pv.Set("var1", var1Value);
 			
@@ -222,8 +228,8 @@ namespace testsoap
 			var r = new XmlReaderImpl();
 			r.SetString(serialized);
 
-			var checkObject = f.ReadXml(r) as XdtoDataObjectImpl;
-			var checkValue = (checkObject.Get("Element") as XdtoDataObjectImpl).Get("var1").AsString();
+			var checkObject = f.ReadXml(r) as XdtoDataObject;
+			var checkValue = (checkObject.Get("Element") as XdtoDataObject).Get("var1").AsString();
 			
 			Console.WriteLine($"got {checkValue}");
 		}

@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Collections.Generic;
@@ -7,16 +13,16 @@ using ScriptEngine.HostedScript.Library.Xml;
 namespace OneScript.Soap
 {
 	[ContextClass("WSСтрелочник", "WSRouter")]
-	public class RouterImpl : AutoContext<RouterImpl>, ISoapTransport
+	public class Router : AutoContext<Router>, ISoapTransport
 	{
 
 		const string xmlns_soap = @"http://schemas.xmlsoap.org/soap/envelope/";
 
 		private readonly List<IReflectableContext> handlers = new List<IReflectableContext>();
-		private readonly Dictionary<string, OperationImpl> operations = new Dictionary<string, OperationImpl> ();
-		private readonly Dictionary<OperationImpl, IReflectableContext> operationsMapper = new Dictionary<OperationImpl, IReflectableContext> ();
+		private readonly Dictionary<string, Operation> operations = new Dictionary<string, Operation> ();
+		private readonly Dictionary<Operation, IReflectableContext> operationsMapper = new Dictionary<Operation, IReflectableContext> ();
 
-		public RouterImpl (string name, string targetNamespace)
+		public Router (string name, string targetNamespace)
 		{
 			Name = name;
 			NamespaceUri = targetNamespace;
@@ -34,7 +40,7 @@ namespace OneScript.Soap
 			var handler = ihandler as IReflectableContext;
 			foreach (var methodInfo in handler.GetMethods ()) {
 
-				var operation = new OperationImpl (methodInfo, NamespaceUri);
+				var operation = new Operation (methodInfo, NamespaceUri);
 				operations.Add (operation.Name, operation);
 				operationsMapper.Add (operation, handler);
 
@@ -294,27 +300,27 @@ namespace OneScript.Soap
 			return responseText;
 		}
 
-		public InterfaceImpl CreateInterface ()
+		public Interface CreateInterface ()
 		{
-			return new InterfaceImpl (NamespaceUri, "", Name,
-									 new OperationCollectionImpl (operations.Values));
+			return new Interface (NamespaceUri, "", Name,
+									 new OperationCollection (operations.Values));
 		}
 
-		public EndpointImpl CreateEndPoint ()
+		public Endpoint CreateEndPoint ()
 		{
-			return new EndpointImpl (Name, "", CreateInterface (), this);
+			return new Endpoint (Name, "", CreateInterface (), this);
 		}
 
 		[ContextMethod("СоздатьПрокси", "CreateProxy")]
-		public ProxyImpl CreateProxy ()
+		public Proxy CreateProxy ()
 		{
-			return new ProxyImpl (null, CreateEndPoint ());
+			return new Proxy (null, CreateEndPoint ());
 		}
 
 		[ScriptConstructor]
 		public static IReflectableContext Constructor (IValue name, IValue namespaceUri)
 		{
-			return new RouterImpl (name.AsString(), namespaceUri.AsString ());
+			return new Router (name.AsString(), namespaceUri.AsString ());
 		}
 	}
 }

@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Collections;
@@ -7,21 +13,21 @@ using System.Collections.Generic;
 namespace TinyXdto
 {
 	[ContextClass("СписокXDTO", "XDTOList")]
-	public class XdtoListImpl : AutoContext<XdtoListImpl>, ICollectionContext, IEnumerable<IXdtoValue>
+	public class XdtoList : AutoContext<XdtoList>, ICollectionContext, IEnumerable<IXdtoValue>
 	{
 		private List<IXdtoValue> _data = new List<IXdtoValue> ();
 
-		internal XdtoListImpl (XdtoDataObjectImpl owner, XdtoPropertyImpl owningProperty)
+		internal XdtoList (XdtoDataObject owner, XdtoProperty owningProperty)
 		{
 			Owner = owner;
 			OwningProperty = owningProperty;
 		}
 
 		[ContextProperty("Владелец")]
-		public XdtoDataObjectImpl Owner { get; }
+		public XdtoDataObject Owner { get; }
 
 		[ContextProperty ("ВладеющееСвойство")]
-		public XdtoPropertyImpl OwningProperty { get; }
+		public XdtoProperty OwningProperty { get; }
 
 		public override IValue GetIndexedValue (IValue index)
 		{

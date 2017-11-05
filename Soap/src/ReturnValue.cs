@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Web.Services.Description;
@@ -8,9 +14,9 @@ using System.Collections.Generic;
 namespace OneScript.Soap
 {
 	[ContextClass("WSВозвращаемоеЗначение", "WSReturnValue")]
-	public class ReturnValueImpl : AutoContext<ReturnValueImpl>
+	public class ReturnValue : AutoContext<ReturnValue>
 	{
-		internal ReturnValueImpl (OperationOutput returnValue, TinyXdto.XdtoFactoryImpl factory)
+		internal ReturnValue (OperationOutput returnValue, TinyXdto.XdtoFactory factory)
 		{
 			Documentation = returnValue.Documentation;
 			MessagePartName = "";
@@ -31,7 +37,7 @@ namespace OneScript.Soap
 					continue;
 				}
 
-				ResponseType = type as XdtoObjectTypeImpl;
+				ResponseType = type as XdtoObjectType;
 
 				foreach (var property in ResponseType.Properties) {
 					
@@ -49,7 +55,7 @@ namespace OneScript.Soap
 
 		}
 
-		internal ReturnValueImpl (IXdtoType type = null,
+		internal ReturnValue (IXdtoType type = null,
 		                          string messagePartName = "",
 		                          bool nillable = false,
 		                          string documentation = "")
@@ -69,7 +75,7 @@ namespace OneScript.Soap
 		[ContextProperty("Тип", "Type")]
 		public IXdtoType Type { get; }
 
-		public XdtoObjectTypeImpl ResponseType { get; }
+		public XdtoObjectType ResponseType { get; }
 
 		public string MessagePartName { get; }
 

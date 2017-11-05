@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Collections.Generic;
@@ -7,20 +13,20 @@ using System.Collections;
 namespace TinyXdto
 {
 	[ContextClass ("ПоследовательностьXDTO", "XDTOSeqence")]
-	public sealed class XdtoSequenceImpl : AutoContext<XdtoSequenceImpl>, IEnumerable<IXdtoSequenceElement>
+	public sealed class XdtoSequence : AutoContext<XdtoSequence>, IEnumerable<IXdtoSequenceElement>
 	{
 
 		readonly List<IXdtoSequenceElement> elements = new List<IXdtoSequenceElement> ();
 		readonly bool _isMixed;
 
-		internal XdtoSequenceImpl (XdtoDataObjectImpl owner, bool isMixed)
+		internal XdtoSequence (XdtoDataObject owner, bool isMixed)
 		{
 			Owner = owner;
 			_isMixed = isMixed;
 		}
 
 		[ContextProperty ("Владелец", "Owner")]
-		public XdtoDataObjectImpl Owner { get; }
+		public XdtoDataObject Owner { get; }
 
 		[ContextMethod ("Добавить", "Add")]
 		public void Add (string text)
@@ -29,7 +35,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Добавить", "Add")]
-		public void Add (XdtoPropertyImpl property, IValue dataElement)
+		public void Add (XdtoProperty property, IValue dataElement)
 		{
 			elements.Add (new XdtoSequenceValueElement (property, dataElement as IXdtoValue));
 		}
@@ -41,7 +47,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Вставить", "Insert")]
-		public void Insert (int index, XdtoPropertyImpl property, IValue dataElement)
+		public void Insert (int index, XdtoProperty property, IValue dataElement)
 		{
 			elements.Insert (index, new XdtoSequenceValueElement (property, dataElement as IXdtoValue));
 		}
@@ -76,7 +82,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("ПолучитьСвойство", "GetProperty")]
-		public XdtoPropertyImpl GetProperty (int index)
+		public XdtoProperty GetProperty (int index)
 		{
 			var item = elements [index] as XdtoSequenceValueElement;
 			return item?.Property;

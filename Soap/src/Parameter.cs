@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
 using System.Web.Services.Description;
@@ -8,10 +14,10 @@ using TinyXdto;
 namespace OneScript.Soap
 {
 	[ContextClass("WSПараметр", "WSParameter")]
-	public class ParameterImpl : AutoContext<ParameterImpl>, IWithName
+	public class Parameter : AutoContext<Parameter>, IWithName
 	{
 		
-		internal ParameterImpl (XmlSchemaElement element, ParameterDirectionEnum direction, XdtoFactoryImpl factory)
+		internal Parameter (XmlSchemaElement element, ParameterDirectionEnum direction, XdtoFactory factory)
 		{
 			Name = element.Name;
 			Nillable = element.IsNillable;
@@ -19,11 +25,11 @@ namespace OneScript.Soap
 			Documentation = "";
 			if (element.SchemaType is XmlSchemaSimpleType) {
 
-				Type = new XdtoValueTypeImpl (element.SchemaType as XmlSchemaSimpleType, factory);
+				Type = new XdtoValueType (element.SchemaType as XmlSchemaSimpleType, factory);
 
 			} else if (element.SchemaType is XmlSchemaComplexType) {
 
-				Type = new XdtoObjectTypeImpl (element.SchemaType as XmlSchemaComplexType, factory);
+				Type = new XdtoObjectType (element.SchemaType as XmlSchemaComplexType, factory);
 
 			} else {
 
@@ -34,7 +40,7 @@ namespace OneScript.Soap
 			}
 		}
 
-		internal ParameterImpl (string name,
+		internal Parameter (string name,
 		                        ParameterDirectionEnum direction = ParameterDirectionEnum.InOut,
 								bool nillable = true,
 								string documentation = "")

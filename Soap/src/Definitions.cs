@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.IO;
@@ -11,7 +17,7 @@ using TinyXdto;
 namespace OneScript.Soap
 {
 	[ContextClass ("WSОпределения", "WSDefinitions")]
-	public class DefinitionsImpl : AutoContext<DefinitionsImpl>
+	public class Definitions : AutoContext<Definitions>
 	{
 
 		private ServiceDescription _wsd;
@@ -22,7 +28,7 @@ namespace OneScript.Soap
 		private decimal _timeout;
 		private IValue _securedConnection;
 
-		public DefinitionsImpl (string wsdl,
+		public Definitions (string wsdl,
 			string userName = null,
 			string password = null,
 			IValue internetProxy = null,
@@ -38,9 +44,9 @@ namespace OneScript.Soap
 
 			_wsd = ReachWsdl();
 
-			XdtoFactory = new XdtoFactoryImpl (_wsd.Types.Schemas);
+			XdtoFactory = new XdtoFactory (_wsd.Types.Schemas);
 
-			Services = ServiceCollectionImpl.Create(_wsd.Services, XdtoFactory);
+			Services = ServiceCollection.Create(_wsd.Services, XdtoFactory);
 			InitializeStructures();
 		}
 
@@ -53,10 +59,10 @@ namespace OneScript.Soap
 		public string Documentation { get; }
 
 		[ContextProperty("Сервисы", "Services")]
-		public ServiceCollectionImpl Services { get; }
+		public ServiceCollection Services { get; }
 
 		[ContextProperty("ФабрикаXDTO", "XDTOFactory")]
-		public XdtoFactoryImpl XdtoFactory { get; }
+		public XdtoFactory XdtoFactory { get; }
 
 		// TODO: использовать InternetProxy, timeout и SecuredConnection
 		private ServiceDescription ReachWsdl()
@@ -74,7 +80,7 @@ namespace OneScript.Soap
 			IValue securedConnection = null
 		)
 		{
-			var definitions = new DefinitionsImpl(
+			var definitions = new Definitions(
 				wsdl.ToString(),
 				userName?.ToString(),
 				password?.ToString(),

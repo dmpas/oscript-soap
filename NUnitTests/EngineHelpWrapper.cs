@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using System.IO;
 using NUnit.Framework;
 using ScriptEngine.Machine.Contexts;
@@ -31,8 +37,8 @@ namespace NUnitTests
 			engine = new HostedScriptEngine ();
 			engine.Initialize ();
 
-			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (TinyXdto.XdtoFactoryImpl)));
-			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (OneScript.Soap.DefinitionsImpl)));
+			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (TinyXdto.XdtoFactory)));
+			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (OneScript.Soap.Definitions)));
 
 			// Подключаем тестовую оболочку
 			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (EngineHelpWrapper)));

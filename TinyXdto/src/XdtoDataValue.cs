@@ -1,24 +1,30 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 
 namespace TinyXdto
 {
 	[ContextClass("ЗначениеXDTO", "XDTODataValue")]
-	public class XdtoDataValueImpl : AutoContext<XdtoDataValueImpl>, IXdtoValue
+	public class XdtoDataValue : AutoContext<XdtoDataValue>, IXdtoValue
 	{
 
-		private readonly XdtoValueTypeImpl _type;
+		private readonly XdtoValueType _type;
 
-		internal XdtoDataValueImpl (XdtoValueTypeImpl type,
+		internal XdtoDataValue (XdtoValueType type,
 		                            string lexicalValue,
 		                            IValue value,
-		                            XdtoDataValueCollectionImpl list = null)
+		                            XdtoDataValueCollection list = null)
 		{
 			_type = type;
 			Value = value;
 			LexicalValue = lexicalValue;
-			List = list ?? new XdtoDataValueCollectionImpl();
+			List = list ?? new XdtoDataValueCollection();
 		}
 
 		[ContextProperty("Значение", "Value")]
@@ -28,10 +34,10 @@ namespace TinyXdto
 		public string LexicalValue { get; }
 
 		[ContextProperty("Список", "List")]
-		public XdtoDataValueCollectionImpl List { get; }
+		public XdtoDataValueCollection List { get; }
 
 		[ContextMethod ("Тип", "Type")]
-		public XdtoValueTypeImpl Type ()
+		public XdtoValueType Type ()
 		{
 			return _type;
 		}

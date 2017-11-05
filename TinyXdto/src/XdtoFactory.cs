@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using ScriptEngine.HostedScript.Library.Xml;
@@ -10,17 +16,17 @@ using System.Xml;
 namespace TinyXdto
 {
 	[ContextClass("ФабрикаXDTO", "XDTOFactory")]
-	public class XdtoFactoryImpl : AutoContext<XdtoFactoryImpl>
+	public class XdtoFactory : AutoContext<XdtoFactory>
 	{
 
-		public XdtoFactoryImpl ()
-			: this (new XdtoPackageImpl [] { } )
+		public XdtoFactory ()
+			: this (new XdtoPackage [] { } )
 		{
 		}
 
-		public XdtoFactoryImpl (IEnumerable<XdtoPackageImpl> packages)
+		public XdtoFactory (IEnumerable<XdtoPackage> packages)
 		{
-			var _packages = new List<XdtoPackageImpl> ();
+			var _packages = new List<XdtoPackage> ();
 			_packages.Add (W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create ());
 			foreach (var package in packages) {
 				if (!_packages.Contains (package)) {
@@ -28,7 +34,7 @@ namespace TinyXdto
 				}
 			}
 
-			Packages = new XdtoPackageCollectionImpl (_packages);
+			Packages = new XdtoPackageCollection (_packages);
 
 			ResoveTypes();
 		}
@@ -40,11 +46,11 @@ namespace TinyXdto
 			{
 				foreach (var type in package)
 				{
-					if (!(type is XdtoObjectTypeImpl))
+					if (!(type is XdtoObjectType))
 					{
 						return;
 					}
-					var objectType = type as XdtoObjectTypeImpl;
+					var objectType = type as XdtoObjectType;
 					foreach (var prop in objectType.Properties)
 					{
 						if (prop.Type is TypeResolver)
@@ -60,21 +66,21 @@ namespace TinyXdto
 			}
 		}
 
-		public XdtoFactoryImpl (IEnumerable<XmlSchema> schemas)
+		public XdtoFactory (IEnumerable<XmlSchema> schemas)
 		{
-			var packages = new List<XdtoPackageImpl> ();
+			var packages = new List<XdtoPackage> ();
 			packages.Add (W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create ());
 			foreach (var schema in schemas) {
-				var package = new XdtoPackageImpl (schema, this); // TODO: фабрика ещё не сформирована!
+				var package = new XdtoPackage (schema, this); // TODO: фабрика ещё не сформирована!
 				if (!packages.Contains (package)) {
 					packages.Add (package);
 				}
 			}
-			Packages = new XdtoPackageCollectionImpl (packages);
+			Packages = new XdtoPackageCollection (packages);
 		}
 
 		[ContextProperty("Пакеты", "Packages")]
-		public XdtoPackageCollectionImpl Packages { get; }
+		public XdtoPackageCollection Packages { get; }
 
 		private void WriteTypeAttribute (XmlWriterImpl xmlWriter,
 		                                 IValue value)
@@ -82,12 +88,12 @@ namespace TinyXdto
 			string typeName;
 			string typeUri;
 
-			if (value is XdtoDataObjectImpl) {
-				var obj = value as XdtoDataObjectImpl;
+			if (value is XdtoDataObject) {
+				var obj = value as XdtoDataObject;
 				typeUri = obj.Type ().NamespaceUri;
 				typeName = obj.Type ().Name;
-			} else if (value is XdtoDataValueImpl) {
-				var obj = value as XdtoDataValueImpl;
+			} else if (value is XdtoDataValue) {
+				var obj = value as XdtoDataValue;
 				typeUri = obj.Type ().NamespaceUri;
 				typeName = obj.Type ().Name;
 			} else {
@@ -109,7 +115,7 @@ namespace TinyXdto
 		}
 
 		private void WriteXdtoSequence (XmlWriterImpl xmlWriter,
-		                                XdtoSequenceImpl sequence)
+		                                XdtoSequence sequence)
 		{
 			foreach (var element in sequence) {
 
@@ -134,7 +140,7 @@ namespace TinyXdto
 		}
 
 		private void WriteXdtoObject (XmlWriterImpl xmlWriter,
-		                              XdtoDataObjectImpl obj)
+		                              XdtoDataObject obj)
 		{
 			obj.Validate ();
 
@@ -179,13 +185,13 @@ namespace TinyXdto
 					
 					xmlWriter.WriteAttribute ("nil", XmlNs.xsi, "true");
 
-				} else if (value is XdtoDataObjectImpl) {
+				} else if (value is XdtoDataObject) {
 					
-					WriteXdtoObject (xmlWriter, value as XdtoDataObjectImpl);
+					WriteXdtoObject (xmlWriter, value as XdtoDataObject);
 
-				} else if (value is XdtoDataValueImpl) {
+				} else if (value is XdtoDataValue) {
 
-					var dataValue = value as XdtoDataValueImpl;
+					var dataValue = value as XdtoDataValue;
 					xmlWriter.WriteText (dataValue.LexicalValue);
 
 				} else {
@@ -240,11 +246,11 @@ namespace TinyXdto
 		[ContextMethod ("Создать", "Create")]
 		public IXdtoValue Create (IXdtoType type, IValue value = null)
 		{
-			if (type is XdtoObjectTypeImpl) {
-				return new XdtoDataObjectImpl (type as XdtoObjectTypeImpl, null, null);
+			if (type is XdtoObjectType) {
+				return new XdtoDataObject (type as XdtoObjectType, null, null);
 			}
 
-			var valueType = type as XdtoValueTypeImpl;
+			var valueType = type as XdtoValueType;
 			if (valueType == null) {
 				throw RuntimeException.InvalidArgumentType (nameof (type));
 			}
@@ -254,12 +260,12 @@ namespace TinyXdto
 			}
 
 			if (value.DataType == DataType.String) {
-				return new XdtoDataValueImpl (valueType,
+				return new XdtoDataValue (valueType,
 				                              value.AsString (),
 				                              value);
 			}
 
-			return new XdtoDataValueImpl (valueType,
+			return new XdtoDataValue (valueType,
 			                              value.AsString (),
 			                              value);
 		}
@@ -275,7 +281,7 @@ namespace TinyXdto
 				var explicitType = reader.GetAttribute (ValueFactory.Create ("type"), XmlNs.xsi);
 				if (explicitType.DataType == DataType.Undefined) {
 
-					type = new XdtoObjectTypeImpl ();
+					type = new XdtoObjectType ();
 
 				} else {
 
@@ -302,13 +308,13 @@ namespace TinyXdto
 				}
 			}
 
-			if (type is XdtoObjectTypeImpl) {
+			if (type is XdtoObjectType) {
 				return type.Reader.ReadXml (reader, type, this);
 			}
 
 			var xmlNodeTypeEnum = XmlNodeTypeEnum.CreateInstance ();
 			var xmlElementStart = xmlNodeTypeEnum.FromNativeValue (XmlNodeType.Element);
-			if (type is XdtoValueTypeImpl) {
+			if (type is XdtoValueType) {
 				if (reader.NodeType.Equals (xmlElementStart)) {
 					reader.Read ();
 				}
@@ -323,7 +329,7 @@ namespace TinyXdto
 		[ScriptConstructor]
 		static public IRuntimeContextInstance Constructor ()
 		{
-			return new XdtoFactoryImpl ();
+			return new XdtoFactory ();
 		}
 	}
 }

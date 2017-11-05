@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Collections.Generic;
@@ -6,30 +12,30 @@ using System.Collections.Generic;
 namespace TinyXdto
 {
 	[ContextClass("ОбъектXDTO", "XDTODataObject")]
-	public class XdtoDataObjectImpl : DynamicPropertiesAccessor, IXdtoValue
+	public class XdtoDataObject : DynamicPropertiesAccessor, IXdtoValue
 	{
-		private readonly XdtoDataObjectImpl _owner;
-		private readonly XdtoPropertyImpl _owningProperty;
-		private readonly Dictionary<XdtoPropertyImpl, IValue> _data = new Dictionary<XdtoPropertyImpl, IValue> ();
-		private readonly XdtoObjectTypeImpl _type;
-		private readonly XdtoSequenceImpl _sequence;
+		private readonly XdtoDataObject _owner;
+		private readonly XdtoProperty _owningProperty;
+		private readonly Dictionary<XdtoProperty, IValue> _data = new Dictionary<XdtoProperty, IValue> ();
+		private readonly XdtoObjectType _type;
+		private readonly XdtoSequence _sequence;
 
-		internal XdtoDataObjectImpl (XdtoObjectTypeImpl type, XdtoDataObjectImpl owner, XdtoPropertyImpl property)
+		internal XdtoDataObject (XdtoObjectType type, XdtoDataObject owner, XdtoProperty property)
 		{
 			_type = type;
 			_owner = owner;
 			_owningProperty = property;
-			_sequence = new XdtoSequenceImpl (this, true);
+			_sequence = new XdtoSequence (this, true);
 		}
 
 		[ContextMethod ("Владелец", "Owner")]
-		public XdtoDataObjectImpl Owner ()
+		public XdtoDataObject Owner ()
 		{
 			return _owner;
 		}
 
 		[ContextMethod ("ВладеющееСвойство", "OwningProperty")]
-		public XdtoPropertyImpl OwningProperty ()
+		public XdtoProperty OwningProperty ()
 		{
 			return _owningProperty;
 		}
@@ -39,27 +45,27 @@ namespace TinyXdto
 		public void Add (XmlFormEnum form, string namespaceUri, string localName, IXdtoValue dataElement)
 		{
 			if (_type?.Open ?? true) {
-				var customProperty = new XdtoPropertyImpl (this, form, namespaceUri, localName);
+				var customProperty = new XdtoProperty (this, form, namespaceUri, localName);
 				Add (customProperty, dataElement);
 			}
 
 			throw new RuntimeException ("Добавлять можно только в объекты открытого типа!");
 		}
 
-		public void Add (XdtoPropertyImpl property, IXdtoValue dataElement)
+		public void Add (XdtoProperty property, IXdtoValue dataElement)
 		{
-			XdtoListImpl list;
+			XdtoList list;
 			if (_data.ContainsKey (property)) {
 
-				list = _data [property] as XdtoListImpl;
+				list = _data [property] as XdtoList;
 				if (list == null) {
-					list = new XdtoListImpl (this, property);
+					list = new XdtoList (this, property);
 					_data [property] = list;
 				}
 
 			} else {
 
-				list = new XdtoListImpl (this, property);
+				list = new XdtoList (this, property);
 				_data [property] = list;
 
 			}
@@ -79,7 +85,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod("Получить", "Get")]
-		public IValue Get (XdtoPropertyImpl property)
+		public IValue Get (XdtoProperty property)
 		{
 			if (property != null && _data.ContainsKey (property))
 			{
@@ -97,7 +103,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod("ПолучитьXDTO", "GetXDTO")]
-		public IXdtoValue GetXdto (XdtoPropertyImpl property)
+		public IXdtoValue GetXdto (XdtoProperty property)
 		{
 			return Get (property) as IXdtoValue;
 		}
@@ -109,19 +115,19 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("ПолучитьСписок", "GetList")]
-		public IValue GetList (XdtoPropertyImpl property)
+		public IValue GetList (XdtoProperty property)
 		{
-			return Get (property) as XdtoListImpl;
+			return Get (property) as XdtoList;
 		}
 
 		[ContextMethod ("ПолучитьСписок", "GetList")]
-		public XdtoListImpl GetList (string xpath)
+		public XdtoList GetList (string xpath)
 		{
-			return Get (xpath) as XdtoListImpl;
+			return Get (xpath) as XdtoList;
 		}
 
 		[ContextMethod ("Последовательность", "Sequence")]
-		public XdtoSequenceImpl Sequence ()
+		public XdtoSequence Sequence ()
 		{
 			return _sequence;
 		}
@@ -133,7 +139,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Сбросить", "Unset")]
-		public void Unset (XdtoPropertyImpl property)
+		public void Unset (XdtoProperty property)
 		{
 			_data.Remove (property);
 		}
@@ -147,13 +153,13 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Свойства", "Properties")]
-		public XdtoPropertyCollectionImpl Properties ()
+		public XdtoPropertyCollection Properties ()
 		{
-			return new XdtoPropertyCollectionImpl (_data.Keys);
+			return new XdtoPropertyCollection (_data.Keys);
 		}
 
 		[ContextMethod ("Тип", "Type")]
-		public XdtoObjectTypeImpl Type ()
+		public XdtoObjectType Type ()
 		{
 			return _type;
 		}
@@ -166,7 +172,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Установить", "Set")]
-		public void Set (XdtoPropertyImpl property, IValue value)
+		public void Set (XdtoProperty property, IValue value)
 		{
 			_data [property] = value;
 		}
@@ -180,12 +186,12 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("Установлено", "IsSet")]
-		public bool IsSet (XdtoPropertyImpl property)
+		public bool IsSet (XdtoProperty property)
 		{
 			return _data.ContainsKey (property);
 		}
 
-		private static readonly ContextMethodsMapper<XdtoDataObjectImpl> _methods = new ContextMethodsMapper<XdtoDataObjectImpl> ();
+		private static readonly ContextMethodsMapper<XdtoDataObject> _methods = new ContextMethodsMapper<XdtoDataObject> ();
 
 		public override IValue GetPropValue (int propNum)
 		{

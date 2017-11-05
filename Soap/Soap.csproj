@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -48,26 +48,26 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\ParameterDirectionEnum.cs" />
-    <Compile Include="src\ReturnValueImpl.cs" />
-    <Compile Include="src\ParameterImpl.cs" />
-    <Compile Include="src\ParameterCollectionImpl.cs" />
-    <Compile Include="src\DefinitionsImpl.cs" />
-    <Compile Include="src\ServiceImpl.cs" />
-    <Compile Include="src\OperationImpl.cs" />
-    <Compile Include="src\OperationCollectionImpl.cs" />
-    <Compile Include="src\InterfaceImpl.cs" />
-    <Compile Include="src\EndpointImpl.cs" />
-    <Compile Include="src\EndpointCollectionImpl.cs" />
-    <Compile Include="src\ServiceCollectionImpl.cs" />
+    <Compile Include="src\ReturnValue.cs" />
+    <Compile Include="src\Parameter.cs" />
+    <Compile Include="src\ParameterCollection.cs" />
+    <Compile Include="src\Definitions.cs" />
+    <Compile Include="src\Service.cs" />
+    <Compile Include="src\Operation.cs" />
+    <Compile Include="src\OperationCollection.cs" />
+    <Compile Include="src\Interface.cs" />
+    <Compile Include="src\Endpoint.cs" />
+    <Compile Include="src\EndpointCollection.cs" />
+    <Compile Include="src\ServiceCollection.cs" />
     <Compile Include="src\FixedCollectionOf.cs" />
     <Compile Include="src\IWithName.cs" />
-    <Compile Include="src\ProxyImpl.cs" />
+    <Compile Include="src\Proxy.cs" />
     <Compile Include="src\WsdlConnector.cs" />
     <Compile Include="src\MessagePartProxy.cs" />
     <Compile Include="src\IParsedResponse.cs" />
     <Compile Include="src\SoapExceptionResponse.cs" />
     <Compile Include="src\SuccessfulSoapResponse.cs" />
-    <Compile Include="src\RouterImpl.cs" />
+    <Compile Include="src\Router.cs" />
     <Compile Include="src\ISoapTransport.cs" />
     <Compile Include="src\HttpTransport.cs" />
     <Compile Include="src\HttpTransportException.cs" />
@@ -88,7 +88,7 @@
           <XmlFormattingPolicy inheritsSet="null" scope="application/config+xml" />
           <TextStylePolicy inheritsSet="null" scope="application/xml" />
           <XmlFormattingPolicy inheritsSet="Mono" inheritsScope="application/xml" scope="application/xml">
-            <DefaultFormat OmitXmlDeclaration="False" NewLineChars="&#xA;" IndentContent="True" ContentIndentString="&#x9;" AttributesInNewLine="False" MaxAttributesPerLine="10" AttributesIndentString="&#x9;" WrapAttributes="False" AlignAttributes="False" AlignAttributeValues="False" QuoteChar="&quot;" SpacesBeforeAssignment="0" SpacesAfterAssignment="0" EmptyLinesBeforeStart="0" EmptyLinesAfterStart="0" EmptyLinesBeforeEnd="0" EmptyLinesAfterEnd="0" />
+            <DefaultFormat OmitXmlDeclaration="False" NewLineChars="&#xA;" IndentContent="True" ContentIndentString="	" AttributesInNewLine="False" MaxAttributesPerLine="10" AttributesIndentString="	" WrapAttributes="False" AlignAttributes="False" AlignAttributeValues="False" QuoteChar="&quot;" SpacesBeforeAssignment="0" SpacesAfterAssignment="0" EmptyLinesBeforeStart="0" EmptyLinesAfterStart="0" EmptyLinesBeforeEnd="0" EmptyLinesAfterEnd="0" />
           </XmlFormattingPolicy>
         </Policies>
       </Properties>

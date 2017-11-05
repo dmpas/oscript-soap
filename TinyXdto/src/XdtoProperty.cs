@@ -1,20 +1,26 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 
 namespace TinyXdto
 {
 	[ContextClass("СвойствоXDTO", "XDTOProperty")]
-	public class XdtoPropertyImpl : AutoContext<XdtoPropertyImpl>
+	public class XdtoProperty : AutoContext<XdtoProperty>
 	{
 		private IXdtoType _type;
 		private IXdtoType _ownerType;
 
-		internal XdtoPropertyImpl ()
+		internal XdtoProperty ()
 		{
 		}
 
-		internal XdtoPropertyImpl (XmlFormEnum form,
+		internal XdtoProperty (XmlFormEnum form,
 			string namespaceUri,
 			string localName,
 			IXdtoType type = null)
@@ -26,7 +32,7 @@ namespace TinyXdto
 			_type = type;
 		}
 		
-		internal XdtoPropertyImpl (XdtoDataObjectImpl owner,
+		internal XdtoProperty (XdtoDataObject owner,
 								   XmlFormEnum form,
 								   string namespaceUri,
 								   string localName,
@@ -40,7 +46,7 @@ namespace TinyXdto
 			_type = type;
 		}
 
-		internal XdtoPropertyImpl (IXdtoType owner,
+		internal XdtoProperty (IXdtoType owner,
 			XmlFormEnum form,
 			string namespaceUri,
 			string localName,
@@ -64,7 +70,7 @@ namespace TinyXdto
 		public bool Nillable { get; }
 
 		[ContextProperty ("ЗначениеПоУмолчанию", "DefaultValue")]
-		public XdtoDataValueImpl DefaultValue { get; }
+		public XdtoDataValue DefaultValue { get; }
 
 		[ContextProperty ("Имя", "Name")]
 		public string Name { get; }
@@ -79,7 +85,7 @@ namespace TinyXdto
 		public int LowerBound { get; }
 
 		[ContextProperty ("ОбъектВладелец", "OwnerObject")]
-		public XdtoDataObjectImpl OwnerObject { get; }
+		public XdtoDataObject OwnerObject { get; }
 
 		[ContextProperty ("Тип", "Type")]
 		public IXdtoType Type {
@@ -109,7 +115,7 @@ namespace TinyXdto
 
 		public override bool Equals (object obj)
 		{
-			var asThis = obj as XdtoPropertyImpl;
+			var asThis = obj as XdtoProperty;
 			if (asThis == null)
 				return false;
 

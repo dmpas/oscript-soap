@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using ScriptEngine.HostedScript.Library;
@@ -13,19 +19,19 @@ using System.Collections.Generic;
 namespace OneScript.Soap
 {
 	[ContextClass ("WSПрокси", "WSProxy")]
-	public class ProxyImpl : AutoContext<ProxyImpl>
+	public class Proxy : AutoContext<Proxy>
 	{
 
 		private List<MethodInfo> _methods = new List<MethodInfo> ();
-		private List<OperationImpl> _operations = new List<OperationImpl> ();
+		private List<Operation> _operations = new List<Operation> ();
 		private ISoapTransport _transport = null;
 
 		// TODO: полный список аргументов
-		public ProxyImpl (DefinitionsImpl definitions, EndpointImpl endpoint)
+		public Proxy (Definitions definitions, Endpoint endpoint)
 		{
 			Definitions = definitions;
 			Endpoint = endpoint;
-			XdtoFactory = definitions?.XdtoFactory ?? new XdtoFactoryImpl();
+			XdtoFactory = definitions?.XdtoFactory ?? new XdtoFactory();
 
 			FillMethods ();
 		}
@@ -42,7 +48,7 @@ namespace OneScript.Soap
 		public IValue SecuredConnection { get; }
 
 		[ContextProperty ("Определение", "Definitions")]
-		public DefinitionsImpl Definitions { get; }
+		public Definitions Definitions { get; }
 
 		[ContextProperty ("Пароль", "Password")]
 		public string Password { get; set; }
@@ -51,18 +57,18 @@ namespace OneScript.Soap
 		public string User { get; set; }
 
 		[ContextProperty ("Прокси", "Proxy")]
-		public InternetProxyContext Proxy { get; }
+		public InternetProxyContext InternetProxy { get; }
 
 		[ContextProperty ("Таймаут", "Timeout")]
 		public decimal Timeout { get; }
 
 		[ContextProperty ("ТочкаПодключения", "Endpoint")]
-		public EndpointImpl Endpoint { get; }
+		public Endpoint Endpoint { get; }
 
 		[ContextProperty ("ФабрикаXDTO", "XDTOFactory")]
-		public XdtoFactoryImpl XdtoFactory { get; }
+		public XdtoFactory XdtoFactory { get; }
 
-		private MethodInfo GetMethodInfo (OperationImpl operation)
+		private MethodInfo GetMethodInfo (Operation operation)
 		{
 			MethodInfo result;
 
@@ -102,7 +108,7 @@ namespace OneScript.Soap
 
 		private void ConnectIfNeeded ()
 		{
-			_transport = Endpoint.Connect (User, Password, Proxy, (int)Timeout, SecuredConnection);
+			_transport = Endpoint.Connect (User, Password, InternetProxy, (int)Timeout, SecuredConnection);
 		}
 
 		public override void CallAsFunction (int methodNumber, IValue [] arguments, out IValue retValue)
@@ -168,7 +174,7 @@ namespace OneScript.Soap
 		// TODO: полный список параметров
 		[ScriptConstructor]
 		public static IRuntimeContextInstance Constructor (
-			DefinitionsImpl definitions,
+			Definitions definitions,
 			IValue serviceNamespaceURI,
 			IValue serviceName,
 			IValue endpointName
@@ -178,7 +184,7 @@ namespace OneScript.Soap
 		}
 
 		public static IRuntimeContextInstance Constructor(
-			DefinitionsImpl definitions,
+			Definitions definitions,
 			string serviceNamespaceURI,
 			string serviceName,
 			string endpointName
@@ -196,7 +202,7 @@ namespace OneScript.Soap
 				throw new RuntimeException ("Endpoint not found!");
 			}
 
-			return new ProxyImpl(definitions, endpoint);
+			return new Proxy(definitions, endpoint);
 		}
 	}
 }

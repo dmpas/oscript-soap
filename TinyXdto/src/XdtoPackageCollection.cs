@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Collections.Generic;
@@ -7,19 +13,19 @@ using System.Linq;
 namespace TinyXdto
 {
 	[ContextClass("КоллекцияПакетовXDTO", "XDTOPackageCollection")]
-	public class XdtoPackageCollectionImpl : FixedCollectionOf<XdtoPackageImpl>
+	public class XdtoPackageCollection : FixedCollectionOf<XdtoPackage>
 	{
-		internal XdtoPackageCollectionImpl (IEnumerable<XdtoPackageImpl> data) : base(data)
+		internal XdtoPackageCollection (IEnumerable<XdtoPackage> data) : base(data)
 		{
 		}
 
-		public XdtoPackageImpl Get (string namespaceUri)
+		public XdtoPackage Get (string namespaceUri)
 		{
 			return this.FirstOrDefault((p) => p.NamespaceUri.Equals(namespaceUri, StringComparison.Ordinal));
 		}
 
 		[ContextMethod("Получить", "Get")]
-		public new XdtoPackageImpl Get (IValue index)
+		public new XdtoPackage Get (IValue index)
 		{
 			if (index.DataType == DataType.Number)
 				return this.Get ((int)index.AsNumber ());

@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using System.Collections.Generic;
 
 namespace TinyXdto.W3Org.XmlSchema
@@ -10,41 +16,41 @@ namespace TinyXdto.W3Org.XmlSchema
 		static readonly IXdtoReader booleanReader = new BooleanReader ();
 		static readonly IXdtoReader dateTimeReader = new DateTimeReader ();
 
-		public static XdtoPackageImpl Create ()
+		public static XdtoPackage Create ()
 		{
 			var types = new List<IXdtoType> ();
 
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("anySimpleType"), stringReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("anyURI"),        stringReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("duration"),      stringReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("gDay"),          stringReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("gMonth"),        stringReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("gYear"),         stringReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("gYearMonth"),    stringReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("NOTATION"),      stringReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("string"),        stringReader));
+			types.Add (new XdtoValueType (new XmlDataType ("anySimpleType"), stringReader));
+			types.Add (new XdtoValueType (new XmlDataType ("anyURI"),        stringReader));
+			types.Add (new XdtoValueType (new XmlDataType ("duration"),      stringReader));
+			types.Add (new XdtoValueType (new XmlDataType ("gDay"),          stringReader));
+			types.Add (new XdtoValueType (new XmlDataType ("gMonth"),        stringReader));
+			types.Add (new XdtoValueType (new XmlDataType ("gYear"),         stringReader));
+			types.Add (new XdtoValueType (new XmlDataType ("gYearMonth"),    stringReader));
+			types.Add (new XdtoValueType (new XmlDataType ("NOTATION"),      stringReader));
+			types.Add (new XdtoValueType (new XmlDataType ("string"),        stringReader));
 
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("decimal"),       numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("float"),         numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("double"),        numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("integer"),       numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("long"),          numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("int"),           numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("byte"),          numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("short"),         numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("decimal"),       numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("float"),         numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("double"),        numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("integer"),       numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("long"),          numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("int"),           numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("byte"),          numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("short"),         numericReader));
 
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("unsignedLong"),  numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("unsignedInt"),   numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("unsignedByte"),  numericReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("unsignedShort"), numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("unsignedLong"),  numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("unsignedInt"),   numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("unsignedByte"),  numericReader));
+			types.Add (new XdtoValueType (new XmlDataType ("unsignedShort"), numericReader));
 
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("boolean"),       booleanReader));
+			types.Add (new XdtoValueType (new XmlDataType ("boolean"),       booleanReader));
 
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("date"),          dateTimeReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("dateTime"),      dateTimeReader));
-			types.Add (new XdtoValueTypeImpl (new XmlDataType ("time"),          dateTimeReader));
+			types.Add (new XdtoValueType (new XmlDataType ("date"),          dateTimeReader));
+			types.Add (new XdtoValueType (new XmlDataType ("dateTime"),      dateTimeReader));
+			types.Add (new XdtoValueType (new XmlDataType ("time"),          dateTimeReader));
 
-			return new XdtoPackageImpl (XmlNs.xs, types);
+			return new XdtoPackage (XmlNs.xs, types);
 		}
 	}
 }

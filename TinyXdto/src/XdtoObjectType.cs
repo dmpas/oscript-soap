@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Xml.Schema;
@@ -9,10 +15,10 @@ using System.Linq;
 namespace TinyXdto
 {
 	[ContextClass("ТипОбъектаXDTO", "XDTOObjectType")]
-	public class XdtoObjectTypeImpl : AutoContext<XdtoObjectTypeImpl>, IXdtoType, IXdtoReader
+	public class XdtoObjectType : AutoContext<XdtoObjectType>, IXdtoType, IXdtoReader
 	{
 		// anyType
-		internal XdtoObjectTypeImpl ()
+		internal XdtoObjectType ()
 		{
 			Name = "anyType";
 			NamespaceUri = XmlNs.xs;
@@ -20,10 +26,10 @@ namespace TinyXdto
 			Open = true;
 			Sequenced = true;
 			Mixed = true;
-			Properties = new XdtoPropertyCollectionImpl (new List<XdtoPropertyImpl> ());
+			Properties = new XdtoPropertyCollection (new List<XdtoProperty> ());
 		}
 
-		public XdtoObjectTypeImpl (XmlSchemaComplexType xmlType, XdtoFactoryImpl factory)
+		public XdtoObjectType (XmlSchemaComplexType xmlType, XdtoFactory factory)
 		{
 			Name = xmlType.QualifiedName.Name;
 			NamespaceUri = xmlType.QualifiedName.Namespace;
@@ -31,7 +37,7 @@ namespace TinyXdto
 			Abstract = xmlType.IsAbstract;
 			Mixed = xmlType.IsMixed;
 
-			var properties = new List<XdtoPropertyImpl> ();
+			var properties = new List<XdtoProperty> ();
 
 			if (xmlType.Particle is XmlSchemaSequence)
 			{
@@ -51,11 +57,11 @@ namespace TinyXdto
 						var type = element.SchemaType;
 						if (type is XmlSchemaSimpleType)
 						{
-							propertyType = new XdtoValueTypeImpl(type as XmlSchemaSimpleType, factory);
+							propertyType = new XdtoValueType(type as XmlSchemaSimpleType, factory);
 						}
 						else if (type is XmlSchemaComplexType)
 						{
-							propertyType = new XdtoObjectTypeImpl(type as XmlSchemaComplexType, factory);
+							propertyType = new XdtoObjectType(type as XmlSchemaComplexType, factory);
 						}
 						else
 						{
@@ -63,7 +69,7 @@ namespace TinyXdto
 						}
 					}
 
-					properties.Add(new XdtoPropertyImpl(
+					properties.Add(new XdtoProperty(
 						XmlFormEnum.Element,
 						element.QualifiedName.Namespace,
 						element.QualifiedName.Name,
@@ -87,11 +93,11 @@ namespace TinyXdto
 						var type = element.SchemaType;
 						if (type is XmlSchemaSimpleType)
 						{
-							propertyType = new XdtoValueTypeImpl(type as XmlSchemaSimpleType, factory);
+							propertyType = new XdtoValueType(type as XmlSchemaSimpleType, factory);
 						}
 						else if (type is XmlSchemaComplexType)
 						{
-							propertyType = new XdtoObjectTypeImpl(type as XmlSchemaComplexType, factory);
+							propertyType = new XdtoObjectType(type as XmlSchemaComplexType, factory);
 						}
 						else
 						{
@@ -99,7 +105,7 @@ namespace TinyXdto
 						}
 					}
 
-					properties.Add(new XdtoPropertyImpl(this,
+					properties.Add(new XdtoProperty(this,
 						XmlFormEnum.Element,
 						element.QualifiedName.Namespace,
 						element.QualifiedName.Name,
@@ -110,10 +116,10 @@ namespace TinyXdto
 				throw new NotImplementedException("Недоработочка в XDTO-объекте");
 			}
 
-			Properties = new XdtoPropertyCollectionImpl (properties);
+			Properties = new XdtoPropertyCollection (properties);
 		}
 
-		public XdtoObjectTypeImpl (XmlSchemaElement element, XdtoFactoryImpl factory)
+		public XdtoObjectType (XmlSchemaElement element, XdtoFactory factory)
 			: this(element.SchemaType as XmlSchemaComplexType, factory)
 		{
 			Name = element.QualifiedName.Name;
@@ -124,7 +130,7 @@ namespace TinyXdto
 		public string NamespaceUri { get; }
 
 		[ContextProperty("БазовыйТип", "BaseType")]
-		public XdtoObjectTypeImpl BaseType { get; }
+		public XdtoObjectType BaseType { get; }
 
 		[ContextProperty("Имя", "Name")]
 		public string Name { get; }
@@ -145,7 +151,7 @@ namespace TinyXdto
 		public bool Ordered { get; }
 
 		[ContextProperty("Свойства", "Properties")]
-		public XdtoPropertyCollectionImpl Properties { get; }
+		public XdtoPropertyCollection Properties { get; }
 
 		public IXdtoReader Reader {
 			get {
@@ -165,7 +171,7 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("ЭтоПотомок", "IsDescendant")]
-		public bool IsDescendant (XdtoObjectTypeImpl type)
+		public bool IsDescendant (XdtoObjectType type)
 		{
 			if (BaseType == null)
 				return false;
@@ -176,11 +182,11 @@ namespace TinyXdto
 			return BaseType.IsDescendant (type);
 		}
 
-		public IXdtoValue ReadXml(XmlReaderImpl reader, IXdtoType expectedType, XdtoFactoryImpl factory)
+		public IXdtoValue ReadXml(XmlReaderImpl reader, IXdtoType expectedType, XdtoFactory factory)
 		{
 			// TODO: дублирование кода в трёх ветках
 
-			var result = new XdtoDataObjectImpl(this, null, null);
+			var result = new XdtoDataObject(this, null, null);
 
 			// TODO: Перевести XML на простые перечисления
 			var xmlNodeTypeEnum = XmlNodeTypeEnum.CreateInstance();
@@ -209,7 +215,7 @@ namespace TinyXdto
 						throw new XdtoException($"Ошиба разбора XDTO: Получили неизвестный атрибут {propertyName}");
 					}
 					var type = factory.Type(new XmlDataType("string"));
-					attributeProperty = new XdtoPropertyImpl(result, XmlFormEnum.Attribute, NamespaceUri, propertyName, type);
+					attributeProperty = new XdtoProperty(result, XmlFormEnum.Attribute, NamespaceUri, propertyName, type);
 				}
 
 				IValue attributeValue = attributeProperty.Type.Reader.ReadXml(reader, attributeProperty.Type, factory);
@@ -234,7 +240,7 @@ namespace TinyXdto
 						if (!Open)
 							throw new XdtoException ($"Ошибка разбора XDTO: Текст {reader.Value} в неположенном месте при разборе типа {this}!");
 
-						textProperty = new XdtoPropertyImpl (result, XmlFormEnum.Text, NamespaceUri, "#text");
+						textProperty = new XdtoProperty (result, XmlFormEnum.Text, NamespaceUri, "#text");
 						type = factory.Type(new XmlDataType ("string"));
 						textValue = ValueFactory.Create (reader.Value);
 
@@ -265,7 +271,7 @@ namespace TinyXdto
 						if (!Open)
 							throw new XdtoException ($"Ошибка разбора XDTO: Получили неизвестный элемент {localName}");
 
-						property = new XdtoPropertyImpl (result, XmlFormEnum.Element, ns, localName);
+						property = new XdtoProperty (result, XmlFormEnum.Element, ns, localName);
 					}
 
 					var elementValue = factory.ReadXml (reader, property.Type);
@@ -288,7 +294,7 @@ namespace TinyXdto
 
 		public override bool Equals (object obj)
 		{
-			var asThis = obj as XdtoObjectTypeImpl;
+			var asThis = obj as XdtoObjectType;
 			if (asThis == null)
 			{
 				return false;

@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Web.Services.Description;
@@ -6,20 +12,20 @@ using System.Web.Services.Description;
 namespace OneScript.Soap
 {
 	[ContextClass("WSИнтерфейс", "WSInterface")]
-	public class InterfaceImpl : AutoContext<InterfaceImpl>, IWithName
+	public class Interface : AutoContext<Interface>, IWithName
 	{
-		internal InterfaceImpl(PortType portType, TinyXdto.XdtoFactoryImpl factory)
+		internal Interface(PortType portType, TinyXdto.XdtoFactory factory)
 		{
 			Documentation = portType.Documentation;
 			Name = portType.Name;
 			NamespaceURI = portType.ServiceDescription.TargetNamespace;
-			Operations = OperationCollectionImpl.Create (portType.Operations, factory);
+			Operations = OperationCollection.Create (portType.Operations, factory);
 		}
 
-		internal InterfaceImpl (string namespaceUri,
+		internal Interface (string namespaceUri,
 							    string documentation,
 							    string name,
-							    OperationCollectionImpl operations)
+							    OperationCollection operations)
 		{
 			NamespaceURI = namespaceUri;
 			Documentation = documentation;
@@ -37,6 +43,6 @@ namespace OneScript.Soap
 		public string Name { get; }
 
 		[ContextProperty("Операции", "Operations")]
-		public OperationCollectionImpl Operations { get; }
+		public OperationCollection Operations { get; }
 	}
 }

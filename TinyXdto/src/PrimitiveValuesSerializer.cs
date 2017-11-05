@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*----------------------------------------------------------
+This Source Code Form is subject to the terms of the 
+Mozilla Public License, v.2.0. If a copy of the MPL 
+was not distributed with this file, You can obtain one 
+at http://mozilla.org/MPL/2.0/.
+----------------------------------------------------------*/
+using System;
 using ScriptEngine.Machine;
 using System.Xml;
 
@@ -9,8 +15,8 @@ namespace TinyXdto
 
 		public IValue DeserializeXdto (IXdtoValue xdtoValue)
 		{
-			if (xdtoValue is XdtoDataValueImpl) {
-				return (xdtoValue as XdtoDataValueImpl).Value;
+			if (xdtoValue is XdtoDataValue) {
+				return (xdtoValue as XdtoDataValue).Value;
 			}
 			throw new NotImplementedException ();
 		}
@@ -24,19 +30,19 @@ namespace TinyXdto
 			}
 
 			if (rawValue.DataType == DataType.Boolean) {
-				return new XdtoDataValueImpl (requestedType as XdtoValueTypeImpl, XmlConvert.ToString(rawValue.AsBoolean()), value);
+				return new XdtoDataValue (requestedType as XdtoValueType, XmlConvert.ToString(rawValue.AsBoolean()), value);
 			}
 
 			if (rawValue.DataType == DataType.Date) {
-				return new XdtoDataValueImpl (requestedType as XdtoValueTypeImpl, XmlConvert.ToString (rawValue.AsDate (), "yyyy-MM-ddTHH:mm:ss"), value);
+				return new XdtoDataValue (requestedType as XdtoValueType, XmlConvert.ToString (rawValue.AsDate (), "yyyy-MM-ddTHH:mm:ss"), value);
 			}
 
 			if (rawValue.DataType == DataType.Number) {
-				return new XdtoDataValueImpl (requestedType as XdtoValueTypeImpl, XmlConvert.ToString (rawValue.AsNumber ()), value);
+				return new XdtoDataValue (requestedType as XdtoValueType, XmlConvert.ToString (rawValue.AsNumber ()), value);
 			}
 
 			if (rawValue.DataType == DataType.String) {
-				return new XdtoDataValueImpl (requestedType as XdtoValueTypeImpl, rawValue.AsString (), value);
+				return new XdtoDataValue (requestedType as XdtoValueType, rawValue.AsString (), value);
 			}
 			// Non-primitive value
 			return null;
