@@ -31,7 +31,7 @@ namespace TinyXdto
 
 		public override IValue GetIndexedValue (IValue index)
 		{
-			return Get (index);
+			return ValueFactory.Create(Get(index));
 		}
 
 		[ContextMethod ("Добавить", "Add")]
@@ -72,6 +72,14 @@ namespace TinyXdto
 			}
 		}
 
+		public IEnumerator<IValue> GetIValueEnumerator()
+		{
+			foreach (var value in _data)
+			{
+				yield return ValueFactory.Create(value);
+			}
+		}
+		
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
@@ -79,7 +87,7 @@ namespace TinyXdto
 
 		public CollectionEnumerator GetManagedIterator()
 		{
-			return new CollectionEnumerator(GetEnumerator());
+			return new CollectionEnumerator(GetIValueEnumerator());
 		}
 	}
 }

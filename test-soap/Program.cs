@@ -73,7 +73,7 @@ namespace testsoap
 			int methodIndex = proxy.FindMethod ("DoOp");
 
 			var callParams = new List<IValue> ();
-			var OpParam = Variable.Create (ValueFactory.Create ());
+			var OpParam = Variable.Create (ValueFactory.Create (), "Op");
 			callParams.Add (OpParam);
 			callParams.Add (ValueFactory.Create (1));
 			callParams.Add (ValueFactory.Create (2));
@@ -212,7 +212,7 @@ namespace testsoap
 			var p = t.Properties.Get("Element");
 			var pv = f.Create(p.Type) as XdtoDataObject;
 			var var1Value = f.Create(f.Type(XmlNs.xs, "string"), ValueFactory.Create("value of var1"));
-			pv.Set("var1", var1Value);
+			pv.Set("var1", ValueFactory.Create(var1Value));
 			
 			v.Set("Element", pv);
 			

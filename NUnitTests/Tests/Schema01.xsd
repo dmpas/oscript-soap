@@ -1,0 +1,23 @@
+﻿<xs:schema targetNamespace="unnamedComplexType" xmlns:tns="unnamedComplexType"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           attributeFormDefault="unqualified" elementFormDefault="qualified">
+    <xs:complexType name="TheComplexType">
+        <xs:sequence>
+            <xs:element name="Element">
+                <xs:complexType>
+                    <xs:choice>
+                        <xs:element name="var1" type="xs:string"/>
+                        <xs:element name="var2" type="xs:decimal"/>
+                        <xs:element name="var3" minOccurs="0">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:maxLength value="500"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                    </xs:choice>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

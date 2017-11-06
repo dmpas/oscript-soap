@@ -53,6 +53,10 @@ namespace NUnitTests
 			var testRunner = AttachedScriptsFactory.ScriptFactory ("TestRunner", new IValue [] { });
 			TestRunner = ValueFactory.Create (testRunner);
 
+			var testRootDir = ValueFactory.Create(TestContext.CurrentContext.TestDirectory);
+			engine.InjectGlobalProperty("TestDataDirectory", testRootDir, readOnly: true);
+			engine.InjectGlobalProperty("КаталогТестовыхДанных", testRootDir, readOnly: true);
+
 			return engine;
 		}
 
@@ -64,7 +68,7 @@ namespace NUnitTests
 			engine.LoadUserScript (new ScriptEngine.UserAddedScript () {
 				Type = ScriptEngine.UserAddedScriptType.Class, Module = module, Symbol = resourceName
 			});
-
+			
 			var test = AttachedScriptsFactory.ScriptFactory (resourceName, new IValue [] { });
 			ArrayImpl testArray;
 			{

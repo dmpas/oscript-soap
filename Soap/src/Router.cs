@@ -18,9 +18,9 @@ namespace OneScript.Soap
 
 		const string xmlns_soap = @"http://schemas.xmlsoap.org/soap/envelope/";
 
-		private readonly List<IReflectableContext> handlers = new List<IReflectableContext>();
+		private readonly List<IRuntimeContextInstance> handlers = new List<IRuntimeContextInstance>();
 		private readonly Dictionary<string, Operation> operations = new Dictionary<string, Operation> ();
-		private readonly Dictionary<Operation, IReflectableContext> operationsMapper = new Dictionary<Operation, IReflectableContext> ();
+		private readonly Dictionary<Operation, IRuntimeContextInstance> operationsMapper = new Dictionary<Operation, IRuntimeContextInstance> ();
 
 		public Router (string name, string targetNamespace)
 		{
@@ -37,7 +37,7 @@ namespace OneScript.Soap
 		[ContextMethod("ДобавитьОбработчик", "AddHandler")]
 		public void AddHandler (IValue ihandler)
 		{
-			var handler = ihandler as IReflectableContext;
+			var handler = ihandler as IRuntimeContextInstance;
 			foreach (var methodInfo in handler.GetMethods ()) {
 
 				var operation = new Operation (methodInfo, NamespaceUri);
@@ -318,7 +318,7 @@ namespace OneScript.Soap
 		}
 
 		[ScriptConstructor]
-		public static IReflectableContext Constructor (IValue name, IValue namespaceUri)
+		public static IRuntimeContextInstance Constructor (IValue name, IValue namespaceUri)
 		{
 			return new Router (name.AsString(), namespaceUri.AsString ());
 		}

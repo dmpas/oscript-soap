@@ -9,7 +9,7 @@ using ScriptEngine.Machine;
 
 namespace TinyXdto
 {
-	public interface IXdtoValue : IValue
+	public interface IXdtoValue : IRuntimeContextInstance
 	{
 		XmlDataType XmlType ();
 	}

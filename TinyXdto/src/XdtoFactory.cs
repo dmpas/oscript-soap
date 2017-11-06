@@ -10,8 +10,11 @@ using ScriptEngine.Machine;
 using ScriptEngine.HostedScript.Library.Xml;
 using System.Xml.Schema;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
+using System.Xml.Serialization;
+using ScriptEngine.HostedScript.Library;
 
 namespace TinyXdto
 {
@@ -66,10 +69,18 @@ namespace TinyXdto
 			}
 		}
 
-		public XdtoFactory (IEnumerable<XmlSchema> schemas)
+		public XdtoFactory (IEnumerable<XmlSchema> schemas, IEnumerable<XdtoPackage> resolvePackages = null)
 		{
 			var packages = new List<XdtoPackage> ();
-			packages.Add (W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create ());
+			if (resolvePackages != null)
+			{
+				packages.AddRange(resolvePackages);
+			}
+			var w3org = W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create();
+			if (!packages.Contains(w3org))
+			{
+				packages.Add(w3org);
+			}
 			foreach (var schema in schemas) {
 				var package = new XdtoPackage (schema, this); // TODO: фабрика ещё не сформирована!
 				if (!packages.Contains (package)) {
@@ -178,10 +189,10 @@ namespace TinyXdto
 				xmlWriter.WriteStartElement (localName, namespaceUri);
 
 				if (typeAssignment == XmlTypeAssignmentEnum.Implicit) {
-					WriteTypeAttribute (xmlWriter, value);
+					WriteTypeAttribute (xmlWriter, ValueFactory.Create(value));
 				}
 
-				if (value == null || value.DataType == DataType.Undefined) {
+				if (value == null) {
 					
 					xmlWriter.WriteAttribute ("nil", XmlNs.xsi, "true");
 
@@ -204,11 +215,11 @@ namespace TinyXdto
 
 			} else if (xmlForm == XmlFormEnum.Attribute) {
 
-				xmlWriter.WriteAttribute (localName, namespaceUri, value.AsString ());
+				xmlWriter.WriteAttribute (localName, namespaceUri, value.ToString());
 
 			} else if (xmlForm == XmlFormEnum.Text) {
 
-				xmlWriter.WriteText (value.AsString ()); // TODO: XmlString ??
+				xmlWriter.WriteText (value.ToString ()); // TODO: XmlString ??
 
 			} else
 				throw new NotSupportedException ("Какой-то новый тип для XML");
@@ -330,6 +341,40 @@ namespace TinyXdto
 		static public IRuntimeContextInstance Constructor ()
 		{
 			return new XdtoFactory ();
+		}
+
+		[ScriptConstructor]
+		static public IRuntimeContextInstance Constructor(IValue source, IValue packages = null)
+		{
+			var rawSource = source.GetRawValue();
+			var rawPackages = packages?.GetRawValue();
+			var schemas = new List<XmlSchema>();
+			var resolvePackages = new List<XdtoPackage>();
+			
+			if (rawSource.DataType == DataType.String)
+			{
+				// source - путь к xsd-файлу
+				using (var fs = new FileStream(rawSource.AsString(), FileMode.Open))
+				using (var r = XmlReader.Create(fs))
+				{
+					var ss = new XmlSchemaSet();
+					ss.Add(null, r);
+					foreach (var schema in ss.Schemas())
+					{
+						schemas.Add(schema as XmlSchema);
+					}
+				}
+			}
+
+			if (rawPackages is IEnumerable<IValue>)
+			{
+				foreach (var pack in rawPackages as IEnumerable<IValue>)
+				{
+					resolvePackages.Add(pack as XdtoPackage);
+				}
+			}
+			
+			return new XdtoFactory(schemas, resolvePackages);
 		}
 	}
 }

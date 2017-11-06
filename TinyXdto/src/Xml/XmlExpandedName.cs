@@ -26,7 +26,7 @@ namespace TinyXdto
 		public string LocalName { get; }
 
 		[ScriptConstructor]
-		public static IReflectableContext Constructor (IValue namespaceUri, IValue localName)
+		public static IRuntimeContextInstance Constructor (IValue namespaceUri, IValue localName)
 		{
 			return new XmlExpandedName (namespaceUri.ToString (), localName.ToString ());
 		}

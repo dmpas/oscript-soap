@@ -218,8 +218,8 @@ namespace TinyXdto
 					attributeProperty = new XdtoProperty(result, XmlFormEnum.Attribute, NamespaceUri, propertyName, type);
 				}
 
-				IValue attributeValue = attributeProperty.Type.Reader.ReadXml(reader, attributeProperty.Type, factory);
-				result.Set(attributeProperty, attributeValue);
+				var attributeValue = attributeProperty.Type.Reader.ReadXml(reader, attributeProperty.Type, factory);
+				result.Set(attributeProperty, ValueFactory.Create(attributeValue));
 			}
 
 			while (reader.Read()) {
@@ -246,7 +246,7 @@ namespace TinyXdto
 
 					} else {
 						type = textProperty.Type;
-						textValue = type.Reader.ReadXml (reader, type, factory);
+						textValue = ValueFactory.Create(type.Reader.ReadXml(reader, type, factory));
 					}
 
 					if (Sequenced) {
@@ -276,13 +276,14 @@ namespace TinyXdto
 
 					var elementValue = factory.ReadXml (reader, property.Type);
 
-					if (Sequenced) {
+					if (Sequenced)
+					{
 
-						result.Sequence ().Add (property, elementValue);
+						result.Sequence().Add(property, ValueFactory.Create(elementValue));
 
 					} else {
 
-						result.Set (property, elementValue);
+						result.Set (property, ValueFactory.Create(elementValue));
 
 					}
 

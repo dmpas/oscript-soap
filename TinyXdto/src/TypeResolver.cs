@@ -85,6 +85,16 @@ namespace TinyXdto
 			throw new NotSupportedException ();
 		}
 
+		public int GetPropCount()
+		{
+			return 0;
+		}
+
+		public string GetPropName(int propNum)
+		{
+			throw new NotImplementedException();
+		}
+
 		public IEnumerable<MethodInfo> GetMethods ()
 		{
 			throw new NotSupportedException ();
@@ -93,6 +103,11 @@ namespace TinyXdto
 		public int FindMethod (string name)
 		{
 			throw new NotSupportedException ();
+		}
+
+		public int GetMethodsCount()
+		{
+			return 0;
 		}
 
 		public MethodInfo GetMethodInfo (int methodNumber)
@@ -110,17 +125,9 @@ namespace TinyXdto
 			throw new NotSupportedException ();
 		}
 
-		public bool IsIndexed {
-			get {
-				throw new NotSupportedException ();
-			}
-		}
+		public bool IsIndexed => false;
 
-		public bool DynamicMethodSignatures {
-			get {
-				throw new NotSupportedException ();
-			}
-		}
+		public bool DynamicMethodSignatures { get; } = false;
 
 		#endregion
 	}

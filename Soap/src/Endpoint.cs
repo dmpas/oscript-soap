@@ -9,7 +9,6 @@ using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Web.Services.Description;
 using ScriptEngine.HostedScript.Library.Http;
-using System.Linq;
 
 namespace OneScript.Soap
 {

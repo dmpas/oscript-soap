@@ -96,11 +96,6 @@ namespace OneScript.Soap
 			return _methods.FindIndex ((obj) => obj.Name.Equals (name, StringComparison.InvariantCultureIgnoreCase));
 		}
 
-		public override IEnumerable<MethodInfo> GetMethods ()
-		{
-			return _methods;
-		}
-
 		public override MethodInfo GetMethodInfo (int methodNumber)
 		{
 			return _methods [methodNumber];
