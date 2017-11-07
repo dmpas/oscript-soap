@@ -5,13 +5,14 @@ was not distributed with this file, You can obtain one
 at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------*/
 using System;
+using ScriptEngine;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 
 namespace TinyXdto
 {
 	[ContextClass("СвойствоXDTO", "XDTOProperty")]
-	public class XdtoProperty : AutoContext<XdtoProperty>
+	public class XdtoProperty : AutoContext<XdtoProperty>, INamed
 	{
 		private IXdtoType _type;
 		private IXdtoType _ownerType;
@@ -27,36 +28,29 @@ namespace TinyXdto
 		{
 			NamespaceURI = namespaceUri;
 			LocalName = localName;
+			Name = localName;
 			Form = form;
-			UpperBound = -1;
-			_type = type;
-		}
-		
-		internal XdtoProperty (XdtoDataObject owner,
-								   XmlFormEnum form,
-								   string namespaceUri,
-								   string localName,
-								   IXdtoType type = null)
-		{
-			NamespaceURI = namespaceUri;
-			LocalName = localName;
-			Form = form;
-			OwnerObject = owner;
-			UpperBound = -1;
+			LowerBound = 1;
+			UpperBound = 1;
 			_type = type;
 		}
 
-		internal XdtoProperty (IXdtoType owner,
+		internal XdtoProperty (IXdtoType ownerType, XdtoDataObject ownerObject,
 			XmlFormEnum form,
 			string namespaceUri,
 			string localName,
+			int lowerBound = 1,
+			int upperBound = 1,
 			IXdtoType type = null)
 		{
 			NamespaceURI = namespaceUri;
 			LocalName = localName;
+			Name = localName;
 			Form = form;
-			_ownerType = owner;
-			UpperBound = -1;
+			_ownerType = ownerType;
+			OwnerObject = ownerObject;
+			LowerBound = lowerBound;
+			UpperBound = upperBound;
 			_type = type;
 		}
 		
@@ -128,6 +122,11 @@ namespace TinyXdto
 		public override int GetHashCode ()
 		{
 			return (NamespaceURI?.GetHashCode () ?? 0) + (LocalName?.GetHashCode () ?? 0);
+		}
+
+		public string GetComparableName()
+		{
+			return Name;
 		}
 	}
 }

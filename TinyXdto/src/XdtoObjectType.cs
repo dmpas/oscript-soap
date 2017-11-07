@@ -105,10 +105,11 @@ namespace TinyXdto
 						}
 					}
 
-					properties.Add(new XdtoProperty(this,
+					properties.Add(new XdtoProperty(this, null,
 						XmlFormEnum.Element,
 						element.QualifiedName.Namespace,
 						element.QualifiedName.Name,
+						0, 1,
 						propertyType));
 
 				}
@@ -215,7 +216,9 @@ namespace TinyXdto
 						throw new XdtoException($"Ошиба разбора XDTO: Получили неизвестный атрибут {propertyName}");
 					}
 					var type = factory.Type(new XmlDataType("string"));
-					attributeProperty = new XdtoProperty(result, XmlFormEnum.Attribute, NamespaceUri, propertyName, type);
+					attributeProperty = new XdtoProperty(null, result, XmlFormEnum.Attribute,
+						NamespaceUri, propertyName,
+						0, -1, type);
 				}
 
 				var attributeValue = attributeProperty.Type.Reader.ReadXml(reader, attributeProperty.Type, factory);
@@ -240,7 +243,7 @@ namespace TinyXdto
 						if (!Open)
 							throw new XdtoException ($"Ошибка разбора XDTO: Текст {reader.Value} в неположенном месте при разборе типа {this}!");
 
-						textProperty = new XdtoProperty (result, XmlFormEnum.Text, NamespaceUri, "#text");
+						textProperty = new XdtoProperty (null, result, XmlFormEnum.Text, NamespaceUri, "#text");
 						type = factory.Type(new XmlDataType ("string"));
 						textValue = ValueFactory.Create (reader.Value);
 
@@ -271,7 +274,7 @@ namespace TinyXdto
 						if (!Open)
 							throw new XdtoException ($"Ошибка разбора XDTO: Получили неизвестный элемент {localName}");
 
-						property = new XdtoProperty (result, XmlFormEnum.Element, ns, localName);
+						property = new XdtoProperty (null, result, XmlFormEnum.Element, ns, localName);
 					}
 
 					var elementValue = factory.ReadXml (reader, property.Type);

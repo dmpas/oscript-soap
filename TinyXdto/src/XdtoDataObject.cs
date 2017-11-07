@@ -26,6 +26,23 @@ namespace TinyXdto
 			_owner = owner;
 			_owningProperty = property;
 			_sequence = new XdtoSequence (this, true);
+			FillPropertiesFromType();
+		}
+
+		private void FillPropertiesFromType()
+		{
+			if (_type == null)
+			{
+				return;
+			}
+
+			foreach (var typeProperty in _type.Properties)
+			{
+				if (typeProperty.UpperBound == 1)
+				{
+					Set(typeProperty, null);
+				}
+			}
 		}
 
 		[ContextMethod ("Владелец", "Owner")]
@@ -45,7 +62,7 @@ namespace TinyXdto
 		public void Add (XmlFormEnum form, string namespaceUri, string localName, IXdtoValue dataElement)
 		{
 			if (_type?.Open ?? true) {
-				var customProperty = new XdtoProperty (this, form, namespaceUri, localName);
+				var customProperty = new XdtoProperty (null, this, form, namespaceUri, localName);
 				Add (customProperty, dataElement);
 			}
 
@@ -142,6 +159,7 @@ namespace TinyXdto
 		public void Unset (XdtoProperty property)
 		{
 			_data.Remove (property);
+			RemoveProperty(property.LocalName);
 		}
 
 		[ContextMethod ("Сбросить", "Unset")]
@@ -168,12 +186,13 @@ namespace TinyXdto
 		public void Set (string xpath, IValue value)
 		{
 			var customProperty = _type.Properties.Get (xpath);
-			_data [customProperty] = value;
+			Set(customProperty, value);
 		}
 
 		[ContextMethod ("Установить", "Set")]
 		public void Set (XdtoProperty property, IValue value)
 		{
+			RegisterProperty(property.LocalName);
 			_data [property] = value;
 		}
 
@@ -195,14 +214,14 @@ namespace TinyXdto
 
 		public override IValue GetPropValue (int propNum)
 		{
-			// return _values [propNum];
-			throw new NotImplementedException ("ОбъектXDTO.GetPropValue");
+			var propertyName = GetPropertyName(propNum);
+			return Get(propertyName);
 		}
 
 		public override void SetPropValue (int propNum, IValue newVal)
 		{
-			// _values [propNum] = newVal;
-			throw new NotImplementedException ("ОбъектXDTO.SetPropValue");
+			var propertyName = GetPropertyName(propNum);
+			Set(propertyName, newVal);
 		}
 
 		public override MethodInfo GetMethodInfo (int methodNumber)

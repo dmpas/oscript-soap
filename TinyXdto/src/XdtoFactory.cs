@@ -165,11 +165,14 @@ namespace TinyXdto
 				var typeAssignment = XmlTypeAssignmentEnum.Explicit;
 
 				var value = obj.Get (property) as IXdtoValue;
-				WriteXml (xmlWriter, value,
-				          property.LocalName,
-				          property.NamespaceURI,
-				          typeAssignment,
-				          property.Form);
+				if (value != null || property.Nillable)
+				{
+					WriteXml(xmlWriter, value,
+						property.LocalName,
+						property.NamespaceURI,
+						typeAssignment,
+						property.Form);
+				}
 			}
 		}
 

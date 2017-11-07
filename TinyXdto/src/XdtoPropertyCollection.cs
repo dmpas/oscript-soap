@@ -17,11 +17,6 @@ namespace TinyXdto
 		internal XdtoPropertyCollection (IEnumerable<XdtoProperty> data) : base(data)
 		{
 		}
-
-		public XdtoProperty Get (string name)
-		{
-			return this.FirstOrDefault((p) => p.LocalName.Equals(name, StringComparison.Ordinal));
-		}
 	}
 }
 

@@ -234,11 +234,25 @@ namespace testsoap
 			Console.WriteLine($"got {checkValue}");
 		}
 
+		public void TestSomeInternals()
+		{
+			var ss = LoadSchema(@"TestData/Schema01.xsd");
+			var f = new XdtoFactory(ss);
+			var t = f.Type(uri: "unnamedComplexType", name: "TheComplexType") as XdtoObjectType;
+			var v = f.Create(t) as XdtoDataObject;
+			var fGet = t.Properties.FindMethod("Получить");
+			IValue p;
+			t.Properties.CallAsFunction(fGet, new[] {ValueFactory.Create("Element")}, out p);
+			Console.WriteLine(p);
+		}
+
 		public void Run()
 		{
 			Check_AllClassesAreIValues();
 
 			StartEngine ();
+			
+			TestSomeInternals();
 
 			TestUnnamedComplexType();
 			
