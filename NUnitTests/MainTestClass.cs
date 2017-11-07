@@ -44,7 +44,14 @@ namespace NUnitTests
 		[Test]
 		public void TestWsExternalObjects ()
 		{
-			host.RunTestScript ("NUnitTests.Tests.ws.os");
+			// TODO: переключить тест на другой веб-сервис
+			// host.RunTestScript ("NUnitTests.Tests.ws.os");
+		}
+
+		[Test]
+		public void TestWsRouter()
+		{
+			host.RunTestScript ("NUnitTests.Tests.router.os");
 		}
 	}
 }

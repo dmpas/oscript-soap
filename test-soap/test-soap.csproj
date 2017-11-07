@@ -62,6 +62,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Scripts\router.os" />
     <Content Include="TestData\Schema01.xsd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

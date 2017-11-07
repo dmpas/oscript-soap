@@ -37,16 +37,28 @@ namespace OneScript.Soap
 					continue;
 				}
 
-				ResponseType = type as XdtoObjectType;
+				var ResponseType = type as XdtoObjectType;
 
-				foreach (var property in ResponseType.Properties) {
-					
-					if (property.LocalName == "return") {
-						Type = property.Type;
-					} else {
-						OutputParamNames.Add (property.LocalName);
+				if (ResponseType == null && Type == null)
+				{
+					Type = type;
+					continue;
+				}
+				else
+				{
+					foreach (var property in ResponseType.Properties)
+					{
+
+						if (property.LocalName == "return")
+						{
+							Type = property.Type;
+						}
+						else
+						{
+							OutputParamNames.Add(property.LocalName);
+						}
+
 					}
-
 				}
 
 				// Поддерживаем сообщения только из одной части
@@ -74,8 +86,6 @@ namespace OneScript.Soap
 
 		[ContextProperty("Тип", "Type")]
 		public IXdtoType Type { get; }
-
-		public XdtoObjectType ResponseType { get; }
 
 		public string MessagePartName { get; }
 
