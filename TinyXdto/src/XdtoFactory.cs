@@ -312,8 +312,7 @@ namespace TinyXdto
 					                          ? nameElements [1]
 					                          : nameElements [0];
 
-					// TODO: namespace context :'(
-					var nsMapping = reader.AttributeValue (ValueFactory.Create(string.Format("xmlns:{0}", typeUri)));
+					var nsMapping = reader.NamespaceContext.LookupNamespaceUri(typeUri);
 					if (nsMapping != null && nsMapping.DataType == DataType.String) {
 						typeUri = nsMapping.AsString ();
 					}

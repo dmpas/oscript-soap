@@ -8,7 +8,9 @@ using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Collections.Generic;
+using System.Web.Services.Protocols;
 using ScriptEngine.HostedScript.Library.Xml;
+using TinyXdto;
 
 namespace OneScript.Soap
 {
@@ -275,15 +277,53 @@ namespace OneScript.Soap
 		public void Handle (XmlReaderImpl requestReader,
 		                    XmlWriterImpl responseWriter)
 		{
-			// TODO: Отдать фабрике
-			responseWriter.WriteStartElement ("Envelope", xmlns_soap);
-			responseWriter.WriteNamespaceMapping ("soap", xmlns_soap);
-			responseWriter.WriteStartElement ("Body", xmlns_soap);
 
-			WriteFault (responseWriter, "Not implemented!");
+			var F = new XdtoFactory();
+			var S = XdtoSerializerImpl.Constructor(ValueFactory.Create(F)) as XdtoSerializerImpl;
+			var inputMessage = F.ReadXml(requestReader) as XdtoDataObject;
+			var body = inputMessage.Get("Body") as XdtoDataObject;
 
-			responseWriter.WriteEndElement (); // Body
-			responseWriter.WriteEndElement (); // Envelope
+			var requestProperty = body.Properties().Get(0);
+			var methodName = requestProperty.LocalName;
+			if (!operations.ContainsKey(methodName))
+			{
+				// TODO: SoapException
+				throw new RuntimeException($"method not found {methodName}");
+			}
+
+			var op = operations[methodName];
+			
+			// TODO: отдать разбор в операцию
+			var args = new List<IValue>();
+			var callParams = body.Get(body.Properties().Get(0)) as XdtoDataObject;
+			foreach (var pv in callParams.Properties())
+			{
+				var paramName = pv.LocalName;
+				var p = op.Parameters.Get(paramName);
+				var xdtoValue = callParams.Get(pv);
+				var ivalue = S.ReadXdto(xdtoValue as IXdtoValue);
+
+				if (p.ParameterDirection != ParameterDirectionEnum.In)
+				{
+					ivalue = Variable.Create(ivalue, paramName);
+				}
+				args.Add(ivalue);
+			}
+			
+			var handler = operationsMapper[op];
+			var methodIdx = handler.FindMethod(methodName);
+			var mi = handler.GetMethodInfo(methodIdx);
+			IValue result = null;
+			if (mi.IsFunction)
+			{
+				handler.CallAsFunction(methodIdx, args.ToArray(), out result);
+			}
+			else
+			{
+				handler.CallAsProcedure(methodIdx, args.ToArray());
+			}
+			
+			op.WriteResponseBody(responseWriter, S, result, args.ToArray());
 		}
 
 		public string Handle (string requestBody)
@@ -294,8 +334,22 @@ namespace OneScript.Soap
 			var writer = new XmlWriterImpl ();
 			writer.SetString ();
 
-			Handle (reader, writer);
+			writer.WriteStartElement ("Envelope", xmlns_soap);
+			writer.WriteNamespaceMapping ("soap", xmlns_soap);
+			writer.WriteStartElement ("Body", xmlns_soap);
+			
+			try
+			{
+				Handle(reader, writer);
+			}
+			catch (Exception exc)
+			{
+				WriteFault (writer, exc.Message);
+			}
 
+			writer.WriteEndElement (); // Body
+			writer.WriteEndElement (); // Envelope
+			
 			var responseText = writer.Close ().AsString ();
 			return responseText;
 		}

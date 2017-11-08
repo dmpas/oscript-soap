@@ -46,12 +46,12 @@ namespace OneScript.Soap
 			NamespaceUri = namespaceUri;
 			ReturnValue = new ReturnValue (
 				null,
-				string.Format("tns:{0}ResponseMessage", Name),
+				$"{Name}ResponseMessage",
 				nillable: true);
 
 			var messagePart = new MessagePartProxy ();
 			messagePart.Name = "parameters";
-			messagePart.ElementName = String.Format ("tns:{0}", methodInfo.Name);
+			messagePart.ElementName = methodInfo.Name;
 			messagePart.NamespaceUri = namespaceUri;
 			messagePart.Parameters = new List<Parameter> ();
 
@@ -174,8 +174,18 @@ namespace OneScript.Soap
 			if (reader.LocalName.Equals("Fault")
 			    && reader.NodeType.Equals(xmlElementStart))
 			{
-				// TODO: прочитать текст исключения
-				return new SoapExceptionResponse ("Execution failed!");
+				reader.Read();
+				while (!(reader.LocalName.Equals("faultString")
+				                          && reader.NodeType.Equals(xmlElementStart)))
+				{
+					if (!reader.Read())
+					{
+						return new SoapExceptionResponse ("Wrong response!");
+					}
+				}
+				reader.Read();
+				var faultString = reader.Value;
+				return new SoapExceptionResponse (faultString);
 			}
 
 			var xdtoResult = serializer.XdtoFactory.ReadXml (reader, ReturnValue.Type) as XdtoDataObject;

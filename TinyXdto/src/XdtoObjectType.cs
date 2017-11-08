@@ -279,16 +279,17 @@ namespace TinyXdto
 
 					var elementValue = factory.ReadXml (reader, property.Type);
 
-					if (Sequenced)
-					{
-
-						result.Sequence().Add(property, ValueFactory.Create(elementValue));
-
-					} else {
-
+					// TODO: Разбор anyType
+//					if (Sequenced)
+//					{
+//
+//						result.Sequence().Add(property, ValueFactory.Create(elementValue));
+//
+//					} else {
+//
 						result.Set (property, ValueFactory.Create(elementValue));
-
-					}
+//
+//					}
 
 				}
 			}
