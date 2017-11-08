@@ -18,22 +18,5 @@ namespace TinyXdto
 		internal XdtoPackageCollection (IEnumerable<XdtoPackage> data) : base(data)
 		{
 		}
-
-		public XdtoPackage Get (string namespaceUri)
-		{
-			return this.FirstOrDefault((p) => p.NamespaceUri.Equals(namespaceUri, StringComparison.Ordinal));
-		}
-
-		[ContextMethod("Получить", "Get")]
-		public new XdtoPackage Get (IValue index)
-		{
-			if (index.DataType == DataType.Number)
-				return this.Get ((int)index.AsNumber ());
-
-			if (index.DataType == DataType.String)
-				return Get (index.AsString ());
-			
-			throw RuntimeException.InvalidArgumentType (nameof (index));
-		}
 	}
 }

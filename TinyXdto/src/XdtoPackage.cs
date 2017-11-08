@@ -16,7 +16,7 @@ using System.Linq;
 namespace TinyXdto
 {
 	[ContextClass ("ПакетXDTO", "XDTOPackage")]
-	public class XdtoPackage : AutoContext<XdtoPackage>, ICollectionContext, IEnumerable<IXdtoType>
+	public class XdtoPackage : AutoContext<XdtoPackage>, ICollectionContext, IEnumerable<IXdtoType>, INamed
 	{
 		// private readonly XmlSchema _schema;
 		private readonly List<IXdtoType> _types = new List<IXdtoType> ();
@@ -151,6 +151,11 @@ namespace TinyXdto
 		public override int GetHashCode ()
 		{
 			return NamespaceUri.GetHashCode ();
+		}
+
+		public string GetComparableName()
+		{
+			return NamespaceUri;
 		}
 
 		public override string ToString ()
