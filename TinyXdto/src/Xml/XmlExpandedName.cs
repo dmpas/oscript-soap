@@ -10,7 +10,7 @@ using ScriptEngine.Machine;
 
 namespace TinyXdto
 {
-	[ContextClass("РасширенноеИмяXML", "XMLExpandedName")]
+	[ContextClass("TinyРасширенноеИмяXML", "TinyXMLExpandedName")]
 	public class XmlExpandedName : AutoContext<XmlExpandedName>
 	{
 		internal XmlExpandedName (string namespaceUri, string localName)

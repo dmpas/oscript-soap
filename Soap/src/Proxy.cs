@@ -117,7 +117,7 @@ namespace OneScript.Soap
 			headers.Insert (ValueFactory.Create ("Content-Type"), ValueFactory.Create ("application/xml"));
 
 			var xmlBody = XmlWriterImpl.Create ();
-			xmlBody.SetString ("UTF-8");
+			xmlBody.SetString (ValueFactory.Create("UTF-8"));
 
 			xmlBody.WriteStartElement ("soap:Envelope");
 			xmlBody.WriteNamespaceMapping ("xsi", "http://www.w3.org/2001/XMLSchema-instance");

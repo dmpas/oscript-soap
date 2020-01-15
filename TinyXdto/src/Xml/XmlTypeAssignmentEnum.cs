@@ -8,7 +8,7 @@ using ScriptEngine;
 
 namespace TinyXdto
 {
-	[EnumerationType("НазначениеТипаXML", "XMLTypeAssignment")]
+	[EnumerationType("TinyНазначениеТипаXML", "TinyXMLTypeAssignment")]
 	public enum XmlTypeAssignmentEnum
 	{
 
