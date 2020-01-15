@@ -18,7 +18,7 @@ using ScriptEngine.HostedScript.Library;
 
 namespace TinyXdto
 {
-	[ContextClass("ФабрикаXDTO", "XDTOFactory")]
+	[ContextClass("TinyФабрикаXDTO", "TinyXDTOFactory")]
 	public class XdtoFactory : AutoContext<XdtoFactory>
 	{
 

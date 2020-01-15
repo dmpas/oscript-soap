@@ -13,7 +13,7 @@ using System.Xml;
 
 namespace TinyXdto
 {
-	[ContextClass ("СериализаторXDTO", "XDTOSerializer")]
+	[ContextClass ("TinyСериализаторXDTO", "TinyXDTOSerializer")]
 	public class XdtoSerializerImpl : AutoContext<XdtoSerializerImpl>
 	{
 
