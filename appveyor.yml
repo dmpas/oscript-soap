@@ -10,7 +10,7 @@ build:
   verbosity: minimal
 install:
 - cmd: >-
-    choco install onescript.cli -source https://www.myget.org/F/onescript -y
+    choco install onescript -y
 
     refreshenv
 
