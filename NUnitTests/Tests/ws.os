@@ -24,7 +24,7 @@
 
 Процедура ТестДолжен_ПроверитьЧтоСоздается() Экспорт
 
-	Определения = Новый WSОпределения("http://vm21297.hv8.ru:10080/httpservice/ws/echo.1cws?wsdl", "default");
+	Определения = Новый WSОпределения("http://sv-ws-83-tmp:8084/httpservice/ws/echo.1cws?wsdl", "default");
 	Прокси = Новый WSПрокси(Определения, "http://dmpas/echo", "EchoService", "EchoServiceSoap");
 	Прокси.Пользователь = "default";
 
