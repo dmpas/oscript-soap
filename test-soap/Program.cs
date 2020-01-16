@@ -12,6 +12,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using OneScript.Soap;
+using ScriptEngine;
 using ScriptEngine.HostedScript.Library;
 using ScriptEngine.Machine;
 using ScriptEngine.HostedScript.Library.Xml;
@@ -21,7 +22,8 @@ namespace testsoap
 {
 	class MainClass : ScriptEngine.HostedScript.IHostApplication
 	{
-		private ScriptEngine.HostedScript.HostedScriptEngine engine = null;
+		// private ScriptEngine.HostedScript.HostedScriptEngine engine = null;
+		private ScriptingEngine engine = null;
 		private readonly string[] _args;
 
 		MainClass(string[] args)
@@ -92,7 +94,7 @@ namespace testsoap
 
 		public void TestEchoService()
 		{
-			var def = new Definitions("http://vm21297.hv8.ru:10080/httpservice/ws/echo.1cws?wsdl", "default", "");
+			var def = new Definitions("http://sv-ws-83-tmp:8084/httpservice/ws/echo.1cws?wsdl", "default", "");
 			var proxy = Proxy.Constructor(def, "http://dmpas/echo", "EchoService", "EchoServiceSoap") as Proxy;
 			proxy.User = "default";
 
@@ -111,6 +113,11 @@ namespace testsoap
 			{
 				int methodIndex = proxy.FindMethod("Echo" + callData.Key);
 
+				if (methodIndex == -1)
+				{
+					continue;
+				}
+
 				IValue result;
 				proxy.CallAsFunction(methodIndex, new IValue[] {callData.Value}, out result);
 
@@ -121,10 +128,13 @@ namespace testsoap
 
 		private void StartEngine()
 		{
-			engine = new ScriptEngine.HostedScript.HostedScriptEngine();
+			var Environment =new RuntimeEnvironment(); 
+			engine = new ScriptingEngine();
+			engine.Environment = Environment;
+			engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(XmlReaderImpl)), Environment);
+			engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(XdtoObjectType)), Environment);
+			engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(Definitions)), Environment);
 			engine.Initialize();
-			engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(XdtoObjectType)));
-			engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(Definitions)));
 		}
 
 		public void TestXdto()
@@ -252,24 +262,6 @@ namespace testsoap
 				}
 			}
 		}
-		
-		public void TestSomeInternals()
-		{
-			var ss = LoadSchema(@"TestData/Schema01.xsd");
-			var f = new XdtoFactory(ss);
-			var t = f.Type(uri: "unnamedComplexType", name: "TheComplexType") as XdtoObjectType;
-			var v = f.Create(t) as XdtoDataObject;
-			var fGet = t.Properties.FindMethod("Получить");
-			IValue p;
-			t.Properties.CallAsFunction(fGet, new[] {ValueFactory.Create("Element")}, out p);
-			Console.WriteLine(p);
-
-			var source = LoadFromAssemblyResource(@"testsoap.Scripts.router.os");
-			
-			var process = engine.CreateProcess(this, source);
-
-			process.Start();
-		}
 
 		public void Run()
 		{
@@ -277,16 +269,14 @@ namespace testsoap
 
 			StartEngine();
 
-			TestSomeInternals();
+			// TestUnnamedComplexType();
 
-			TestUnnamedComplexType();
-
-			TestModel();
-			TestAllModels();
+			// TestModel();
+			// TestAllModels();
 
 			TestXdto();
 
-			// TestEchoService ();
+			TestEchoService ();
 			// TestWsdl ();
 		}
 
