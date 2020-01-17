@@ -10,7 +10,7 @@ using ScriptEngine.Machine.Contexts;
 
 namespace TinyXdto
 {
-	[ContextClass("ТипДанныхXML", "XMLDataType")]
+	[ContextClass("TinyТипДанныхXML", "TinyXMLDataType")]
 	public class XmlDataType : AutoContext<XmlDataType>
 	{
 		public XmlDataType (string typeName, string namespaceUri = XmlNs.xs)

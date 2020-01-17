@@ -37,7 +37,7 @@ namespace OneScript.Soap
 					continue;
 				}
 
-				var ResponseType = type as XdtoObjectType;
+				ResponseType = type as XdtoObjectType;
 
 				if (ResponseType == null && Type == null)
 				{
@@ -90,6 +90,8 @@ namespace OneScript.Soap
 		public string MessagePartName { get; }
 
 		public IList<string> OutputParamNames { get; }
+
+		public XdtoObjectType ResponseType { get; }
 	}
 }
 

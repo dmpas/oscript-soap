@@ -11,6 +11,7 @@ using System.Xml.Schema;
 using System.Collections.Generic;
 using ScriptEngine.HostedScript.Library.Xml;
 using System.Linq;
+using System.Xml;
 
 namespace TinyXdto
 {
@@ -29,6 +30,16 @@ namespace TinyXdto
 			Properties = new XdtoPropertyCollection (new List<XdtoProperty> ());
 		}
 
+		// TODO: переименовать
+		private XmlQualifiedName Normalize(XmlQualifiedName name, string defaultUri)
+		{
+			if (string.IsNullOrEmpty(name.Namespace))
+			{
+				return new XmlQualifiedName(name.Name, defaultUri);
+			}
+			return name;
+		}
+
 		public XdtoObjectType (XmlSchemaComplexType xmlType, XdtoFactory factory)
 		{
 			Name = xmlType.QualifiedName.Name;
@@ -39,10 +50,27 @@ namespace TinyXdto
 
 			var properties = new List<XdtoProperty> ();
 
-			if (xmlType.Particle is XmlSchemaSequence)
+			var particle = xmlType.Particle;
+
+			if (xmlType.ContentModel is XmlSchemaComplexContent)
+			{
+				var complexContent = xmlType.ContentModel as XmlSchemaComplexContent;
+				if (complexContent.Content is XmlSchemaComplexContentExtension)
+				{
+					var extension = complexContent.Content as XmlSchemaComplexContentExtension;
+					BaseType = factory.Type(Normalize(extension.BaseTypeName, NamespaceUri)) as XdtoObjectType;
+					particle = extension.Particle;
+				}
+				else
+				{
+					throw new NotImplementedException("Недоработочка в XDTO-объекте");
+				}
+			}
+
+			if (particle is XmlSchemaSequence)
 			{
 
-				var sequence = xmlType.Particle as XmlSchemaSequence;
+				var sequence = particle as XmlSchemaSequence;
 
 				foreach (var item in sequence.Items)
 				{
@@ -76,9 +104,9 @@ namespace TinyXdto
 						propertyType));
 
 				}
-			} else if (xmlType.Particle is XmlSchemaChoice)
+			} else if (particle is XmlSchemaChoice)
 			{
-				var choice = xmlType.Particle as XmlSchemaChoice;
+				var choice = particle as XmlSchemaChoice;
 				foreach (var item in choice.Items)
 				{
 					var element = item as XmlSchemaElement;

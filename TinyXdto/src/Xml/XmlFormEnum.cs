@@ -9,7 +9,7 @@ using System.Xml.Schema;
 
 namespace TinyXdto
 {
-	[EnumerationType("ФормаXML", "XMLForm")]
+	[EnumerationType("TinyФормаXML", "TinyXMLForm")]
 	public enum XmlFormEnum
 	{
 		[EnumItem ("Атрибут", "Attribute")]

@@ -188,7 +188,7 @@ namespace OneScript.Soap
 				return new SoapExceptionResponse (faultString);
 			}
 
-			var xdtoResult = serializer.XdtoFactory.ReadXml (reader, ReturnValue.Type) as XdtoDataObject;
+			var xdtoResult = serializer.XdtoFactory.ReadXml (reader, ReturnValue.ResponseType ?? ReturnValue.Type) as XdtoDataObject;
 			retValue = xdtoResult.Get ("return");
 
 			if (retValue is IXdtoValue) {
