@@ -18,29 +18,35 @@ namespace TinyXdto
 	[ContextClass ("ПакетXDTO", "XDTOPackage")]
 	public class XdtoPackage : AutoContext<XdtoPackage>, ICollectionContext, IEnumerable<IXdtoType>, INamed
 	{
-		// private readonly XmlSchema _schema;
+		private readonly XmlSchema _schema;
+		private readonly XdtoFactory _factory;
 		private readonly List<IXdtoType> _types = new List<IXdtoType> ();
 
 		internal XdtoPackage (XmlSchema schema, XdtoFactory factory)
 		{
-			// _schema = schema;
+			_schema = schema;
+			_factory = factory;
 
 			NamespaceUri = schema.TargetNamespace;
 			Dependencies = new XdtoPackageCollection (new XdtoPackage [] { });
 
-			foreach (var oType in schema.SchemaTypes) {
+		}
+
+		internal void BuildPackage()
+		{
+			foreach (var oType in _schema.SchemaTypes) {
 				var dElement = (DictionaryEntry)oType;
 				var type = dElement.Value;
 				if (type is XmlSchemaSimpleType) {
-					_types.Add (new XdtoValueType (type as XmlSchemaSimpleType, factory));
+					_types.Add (new XdtoValueType (type as XmlSchemaSimpleType, _factory));
 				} else
-					if (type is XmlSchemaComplexType) {
-					_types.Add (new XdtoObjectType (type as XmlSchemaComplexType, factory));
+				if (type is XmlSchemaComplexType) {
+					_types.Add (new XdtoObjectType (type as XmlSchemaComplexType, _factory));
 				}
 			}
 
 			var rootProperties = new List<XdtoProperty> ();
-			foreach (var oElement in schema.Elements) {
+			foreach (var oElement in _schema.Elements) {
 
 				var elPair = (DictionaryEntry)oElement;
 				var element = elPair.Value as XmlSchemaElement;
@@ -49,11 +55,11 @@ namespace TinyXdto
 				IXdtoType elementType;
 				if (element.SchemaType is XmlSchemaSimpleType) {
 
-					elementType = new XdtoValueType (element.SchemaType as XmlSchemaSimpleType, factory);
+					elementType = new XdtoValueType (element.SchemaType as XmlSchemaSimpleType, _factory);
 
 				} else if (element.SchemaType is XmlSchemaComplexType) {
 
-					elementType = new XdtoObjectType (element, factory);
+					elementType = new XdtoObjectType (element, _factory);
 
 				} else {
 					// TODO: Присвоить anyType
@@ -63,13 +69,14 @@ namespace TinyXdto
 				_types.Add (elementType);
 
 				var property = new XdtoProperty (XmlFormEnum.Element,
-				                                     element.QualifiedName.Namespace,
-				                                     element.QualifiedName.Name,
-				                                     elementType);
+					element.QualifiedName.Namespace,
+					element.QualifiedName.Name,
+					elementType);
 				rootProperties.Add (property);
 			}
 
 			RootProperties = new XdtoPropertyCollection (rootProperties);
+
 		}
 
 		internal XdtoPackage (string namespaceUri, IEnumerable<IXdtoType> types)
@@ -87,7 +94,7 @@ namespace TinyXdto
 		public XdtoPackageCollection Dependencies { get; }
 
 		[ContextProperty ("КорневыеСвойства", "RootProperties")]
-		public XdtoPropertyCollection RootProperties { get; }
+		public XdtoPropertyCollection RootProperties { get; private set; }
 
 		[ContextMethod("Количество")]
 		public int Count ()

@@ -269,7 +269,7 @@ namespace testsoap
 
 			StartEngine();
 
-			// TestUnnamedComplexType();
+			TestUnnamedComplexType();
 
 			// TestModel();
 			// TestAllModels();

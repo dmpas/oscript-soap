@@ -21,7 +21,8 @@ namespace TinyXdto
 	[ContextClass("TinyФабрикаXDTO", "TinyXDTOFactory")]
 	public class XdtoFactory : AutoContext<XdtoFactory>
 	{
-
+		private new List<XdtoPackage> _packages = new List<XdtoPackage>();
+			
 		public XdtoFactory ()
 			: this (new XdtoPackage [] { } )
 		{
@@ -29,7 +30,6 @@ namespace TinyXdto
 
 		public XdtoFactory (IEnumerable<XdtoPackage> packages)
 		{
-			var _packages = new List<XdtoPackage> ();
 			_packages.Add (W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create ());
 			foreach (var package in packages) {
 				if (!_packages.Contains (package)) {
@@ -71,23 +71,23 @@ namespace TinyXdto
 
 		public XdtoFactory (IEnumerable<XmlSchema> schemas, IEnumerable<XdtoPackage> resolvePackages = null)
 		{
-			var packages = new List<XdtoPackage> ();
 			if (resolvePackages != null)
 			{
-				packages.AddRange(resolvePackages);
+				_packages.AddRange(resolvePackages);
 			}
 			var w3org = W3Org.XmlSchema.W3OrgXmlSchemaPackage.Create();
-			if (!packages.Contains(w3org))
+			if (!_packages.Contains(w3org))
 			{
-				packages.Add(w3org);
+				_packages.Add(w3org);
 			}
 			foreach (var schema in schemas) {
 				var package = new XdtoPackage (schema, this); // TODO: фабрика ещё не сформирована!
-				if (!packages.Contains (package)) {
-					packages.Add (package);
+				if (!_packages.Contains (package)) {
+					_packages.Add (package);
 				}
+				package.BuildPackage();
 			}
-			Packages = new XdtoPackageCollection (packages);
+			Packages = new XdtoPackageCollection (_packages);
 		}
 
 		[ContextProperty("Пакеты", "Packages")]
@@ -232,7 +232,7 @@ namespace TinyXdto
 		public IXdtoType Type (string uri, string name)
 		{
 
-			var package = Packages.Get (uri);
+			var package = _packages.Find((p) => p.NamespaceUri.Equals(uri, StringComparison.Ordinal));
 			if (package == null)
 				return null;
 
