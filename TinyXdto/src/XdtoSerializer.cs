@@ -61,6 +61,11 @@ namespace TinyXdto
 				var xdtoType = XdtoFactory.Type (s.GetPossibleType (inValue));
 				return s.SerializeXdto (inValue, xdtoType);
 			}
+
+			if (inValue is IXdtoValue)
+			{
+				return inValue as IXdtoValue;
+			}
 			return null;
 		}
 
@@ -128,6 +133,11 @@ namespace TinyXdto
 				}
 			}
 
+			if (xdtoType is XdtoObjectType)
+			{
+				return xdtoObject as XdtoDataObject;
+			}
+
 			throw new XdtoException (String.Format ("Не поддерживается сериализация для {0}", t));
 		}
 
@@ -135,7 +145,12 @@ namespace TinyXdto
 		public IValue ReadXml (XmlReaderImpl reader, TypeTypeValue requestedType = null)
 		{
 			var xdtoValue = XdtoFactory.ReadXml (reader);
-			return ReadXdto (xdtoValue);
+			if (xdtoValue is IXdtoValue)
+			{
+				return ReadXdto(xdtoValue as IXdtoValue);
+			}
+
+			return xdtoValue;
 		}
 
 		[ScriptConstructor]

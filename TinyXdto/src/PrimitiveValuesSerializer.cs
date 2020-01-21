@@ -7,6 +7,7 @@ at http://mozilla.org/MPL/2.0/.
 using System;
 using ScriptEngine.Machine;
 using System.Xml;
+using TinyXdto.W3Org.XmlSchema;
 
 namespace TinyXdto
 {
@@ -24,6 +25,11 @@ namespace TinyXdto
 		public IXdtoValue SerializeXdto (IValue value, IXdtoType requestedType)
 		{
 			var rawValue = value.GetRawValue ();
+
+			if (requestedType == null)
+			{
+				requestedType = GetPrimitiveValueType(value);
+			}
 
 			if (rawValue.DataType == DataType.Undefined) {
 				return null;
@@ -65,6 +71,27 @@ namespace TinyXdto
 
 			if (rawValue.DataType == DataType.String) {
 				return new XmlDataType ("string");
+			}
+			return null;
+		}
+
+		public XdtoValueType GetPrimitiveValueType(IValue value)
+		{
+			var rawValue = value.GetRawValue ();
+			if (rawValue.DataType == DataType.Boolean) {
+				return W3OrgXmlSchemaPackage.Create().Get("boolean") as XdtoValueType;
+			}
+
+			if (rawValue.DataType == DataType.Date) {
+				return W3OrgXmlSchemaPackage.Create().Get("dateTime") as XdtoValueType;
+			}
+
+			if (rawValue.DataType == DataType.Number) {
+				return W3OrgXmlSchemaPackage.Create().Get("decimal") as XdtoValueType;
+			}
+
+			if (rawValue.DataType == DataType.String) {
+				return W3OrgXmlSchemaPackage.Create().Get("string") as XdtoValueType;
 			}
 			return null;
 		}

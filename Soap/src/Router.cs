@@ -300,8 +300,8 @@ namespace OneScript.Soap
 			{
 				var paramName = pv.LocalName;
 				var p = op.Parameters.Get(paramName);
-				var xdtoValue = callParams.Get(pv);
-				var ivalue = S.ReadXdto(xdtoValue as IXdtoValue);
+				var xdtoValue = callParams.GetXdto(pv);
+				var ivalue = S.ReadXdto(xdtoValue);
 
 				if (p.ParameterDirection != ParameterDirectionEnum.In)
 				{

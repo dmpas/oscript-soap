@@ -19,6 +19,7 @@ namespace TinyXdto
 		private readonly Dictionary<XdtoProperty, IValue> _data = new Dictionary<XdtoProperty, IValue> ();
 		private readonly XdtoObjectType _type;
 		private readonly XdtoSequence _sequence;
+		private readonly PrimitiveValuesSerializer _pv = new PrimitiveValuesSerializer();
 
 		internal XdtoDataObject (XdtoObjectType type, XdtoDataObject owner, XdtoProperty property)
 		{
@@ -120,9 +121,20 @@ namespace TinyXdto
 		}
 
 		[ContextMethod("ПолучитьXDTO", "GetXDTO")]
-		public IXdtoValue GetXdto (XdtoProperty property)
+		public IXdtoValue GetXdto(XdtoProperty property)
 		{
-			return Get (property) as IXdtoValue;
+			var value = Get(property);
+			if (value is IXdtoValue)
+			{
+				return value as IXdtoValue;
+			}
+
+			if (property.Type is XdtoValueType)
+			{
+				return new XdtoDataValue(property.Type as XdtoValueType, value.AsString(), value);
+			}
+
+			return _pv.SerializeXdto(value, null);
 		}
 
 		[ContextMethod("ПолучитьXDTO", "GetXDTO")]

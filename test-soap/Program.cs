@@ -101,6 +101,7 @@ namespace testsoap
 			decimal testValue = Decimal.Divide(152, 10);
 
 			var calls = new Dictionary<string, IValue>();
+			
 			calls["Number"] = ValueFactory.Create(testValue);
 			calls["Float"] = ValueFactory.Create(testValue);
 			calls["String"] = ValueFactory.Create("<&>");
@@ -108,6 +109,12 @@ namespace testsoap
 			calls["Bool"] = ValueFactory.Create(false);
 			// calls ["Fault"] = ValueFactory.Create ("123");
 
+			var typeObject = proxy.XdtoFactory.Type("http://example.com/soap-mixed", "Object");
+			var objectObject = proxy.XdtoFactory.Create(typeObject) as XdtoDataObject;
+			
+			objectObject.Set("Property", ValueFactory.Create("property value"));
+
+			calls["Object"] = objectObject;
 
 			foreach (var callData in calls)
 			{
@@ -128,7 +135,7 @@ namespace testsoap
 
 		private void StartEngine()
 		{
-			var Environment =new RuntimeEnvironment(); 
+			var Environment = new RuntimeEnvironment(); 
 			engine = new ScriptingEngine();
 			engine.Environment = Environment;
 			engine.AttachAssembly(System.Reflection.Assembly.GetAssembly(typeof(XmlReaderImpl)), Environment);
@@ -263,21 +270,67 @@ namespace testsoap
 			}
 		}
 
+		public void TestRouter()
+		{
+			var router = new Router("OneService", "http://oscript.io/example/");
+			router.AddHandler(new RouterTest());
+
+			// Console.WriteLine(router.GenerateWsdl());
+			
+			var xmlBody = XmlWriterImpl.Create ();
+			
+			xmlBody.SetString (ValueFactory.Create("UTF-8"));
+
+			xmlBody.WriteStartElement ("soap:Envelope");
+			xmlBody.WriteNamespaceMapping ("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			xmlBody.WriteNamespaceMapping ("xsd", "http://www.w3.org/2001/XMLSchema");
+			xmlBody.WriteNamespaceMapping ("soap", "http://schemas.xmlsoap.org/soap/envelope/");
+			xmlBody.WriteNamespaceMapping ("s", "http://oscript.io/example/");
+
+			xmlBody.WriteStartElement ("soap:Body");
+			
+			xmlBody.WriteStartElement ("s:Sum");
+			
+			xmlBody.WriteStartElement ("s:p0");
+			xmlBody.WriteAttribute("xsi:type", "xsd:decimal");
+			xmlBody.WriteText("1");
+			xmlBody.WriteEndElement (); // s:p0
+
+			xmlBody.WriteStartElement ("s:p1");
+			xmlBody.WriteAttribute("xsi:type", "xsd:decimal");
+			xmlBody.WriteText("2");
+			xmlBody.WriteEndElement (); // s:p1
+			
+			xmlBody.WriteEndElement (); // s:Sum
+			
+			xmlBody.WriteEndElement (); // soap:Body
+			xmlBody.WriteEndElement (); // soap:Envelope
+
+			var requestString = xmlBody.Close ().ToString();
+
+			Console.WriteLine(requestString);
+			
+			var responseString = router.Handle(requestString);
+			
+			Console.WriteLine(responseString);
+		}
+
 		public void Run()
 		{
 			Check_AllClassesAreIValues();
 
 			StartEngine();
 
-			TestUnnamedComplexType();
+			// TestUnnamedComplexType();
 
 			// TestModel();
 			// TestAllModels();
 
-			TestXdto();
+			// TestXdto();
 
-			TestEchoService ();
+			// TestEchoService ();
 			// TestWsdl ();
+			TestRouter();
 		}
 
 		public static void Main(string[] args)

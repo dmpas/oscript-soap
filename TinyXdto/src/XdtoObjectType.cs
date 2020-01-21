@@ -315,7 +315,7 @@ namespace TinyXdto
 //
 //					} else {
 //
-						result.Set (property, ValueFactory.Create(elementValue));
+						result.Set (property, elementValue);
 //
 //					}
 

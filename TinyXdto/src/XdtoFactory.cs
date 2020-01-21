@@ -21,7 +21,7 @@ namespace TinyXdto
 	[ContextClass("TinyФабрикаXDTO", "TinyXDTOFactory")]
 	public class XdtoFactory : AutoContext<XdtoFactory>
 	{
-		private new List<XdtoPackage> _packages = new List<XdtoPackage>();
+		private List<XdtoPackage> _packages = new List<XdtoPackage>();
 			
 		public XdtoFactory ()
 			: this (new XdtoPackage [] { } )
@@ -164,7 +164,7 @@ namespace TinyXdto
 
 				var typeAssignment = XmlTypeAssignmentEnum.Explicit;
 
-				var value = obj.Get (property) as IXdtoValue;
+				var value = obj.GetXdto (property);
 				if (value != null || property.Nillable)
 				{
 					WriteXml(xmlWriter, value,
@@ -284,7 +284,8 @@ namespace TinyXdto
 			                              value);
 		}
 
-		public IXdtoValue ReadXml (XmlReaderImpl reader, IXdtoType type = null)
+		[ContextMethod("ПрочитатьXML", "ReadXML")]
+		public IValue ReadXml (XmlReaderImpl reader, IXdtoType type = null)
 		{
 			if (reader.MoveToContent() == null)
 			{
@@ -322,7 +323,7 @@ namespace TinyXdto
 			}
 
 			if (type is XdtoObjectType) {
-				return type.Reader.ReadXml (reader, type, this);
+				return ValueFactory.Create(type.Reader.ReadXml (reader, type, this));
 			}
 
 			var xmlNodeTypeEnum = XmlNodeTypeEnum.CreateInstance ();
@@ -333,7 +334,9 @@ namespace TinyXdto
 				}
 				var result = type.Reader.ReadXml (reader, type, this);
 				reader.Skip ();
-				return result;
+
+				var pd = new PrimitiveValuesSerializer();
+				return pd.DeserializeXdto(result);
 			}
 
 			throw new NotSupportedException ("Неожиданный тип XDTO!");

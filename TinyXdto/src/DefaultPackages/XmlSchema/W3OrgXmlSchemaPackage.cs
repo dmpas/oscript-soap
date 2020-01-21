@@ -16,8 +16,15 @@ namespace TinyXdto.W3Org.XmlSchema
 		static readonly IXdtoReader booleanReader = new BooleanReader ();
 		static readonly IXdtoReader dateTimeReader = new DateTimeReader ();
 
+		private static XdtoPackage _w3package;
+
 		public static XdtoPackage Create ()
 		{
+			if (_w3package != null)
+			{
+				return _w3package;
+			}
+
 			var types = new List<IXdtoType> ();
 
 			types.Add (new XdtoValueType (new XmlDataType ("anySimpleType"), stringReader));
@@ -50,7 +57,8 @@ namespace TinyXdto.W3Org.XmlSchema
 			types.Add (new XdtoValueType (new XmlDataType ("dateTime"),      dateTimeReader));
 			types.Add (new XdtoValueType (new XmlDataType ("time"),          dateTimeReader));
 
-			return new XdtoPackage (XmlNs.xs, types);
+			_w3package = new XdtoPackage (XmlNs.xs, types);
+			return _w3package;
 		}
 	}
 }
