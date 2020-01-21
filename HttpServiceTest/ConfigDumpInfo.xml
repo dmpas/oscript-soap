@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ConfigDumpInfo xmlns="http://v8.1c.ru/8.3/xcf/dumpinfo" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" format="Hierarchical" version="2.9">
 	<ConfigVersions>
-		<Metadata name="Configuration.HttpServiceTest" id="5a1af3d8-a28a-428f-bd56-6827cfadd056" configVersion="6352c03b3461dc428772f4f84e5cd89900000000"/>
+		<Metadata name="Configuration.HttpServiceTest" id="5a1af3d8-a28a-428f-bd56-6827cfadd056" configVersion="331251bbff7a0f4aa9745ab3348ca45200000000"/>
 		<Metadata name="Language.Русский" id="624d525b-4c3d-4b7b-a033-0b6f4acf3093" configVersion="7ddaad46c6ff734da84694afa5c792af00000000"/>
 		<Metadata name="Role.ПолныеПрава" id="6a9aab97-15bc-4714-9d08-8cc764c6ef90" configVersion="2867c3c0764d6248b858debcccbfbda400000000"/>
 		<Metadata name="Role.ПолныеПрава.Rights" id="6a9aab97-15bc-4714-9d08-8cc764c6ef90.0" configVersion="a261066660776642b528e79eed70c46100000000"/>
-		<Metadata name="WebService.EchoService" id="7d3a6fd3-6db2-4e0c-a917-b2e8ba6f5fb9" configVersion="9d2f99b4d600c9418b492d579fd74b3400000000">
+		<Metadata name="WebService.EchoService" id="7d3a6fd3-6db2-4e0c-a917-b2e8ba6f5fb9" configVersion="770560586074d44eacaf071aff8f0d5800000000">
 			<Metadata name="WebService.EchoService.Operation.EchoDateTime.Parameter.param" id="086bf65d-c703-4c47-9fb5-fb536904ab34"/>
 			<Metadata name="WebService.EchoService.Operation.EchoDateTime" id="2bf44aa6-312c-4cd9-b345-0140626c7cc2"/>
 			<Metadata name="WebService.EchoService.Operation.WhoAmI" id="3605682c-9df6-462e-93dd-0bef395c022b"/>
@@ -14,10 +14,14 @@
 			<Metadata name="WebService.EchoService.Operation.EchoNumber.Parameter.param" id="6800aeec-c963-4176-a85d-232fce617b97"/>
 			<Metadata name="WebService.EchoService.Operation.EchoBool.Parameter.param" id="8b035f45-4ac9-4064-ba5a-669922952b7e"/>
 			<Metadata name="WebService.EchoService.Operation.EchoString.Parameter.param" id="a5a949da-e928-4044-af17-4a6cc8b29024"/>
+			<Metadata name="WebService.EchoService.Operation.EchoObject.Parameter.param" id="af650edf-1bf3-450b-a1df-c79d1c538d60"/>
 			<Metadata name="WebService.EchoService.Operation.EchoNumber" id="ce95a19c-ae50-4c61-8c74-39a666e7266a"/>
+			<Metadata name="WebService.EchoService.Operation.EchoObject" id="e4fe0045-8c9a-4f3f-8fd0-f283674afc67"/>
 			<Metadata name="WebService.EchoService.Operation.EchoBool" id="ec62a3ef-fc4a-4960-a468-f3b86408dab4"/>
 			<Metadata name="WebService.EchoService.Operation.EchoString" id="f9b9c562-d36d-415f-b933-e22ed317b2d0"/>
 		</Metadata>
-		<Metadata name="WebService.EchoService.Module" id="7d3a6fd3-6db2-4e0c-a917-b2e8ba6f5fb9.0" configVersion="ab68fa46a1b55440b8a7845893ac92ff00000000"/>
+		<Metadata name="WebService.EchoService.Module" id="7d3a6fd3-6db2-4e0c-a917-b2e8ba6f5fb9.0" configVersion="9839dc0937bd1343a2caa6b019f6e63400000000"/>
+		<Metadata name="XDTOPackage.TestSoap" id="1ace092a-1ab2-44a7-bdc4-fb717d3c7a7a" configVersion="06bc00733a90e941a5206052ae1d88e500000000"/>
+		<Metadata name="XDTOPackage.TestSoap.Package" id="1ace092a-1ab2-44a7-bdc4-fb717d3c7a7a.0" configVersion="788bc67221a6854aad6a6425be8c16c300000000"/>
 	</ConfigVersions>
 </ConfigDumpInfo>

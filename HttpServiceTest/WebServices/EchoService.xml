@@ -11,7 +11,13 @@
 			</Synonym>
 			<Comment/>
 			<Namespace>http://dmpas/echo</Namespace>
-			<XDTOPackages/>
+			<XDTOPackages>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="xr:MDObjectRef">XDTOPackage.TestSoap</xr:Value>
+				</xr:Item>
+			</XDTOPackages>
 			<DescriptorFileName>echo.1cws</DescriptorFileName>
 			<ReuseSessions>AutoUse</ReuseSessions>
 			<SessionMaxAge>20</SessionMaxAge>
@@ -204,6 +210,40 @@
 					<DataLockControlMode>Managed</DataLockControlMode>
 				</Properties>
 				<ChildObjects/>
+			</Operation>
+			<Operation uuid="e4fe0045-8c9a-4f3f-8fd0-f283674afc67">
+				<Properties>
+					<Name>EchoObject</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Echo object</v8:content>
+						</v8:item>
+					</Synonym>
+					<Comment/>
+					<XDTOReturningValueType xmlns:d6p1="http://example.com/soap-mixed">d6p1:Object</XDTOReturningValueType>
+					<Nillable>false</Nillable>
+					<Transactioned>false</Transactioned>
+					<ProcedureName>EchoObject</ProcedureName>
+					<DataLockControlMode>Managed</DataLockControlMode>
+				</Properties>
+				<ChildObjects>
+					<Parameter uuid="af650edf-1bf3-450b-a1df-c79d1c538d60">
+						<Properties>
+							<Name>param</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Param</v8:content>
+								</v8:item>
+							</Synonym>
+							<Comment/>
+							<XDTOValueType xmlns:d8p1="http://example.com/soap-mixed">d8p1:Object</XDTOValueType>
+							<Nillable>false</Nillable>
+							<TransferDirection>In</TransferDirection>
+						</Properties>
+					</Parameter>
+				</ChildObjects>
 			</Operation>
 		</ChildObjects>
 	</WebService>

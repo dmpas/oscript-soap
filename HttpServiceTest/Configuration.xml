@@ -185,6 +185,7 @@
 		<ChildObjects>
 			<Language>Русский</Language>
 			<Role>ПолныеПрава</Role>
+			<XDTOPackage>TestSoap</XDTOPackage>
 			<WebService>EchoService</WebService>
 		</ChildObjects>
 	</Configuration>
