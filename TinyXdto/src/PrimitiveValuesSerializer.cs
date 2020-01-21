@@ -24,7 +24,12 @@ namespace TinyXdto
 
 		public IXdtoValue SerializeXdto (IValue value, IXdtoType requestedType)
 		{
-			var rawValue = value.GetRawValue ();
+			var rawValue = value?.GetRawValue ();
+
+			if (rawValue == null)
+			{
+				return null;
+			}
 
 			if (requestedType == null)
 			{

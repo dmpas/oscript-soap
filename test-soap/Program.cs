@@ -112,6 +112,7 @@ namespace testsoap
 			var typeObject = proxy.XdtoFactory.Type("http://example.com/soap-mixed", "Object");
 			var objectObject = proxy.XdtoFactory.Create(typeObject) as XdtoDataObject;
 			
+			objectObject.Set("BaseProperty", ValueFactory.Create("base property value"));
 			objectObject.Set("Property", ValueFactory.Create("property value"));
 
 			calls["Object"] = objectObject;
@@ -328,9 +329,9 @@ namespace testsoap
 
 			// TestXdto();
 
-			// TestEchoService ();
+			TestEchoService ();
 			// TestWsdl ();
-			TestRouter();
+			// TestRouter();
 		}
 
 		public static void Main(string[] args)

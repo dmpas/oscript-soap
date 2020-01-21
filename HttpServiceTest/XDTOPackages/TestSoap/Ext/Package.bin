@@ -1,0 +1,8 @@
+﻿<package xmlns="http://v8.1c.ru/8.1/xdto" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://example.com/soap-mixed">
+	<objectType name="BaseObject">
+		<property name="BaseProperty" type="xs:string"/>
+	</objectType>
+	<objectType xmlns:d2p1="http://example.com/soap-mixed" name="Object" base="d2p1:BaseObject">
+		<property name="Property" type="xs:string"/>
+	</objectType>
+</package>

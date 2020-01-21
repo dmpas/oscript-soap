@@ -93,7 +93,7 @@ namespace TinyXdto
 						}
 						else
 						{
-							throw new NotImplementedException("Anonymous type...");
+							propertyType = new XdtoObjectType();
 						}
 					}
 
@@ -211,6 +211,23 @@ namespace TinyXdto
 			return BaseType.IsDescendant (type);
 		}
 
+		public IEnumerable<XdtoProperty> AllProperties()
+		{
+			var _baseType = BaseType;
+			while (_baseType != null)
+			{
+				foreach (var property in _baseType.Properties)
+				{
+					yield return property;
+				}
+				_baseType = _baseType.BaseType;
+			}
+			foreach (var property in Properties)
+			{
+				yield return property;
+			}
+		}
+
 		public IXdtoValue ReadXml(XmlReaderImpl reader, IXdtoType expectedType, XdtoFactory factory)
 		{
 			// TODO: дублирование кода в трёх ветках
@@ -233,9 +250,9 @@ namespace TinyXdto
 				var propertyName = reader.LocalName;
 				var attributeNamespace = reader.NamespaceURI;
 				var attributeProperty =
-					Properties.FirstOrDefault(p => p.Form == XmlFormEnum.Attribute
-					                               && p.LocalName.Equals(propertyName)
-					                               && p.NamespaceURI.Equals(attributeNamespace));
+					AllProperties().FirstOrDefault(p => p.Form == XmlFormEnum.Attribute
+					                                  && p.LocalName.Equals(propertyName)
+					                                  && p.NamespaceURI.Equals(attributeNamespace));
 
 				if (attributeProperty == null)
 				{
@@ -264,7 +281,7 @@ namespace TinyXdto
 					// надо найти свойство с Form=Text
 					// оно должно быть одно
 
-					var textProperty = Properties.FirstOrDefault ((p) => p.Form == XmlFormEnum.Text);
+					var textProperty = AllProperties().FirstOrDefault ((p) => p.Form == XmlFormEnum.Text);
 					IXdtoType type;
 					IValue textValue;
 					if (textProperty == null) {
@@ -295,9 +312,9 @@ namespace TinyXdto
 					var localName = reader.LocalName;
 					var ns = reader.NamespaceURI;
 
-					var property = Properties.FirstOrDefault ((p) => p.LocalName.Equals(localName)
-					                                 && p.NamespaceURI.Equals(ns)
-					                                 && p.Form == XmlFormEnum.Element);
+					var property = AllProperties().FirstOrDefault ((p) => p.LocalName.Equals(localName)
+					                                                       && p.NamespaceURI.Equals(ns)
+					                                                       && p.Form == XmlFormEnum.Element);
 					if (property == null) {
 						if (!Open)
 							throw new XdtoException ($"Ошибка разбора XDTO: Получили неизвестный элемент {localName}");

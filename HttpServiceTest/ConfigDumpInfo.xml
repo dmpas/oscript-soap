@@ -21,7 +21,7 @@
 			<Metadata name="WebService.EchoService.Operation.EchoString" id="f9b9c562-d36d-415f-b933-e22ed317b2d0"/>
 		</Metadata>
 		<Metadata name="WebService.EchoService.Module" id="7d3a6fd3-6db2-4e0c-a917-b2e8ba6f5fb9.0" configVersion="9839dc0937bd1343a2caa6b019f6e63400000000"/>
-		<Metadata name="XDTOPackage.TestSoap" id="1ace092a-1ab2-44a7-bdc4-fb717d3c7a7a" configVersion="06bc00733a90e941a5206052ae1d88e500000000"/>
-		<Metadata name="XDTOPackage.TestSoap.Package" id="1ace092a-1ab2-44a7-bdc4-fb717d3c7a7a.0" configVersion="788bc67221a6854aad6a6425be8c16c300000000"/>
+		<Metadata name="XDTOPackage.TestSoap" id="1ace092a-1ab2-44a7-bdc4-fb717d3c7a7a" configVersion="31d6fbbad7751647b13668f3e22f069700000000"/>
+		<Metadata name="XDTOPackage.TestSoap.Package" id="1ace092a-1ab2-44a7-bdc4-fb717d3c7a7a.0" configVersion="b210d53d8f94714582eff4bd0a47af4f00000000"/>
 	</ConfigVersions>
 </ConfigDumpInfo>

@@ -135,11 +135,11 @@ namespace OneScript.Soap
 			xmlBody.WriteEndElement (); // soap:Envelope
 
 			var requestString = xmlBody.Close ().ToString();
-			// Console.WriteLine(requestString); // TODO: Debug
+			Console.WriteLine(requestString); // TODO: Debug
 			var responseText = _transport.Handle (requestString);
 			var xmlResult = XmlReaderImpl.Create () as XmlReaderImpl;
 
-			// Console.WriteLine(responseText); // TODO: Debug
+			Console.WriteLine(responseText); // TODO: Debug
 			// TODO: Отдать на разбор фабрике
 			xmlResult.SetString (responseText);
 

@@ -8,6 +8,7 @@ using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TinyXdto
 {
@@ -20,6 +21,8 @@ namespace TinyXdto
 		private readonly XdtoObjectType _type;
 		private readonly XdtoSequence _sequence;
 		private readonly PrimitiveValuesSerializer _pv = new PrimitiveValuesSerializer();
+		
+		private FixedCollectionOf<XdtoProperty> _typeProperties;
 
 		internal XdtoDataObject (XdtoObjectType type, XdtoDataObject owner, XdtoProperty property)
 		{
@@ -36,14 +39,32 @@ namespace TinyXdto
 			{
 				return;
 			}
+			
+			var allProperties = new List<XdtoProperty>();
+
+			var _baseType = _type.BaseType;
+			while (_baseType != null)
+			{
+				foreach (var typeProperty in _baseType.Properties)
+				{
+					allProperties.Add(typeProperty);
+					if (typeProperty.UpperBound == 1)
+					{
+						Set(typeProperty, null);
+					}
+				}
+				_baseType = _baseType.BaseType;
+			}
 
 			foreach (var typeProperty in _type.Properties)
 			{
+				allProperties.Add(typeProperty);
 				if (typeProperty.UpperBound == 1)
 				{
 					Set(typeProperty, null);
 				}
 			}
+			_typeProperties = new FixedCollectionOf<XdtoProperty>(allProperties);
 		}
 
 		[ContextMethod ("Владелец", "Owner")]
@@ -131,7 +152,7 @@ namespace TinyXdto
 
 			if (property.Type is XdtoValueType)
 			{
-				return new XdtoDataValue(property.Type as XdtoValueType, value.AsString(), value);
+				return new XdtoDataValue(property.Type as XdtoValueType, value?.AsString() ?? "", value);
 			}
 
 			return _pv.SerializeXdto(value, null);
@@ -197,7 +218,7 @@ namespace TinyXdto
 		[ContextMethod ("Установить", "Set")]
 		public void Set (string xpath, IValue value)
 		{
-			var customProperty = _type.Properties.Get (xpath);
+			var customProperty = _typeProperties.Get(xpath);
 			Set(customProperty, value);
 		}
 
@@ -212,7 +233,7 @@ namespace TinyXdto
 		public bool IsSet (string xpath)
 		{
 			// TODO: xpath vs name
-			var customProperty = _type.Properties.Get (xpath);
+			var customProperty = _typeProperties.Get (xpath);
 			return _data.ContainsKey (customProperty);
 		}
 

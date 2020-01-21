@@ -78,9 +78,11 @@
 	
 	ТипОбъекта     = Прокси.ФабрикаXDTO.Тип("http://example.com/soap-mixed", "Object");
 	ОбъектПараметр = Прокси.ФабрикаXDTO.Создать(ТипОбъекта);
+	ОбъектПараметр.Установить("BaseProperty", "base property value");
 	ОбъектПараметр.Установить("Property", "property value"); 
 	Результат = Прокси.EchoObject(ОбъектПараметр);
 	юТест.ПроверитьНеРавенство(Результат, Неопределено, "Прокси.EchoObject(... param ...)");
+	юТест.ПроверитьРавенство(Результат.BaseProperty, "base property value", "Прокси.EchoObject(... param ...)");
 	юТест.ПроверитьРавенство(Результат.Property, "property value", "Прокси.EchoObject(... param ...)");
 	
 КонецПроцедуры
