@@ -1,7 +1,12 @@
 ﻿<package xmlns="http://v8.1c.ru/8.1/xdto" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://example.com/soap-mixed">
 	<import namespace="http://example.com/soap-mixed-base"/>
+	<import namespace="http://example.com/soap-mixed3"/>
 	<objectType xmlns:d2p1="http://example.com/soap-mixed-base" name="Object" base="d2p1:BaseObject">
 		<property name="Property" type="xs:string"/>
 		<property name="ListedProperty" type="xs:string" lowerBound="0" upperBound="-1"/>
+		<property xmlns:d3p1="http://example.com/soap-mixed" name="ListFromOtherPackage" type="d3p1:List" lowerBound="0" upperBound="-1"/>
+	</objectType>
+	<objectType name="List">
+		<property name="name" type="xs:string"/>
 	</objectType>
 </package>

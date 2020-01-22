@@ -187,6 +187,7 @@
 			<Role>ПолныеПрава</Role>
 			<XDTOPackage>TestSoap</XDTOPackage>
 			<XDTOPackage>TestSoapBasePackage</XDTOPackage>
+			<XDTOPackage>Mixed3</XDTOPackage>
 			<WebService>EchoService</WebService>
 		</ChildObjects>
 	</Configuration>
