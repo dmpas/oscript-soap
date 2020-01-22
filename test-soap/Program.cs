@@ -82,17 +82,15 @@ namespace testsoap
 			var methodIndex = proxy.FindMethod("getBasesList");
 			Console.WriteLine($"Method `getBasesList` is {methodIndex}");
 
-			var responseType = proxy.XdtoFactory.Type("http://schemas.xfit.ru/bases1c/1.0", "basesResponse");
-			var responseObject = proxy.XdtoFactory.Create(responseType) as XdtoDataObject;
-			responseObject.Set("success", ValueFactory.Create(true));
+			var responseType = proxy.XdtoFactory.Type("http://xfit.local/1C/Bases1C", "getBasesListResponse");
 			
-			var xwi = new XmlWriterImpl();
-			xwi.SetString();
-			
-			proxy.XdtoFactory.WriteXml(xwi, responseObject, "response");
+			var xri = new XmlReaderImpl();
+			xri.OpenFile(@"D:\temp\testresponse.xml");
+			xri.Read();
+			xri.Read();
+			xri.Read();
 
-			var result = xwi.Close().AsString();
-			Console.WriteLine($"{result}");
+			var response = proxy.XdtoFactory.ReadXml(xri, responseType);
 		}
 
 		public void TestEchoService()
@@ -100,6 +98,7 @@ namespace testsoap
 			var def = new Definitions("http://sv-ws-83-tmp:8084/httpservice/ws/echo.1cws?wsdl", "default", "");
 			var proxy = Proxy.Constructor(def, "http://dmpas/echo", "EchoService", "EchoServiceSoap") as Proxy;
 			proxy.User = "default";
+			proxy.DoDebug = true;
 
 			decimal testValue = Decimal.Divide(152, 10);
 
@@ -334,7 +333,7 @@ namespace testsoap
 			// TestXdto();
 
 			TestEchoService ();
-			// TestWsdl ();
+			TestWsdl ();
 			// TestRouter();
 		}
 
