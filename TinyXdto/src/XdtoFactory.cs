@@ -349,12 +349,16 @@ namespace TinyXdto
 
 			var xmlNodeTypeEnum = XmlNodeTypeEnum.CreateInstance ();
 			var xmlElementStart = xmlNodeTypeEnum.FromNativeValue (XmlNodeType.Element);
+			var xmlElementEnd = xmlNodeTypeEnum.FromNativeValue (XmlNodeType.EndElement);
 			if (type is XdtoValueType) {
 				if (reader.NodeType.Equals (xmlElementStart)) {
 					reader.Read ();
 				}
 				var result = type.Reader.ReadXml (reader, type, this);
-				reader.Skip ();
+				if (!reader.NodeType.Equals(xmlElementEnd))
+				{
+					reader.Skip();
+				}
 
 				var pd = new PrimitiveValuesSerializer();
 				return pd.DeserializeXdto(result);
