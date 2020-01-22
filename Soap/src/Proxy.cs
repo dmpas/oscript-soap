@@ -68,6 +68,8 @@ namespace OneScript.Soap
 		[ContextProperty ("ФабрикаXDTO", "XDTOFactory")]
 		public XdtoFactory XdtoFactory { get; }
 
+		public bool DoDebug { get; set; }
+
 		private MethodInfo GetMethodInfo (Operation operation)
 		{
 			MethodInfo result;
@@ -135,11 +137,19 @@ namespace OneScript.Soap
 			xmlBody.WriteEndElement (); // soap:Envelope
 
 			var requestString = xmlBody.Close ().ToString();
-			// Console.WriteLine(requestString); // TODO: Debug
+			if (DoDebug)
+			{
+				Console.WriteLine(requestString);
+			}
+
 			var responseText = _transport.Handle (requestString);
 			var xmlResult = XmlReaderImpl.Create () as XmlReaderImpl;
 
-			// Console.WriteLine(responseText); // TODO: Debug
+			if (DoDebug)
+			{
+				Console.WriteLine(responseText);
+			}
+
 			// TODO: Отдать на разбор фабрике
 			xmlResult.SetString (responseText);
 
