@@ -1,8 +1,7 @@
 ﻿<package xmlns="http://v8.1c.ru/8.1/xdto" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://example.com/soap-mixed">
-	<objectType name="BaseObject">
-		<property name="BaseProperty" type="xs:string"/>
-	</objectType>
-	<objectType xmlns:d2p1="http://example.com/soap-mixed" name="Object" base="d2p1:BaseObject">
+	<import namespace="http://example.com/soap-mixed-base"/>
+	<objectType xmlns:d2p1="http://example.com/soap-mixed-base" name="Object" base="d2p1:BaseObject">
 		<property name="Property" type="xs:string"/>
+		<property name="ListedProperty" type="xs:string" lowerBound="0" upperBound="-1"/>
 	</objectType>
 </package>

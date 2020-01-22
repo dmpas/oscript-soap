@@ -97,10 +97,17 @@ namespace TinyXdto
 						}
 					}
 
-					properties.Add(new XdtoProperty(
+					var minOccurs = element.MinOccurs;
+					var maxOccurs = string.Equals(element.MaxOccursString, "unbounded", StringComparison.Ordinal)
+							? -1
+							: element.MaxOccurs
+						;
+
+					properties.Add(new XdtoProperty(this, null,
 						XmlFormEnum.Element,
 						element.QualifiedName.Namespace,
 						element.QualifiedName.Name,
+						(int)minOccurs, (int)maxOccurs,
 						propertyType));
 
 				}

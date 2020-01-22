@@ -186,6 +186,7 @@
 			<Language>Русский</Language>
 			<Role>ПолныеПрава</Role>
 			<XDTOPackage>TestSoap</XDTOPackage>
+			<XDTOPackage>TestSoapBasePackage</XDTOPackage>
 			<WebService>EchoService</WebService>
 		</ChildObjects>
 	</Configuration>

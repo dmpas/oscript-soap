@@ -17,6 +17,11 @@
 					<xr:CheckState>0</xr:CheckState>
 					<xr:Value xsi:type="xr:MDObjectRef">XDTOPackage.TestSoap</xr:Value>
 				</xr:Item>
+				<xr:Item>
+					<xr:Presentation/>
+					<xr:CheckState>0</xr:CheckState>
+					<xr:Value xsi:type="xr:MDObjectRef">XDTOPackage.TestSoapBasePackage</xr:Value>
+				</xr:Item>
 			</XDTOPackages>
 			<DescriptorFileName>echo.1cws</DescriptorFileName>
 			<ReuseSessions>AutoUse</ReuseSessions>

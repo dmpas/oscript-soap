@@ -168,14 +168,31 @@ namespace TinyXdto
 
 				var typeAssignment = XmlTypeAssignmentEnum.Explicit;
 
-				var value = obj.GetXdto (property);
-				if (value != null || property.Nillable)
+				if (property.UpperBound != 1)
 				{
-					WriteXml(xmlWriter, value,
-						property.LocalName,
-						property.NamespaceURI,
-						typeAssignment,
-						property.Form);
+					// это список
+					var value = obj.GetList(property) as XdtoList;
+					foreach (var listElement in value)
+					{
+						WriteXml(xmlWriter, listElement,
+							property.LocalName,
+							property.NamespaceURI,
+							typeAssignment,
+							property.Form);
+					}
+				}
+				else
+				{
+
+					var value = obj.GetXdto(property);
+					if (value != null || property.Nillable)
+					{
+						WriteXml(xmlWriter, value,
+							property.LocalName,
+							property.NamespaceURI,
+							typeAssignment,
+							property.Form);
+					}
 				}
 			}
 		}

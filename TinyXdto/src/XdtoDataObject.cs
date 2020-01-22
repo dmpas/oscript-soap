@@ -9,6 +9,7 @@ using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 
 namespace TinyXdto
 {
@@ -22,8 +23,6 @@ namespace TinyXdto
 		private readonly XdtoSequence _sequence;
 		private readonly PrimitiveValuesSerializer _pv = new PrimitiveValuesSerializer();
 		
-		private FixedCollectionOf<XdtoProperty> _typeProperties;
-
 		internal XdtoDataObject (XdtoObjectType type, XdtoDataObject owner, XdtoProperty property)
 		{
 			_type = type;
@@ -40,31 +39,20 @@ namespace TinyXdto
 				return;
 			}
 			
-			var allProperties = new List<XdtoProperty>();
-
-			var _baseType = _type.BaseType;
-			while (_baseType != null)
+			var baseType = _type.BaseType;
+			while (baseType != null)
 			{
-				foreach (var typeProperty in _baseType.Properties)
+				foreach (var typeProperty in baseType.Properties)
 				{
-					allProperties.Add(typeProperty);
-					if (typeProperty.UpperBound == 1)
-					{
-						Set(typeProperty, null);
-					}
+					Set(typeProperty, typeProperty.UpperBound == -1 ? new XdtoList(this, typeProperty) : null);
 				}
-				_baseType = _baseType.BaseType;
+				baseType = baseType.BaseType;
 			}
 
 			foreach (var typeProperty in _type.Properties)
 			{
-				allProperties.Add(typeProperty);
-				if (typeProperty.UpperBound == 1)
-				{
-					Set(typeProperty, null);
-				}
+				Set(typeProperty, typeProperty.UpperBound == -1 ? new XdtoList(this, typeProperty) : null);
 			}
-			_typeProperties = new FixedCollectionOf<XdtoProperty>(allProperties);
 		}
 
 		[ContextMethod ("Владелец", "Owner")]
@@ -167,13 +155,20 @@ namespace TinyXdto
 		[ContextMethod ("ПолучитьСписок", "GetList")]
 		public IValue GetList (XdtoProperty property)
 		{
-			return Get (property) as XdtoList;
+			var v = Get(property) as XdtoList;
+			if (v == null)
+			{
+				v = new XdtoList(this, property);
+				_data[property] = v;
+			}
+			return v;
 		}
 
 		[ContextMethod ("ПолучитьСписок", "GetList")]
 		public XdtoList GetList (string xpath)
 		{
-			return Get (xpath) as XdtoList;
+			var property = Properties().Get(xpath);
+			return GetList (property) as XdtoList;
 		}
 
 		[ContextMethod ("Последовательность", "Sequence")]
@@ -207,6 +202,7 @@ namespace TinyXdto
 		public XdtoPropertyCollection Properties ()
 		{
 			return new XdtoPropertyCollection (_data.Keys);
+			// return new XdtoPropertyCollection(_typeProperties);
 		}
 
 		[ContextMethod ("Тип", "Type")]
@@ -218,7 +214,7 @@ namespace TinyXdto
 		[ContextMethod ("Установить", "Set")]
 		public void Set (string xpath, IValue value)
 		{
-			var customProperty = _typeProperties.Get(xpath);
+			var customProperty = Properties().Get(xpath);
 			Set(customProperty, value);
 		}
 
@@ -233,7 +229,7 @@ namespace TinyXdto
 		public bool IsSet (string xpath)
 		{
 			// TODO: xpath vs name
-			var customProperty = _typeProperties.Get (xpath);
+			var customProperty = Properties().Get (xpath);
 			return _data.ContainsKey (customProperty);
 		}
 

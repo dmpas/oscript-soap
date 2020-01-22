@@ -61,7 +61,8 @@ namespace testsoap
 
 		public void TestWsdl()
 		{
-			var def = new Definitions("http://vm21297.hv8.ru:10080/httpservice/ws/complex.1cws?wsdl", "default");
+			// var def = new Definitions("http://vm21297.hv8.ru:10080/httpservice/ws/complex.1cws?wsdl", "default");
+			var def = new Definitions(@"D:\temp\Bases1C.wsdl", "default");
 			Console.WriteLine("Def has {0} services.", def.Services.Count());
 			foreach (var service in def.Services)
 			{
@@ -76,20 +77,22 @@ namespace testsoap
 				}
 			}
 
-			var proxy = Proxy.Constructor(def, "http://dmpas/complex", "Complex", "ComplexSoap") as Proxy;
+			var proxy = Proxy.Constructor(def, "http://xfit.local/1C/Bases1C", "Bases1C", "Bases1CSoap") as Proxy;
 			proxy.User = "default";
-			int methodIndex = proxy.FindMethod("DoOp");
+			var methodIndex = proxy.FindMethod("getBasesList");
+			Console.WriteLine($"Method `getBasesList` is {methodIndex}");
 
-			var callParams = new List<IValue>();
-			var OpParam = Variable.Create(ValueFactory.Create(), "Op");
-			callParams.Add(OpParam);
-			callParams.Add(ValueFactory.Create(1));
-			callParams.Add(ValueFactory.Create(2));
+			var responseType = proxy.XdtoFactory.Type("http://schemas.xfit.ru/bases1c/1.0", "basesResponse");
+			var responseObject = proxy.XdtoFactory.Create(responseType) as XdtoDataObject;
+			responseObject.Set("success", ValueFactory.Create(true));
+			
+			var xwi = new XmlWriterImpl();
+			xwi.SetString();
+			
+			proxy.XdtoFactory.WriteXml(xwi, responseObject, "response");
 
-			IValue result;
-			proxy.CallAsFunction(methodIndex, callParams.ToArray(), out result);
-
-			Console.WriteLine("The DoOp result is '{0}', Op return is '{1}'", result, OpParam.AsString());
+			var result = xwi.Close().AsString();
+			Console.WriteLine($"{result}");
 		}
 
 		public void TestEchoService()
@@ -114,6 +117,7 @@ namespace testsoap
 			
 			objectObject.Set("BaseProperty", ValueFactory.Create("base property value"));
 			objectObject.Set("Property", ValueFactory.Create("property value"));
+			(objectObject.GetList("ListedProperty") as XdtoList).Add(ValueFactory.Create("Some inner text"));
 
 			calls["Object"] = objectObject;
 

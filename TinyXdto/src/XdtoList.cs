@@ -41,6 +41,14 @@ namespace TinyXdto
 			return value;
 		}
 
+		public IXdtoValue Add (IValue value)
+		{
+			var pv = new PrimitiveValuesSerializer();
+			var xvalue = pv.SerializeXdto(value, null);
+			_data.Add (xvalue);
+			return xvalue;
+		}
+
 		[ContextMethod("Получить", "Get")]
 		public IXdtoValue Get(IValue index)
 		{

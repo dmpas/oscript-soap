@@ -36,5 +36,7 @@
 КонецФункции
 
 Функция EchoObject(param)
+	param.ПолучитьСписок("ListedProperty").Добавить("Text1");
+	param.ПолучитьСписок("ListedProperty").Добавить("Text2");
 	return param;
 КонецФункции
