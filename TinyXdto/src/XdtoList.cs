@@ -31,21 +31,38 @@ namespace TinyXdto
 
 		public override IValue GetIndexedValue (IValue index)
 		{
-			return ValueFactory.Create(GetXdto(index));
+			return Get(index);
+		}
+		
+		public override void SetIndexedValue(IValue index, IValue val)
+		{
+			if (index.DataType == DataType.Number)
+				Set((int)index.AsNumber(), val);
+			else
+				base.SetIndexedValue(index, val);
 		}
 
 		[ContextMethod ("Добавить", "Add")]
-		public IXdtoValue Add (IXdtoValue value)
-		{
-			_data.Add (value);
-			return value;
-		}
-
 		public IXdtoValue Add (IValue value)
 		{
+			var rawValue = value.GetRawValue();
+			if (rawValue is IXdtoValue)
+			{
+				_data.Add(rawValue as IXdtoValue);
+				return rawValue as IXdtoValue;
+			}
 			var pv = new PrimitiveValuesSerializer();
 			var xvalue = pv.SerializeXdto(value, null);
 			_data.Add (xvalue);
+			return xvalue;
+		}
+
+		[ContextMethod("Установить", "Set")]
+		public IXdtoValue Set (int index, IValue value)
+		{
+			var pv = new PrimitiveValuesSerializer();
+			var xvalue = pv.SerializeXdto(value, null);
+			_data[index] = xvalue;
 			return xvalue;
 		}
 
@@ -100,6 +117,10 @@ namespace TinyXdto
 		{
 			foreach (var value in _data)
 			{
+				if (value is XdtoDataValue)
+				{
+					yield return (value as XdtoDataValue).Value;
+				}
 				yield return ValueFactory.Create(value);
 			}
 		}

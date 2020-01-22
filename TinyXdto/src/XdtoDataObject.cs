@@ -97,7 +97,7 @@ namespace TinyXdto
 
 			}
 
-			list.Add (dataElement);
+			list.Add (ValueFactory.Create(dataElement));
 		}
 
 		[ContextMethod ("Добавить", "Add")]
