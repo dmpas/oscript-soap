@@ -31,7 +31,7 @@ namespace TinyXdto
 
 		public override IValue GetIndexedValue (IValue index)
 		{
-			return ValueFactory.Create(Get(index));
+			return ValueFactory.Create(GetXdto(index));
 		}
 
 		[ContextMethod ("Добавить", "Add")]
@@ -50,18 +50,34 @@ namespace TinyXdto
 		}
 
 		[ContextMethod("Получить", "Get")]
-		public IXdtoValue Get(IValue index)
+		public IValue Get(IValue index)
 		{
 			var rawIndex = index.GetRawValue ();
 			if (rawIndex.DataType == DataType.Number)
 			{
-				return Get ((int)rawIndex.AsNumber ());
+				var value = GetXdto ((int)rawIndex.AsNumber ());
+				if (value is XdtoDataValue)
+				{
+					return (value as XdtoDataValue).Value;
+				}
+			}
+
+			throw RuntimeException.InvalidArgumentType ("index");
+		}
+		
+		[ContextMethod("ПолучитьXDTO", "GetXDTO")]
+		public IXdtoValue GetXdto(IValue index)
+		{
+			var rawIndex = index.GetRawValue ();
+			if (rawIndex.DataType == DataType.Number)
+			{
+				return GetXdto ((int)rawIndex.AsNumber ());
 			}
 
 			throw RuntimeException.InvalidArgumentType ("index");
 		}
 
-		public IXdtoValue Get(int index)
+		public IXdtoValue GetXdto(int index)
 		{
 			return _data [index];
 		}

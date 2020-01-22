@@ -270,7 +270,7 @@ namespace TinyXdto
 					var type = factory.Type(new XmlDataType("string"));
 					attributeProperty = new XdtoProperty(null, result, XmlFormEnum.Attribute,
 						NamespaceUri, propertyName,
-						0, -1, type);
+						1, -1, type); // TODO: lower / upper для открытого типа
 				}
 
 				var attributeValue = attributeProperty.Type.Reader.ReadXml(reader, attributeProperty.Type, factory);
@@ -326,22 +326,20 @@ namespace TinyXdto
 						if (!Open)
 							throw new XdtoException ($"Ошибка разбора XDTO: Получили неизвестный элемент {localName}");
 
-						property = new XdtoProperty (null, result, XmlFormEnum.Element, ns, localName);
+						// TODO: lower / upper для открытого типа
+						property = new XdtoProperty(null, result, XmlFormEnum.Element, ns, localName, 1, 1);
 					}
 
 					var elementValue = factory.ReadXml (reader, property.Type);
 
 					// TODO: Разбор anyType
-//					if (Sequenced)
-//					{
-//
-//						result.Sequence().Add(property, ValueFactory.Create(elementValue));
-//
-//					} else {
-//
+					if (property.UpperBound != 1)
+					{
+						// TODO: проверка на null - на отсутствие/наличие списка
+						(result.GetList(property) as XdtoList).Add(elementValue);
+					} else {
 						result.Set (property, elementValue);
-//
-//					}
+					}
 
 				}
 			}

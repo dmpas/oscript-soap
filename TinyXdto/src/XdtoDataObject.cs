@@ -153,6 +153,16 @@ namespace TinyXdto
 		}
 
 		[ContextMethod ("ПолучитьСписок", "GetList")]
+		public IValue GetList (IValue property)
+		{
+			if (property is XdtoProperty)
+			{
+				return GetList(property as XdtoProperty);
+			}
+
+			return GetList(property.AsString());
+		}
+		
 		public IValue GetList (XdtoProperty property)
 		{
 			var v = Get(property) as XdtoList;
@@ -164,11 +174,10 @@ namespace TinyXdto
 			return v;
 		}
 
-		[ContextMethod ("ПолучитьСписок", "GetList")]
-		public XdtoList GetList (string xpath)
+		public IValue GetList (string xpath)
 		{
 			var property = Properties().Get(xpath);
-			return GetList (property) as XdtoList;
+			return GetList (property);
 		}
 
 		[ContextMethod ("Последовательность", "Sequence")]
