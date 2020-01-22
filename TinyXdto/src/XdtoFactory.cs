@@ -80,14 +80,18 @@ namespace TinyXdto
 			{
 				_packages.Add(w3org);
 			}
+			
 			foreach (var schema in schemas) {
-				var package = new XdtoPackage (schema, this); // TODO: фабрика ещё не сформирована!
+				var package = new XdtoPackage (schema, this);
 				if (!_packages.Contains (package)) {
 					_packages.Add (package);
 				}
-				package.BuildPackage();
 			}
 			Packages = new XdtoPackageCollection (_packages);
+			foreach (var package in _packages)
+			{
+				package.BuildPackage();
+			}
 		}
 
 		[ContextProperty("Пакеты", "Packages")]

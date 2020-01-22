@@ -12,6 +12,7 @@ using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace TinyXdto
 {
@@ -21,6 +22,7 @@ namespace TinyXdto
 		private readonly XmlSchema _schema;
 		private readonly XdtoFactory _factory;
 		private readonly List<IXdtoType> _types = new List<IXdtoType> ();
+		private bool _built = false;
 
 		internal XdtoPackage (XmlSchema schema, XdtoFactory factory)
 		{
@@ -34,6 +36,23 @@ namespace TinyXdto
 
 		internal void BuildPackage()
 		{
+			if (_built)
+			{
+				return;
+			}
+			_built = true;
+
+			foreach (var include in _schema.Includes)
+			{
+				if (include is XmlSchemaImport)
+				{
+					var import = include as XmlSchemaImport;
+					var packagetoImport = _factory.Packages.Get(import.Namespace);
+					// TODO: what if null ?
+					packagetoImport?.BuildPackage();
+				}
+			}
+			
 			foreach (var oType in _schema.SchemaTypes) {
 				var dElement = (DictionaryEntry)oType;
 				var type = dElement.Value;
@@ -85,6 +104,7 @@ namespace TinyXdto
 			_types.AddRange (types);
 			Dependencies = new XdtoPackageCollection (new XdtoPackage [] { });
 			RootProperties = new XdtoPropertyCollection (new XdtoProperty [] { });
+			_built = true;
 		}
 
 		[ContextProperty ("URIПространстваИмен", "NamespaceURI")]
