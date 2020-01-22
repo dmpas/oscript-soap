@@ -77,6 +77,8 @@ namespace TinyXdto
 				{
 					return (value as XdtoDataValue).Value;
 				}
+
+				return ValueFactory.Create(value);
 			}
 
 			throw RuntimeException.InvalidArgumentType ("index");

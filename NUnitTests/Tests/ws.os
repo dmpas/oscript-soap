@@ -86,6 +86,12 @@
 	юТест.ПроверитьРавенство(Результат.Property, "property value", "Прокси.EchoObject(... param ...)");
 	
 	Список = Результат.ПолучитьСписок("ListedProperty");
+	Для Каждого мЭлементСписка Из Список Цикл
+	
+	    // Проверяем, что работает пробег циклом
+	
+    КонецЦикла;
+    
 	юТест.ПроверитьРавенство(2, Список.Количество(), "Прокси.EchoObject(... param ...).List.Count");
     юТест.ПроверитьРавенство(Список.Получить(0), "Text1", "Прокси.EchoObject(... param ...).List.Get[0]");
 	юТест.ПроверитьРавенство(Список.Получить(1), "Text2", "Прокси.EchoObject(... param ...).List.Get[1]");
@@ -99,6 +105,12 @@
 	    // Проверяем, что работает пробег циклом
 	
     КонецЦикла;
+	
+    юТест.ПроверитьРавенство(Результат.ListFromOtherPackage.Получить(0).name, "123", "Прокси.EchoObject(... param ...).ListFromOtherPackage.Get[0]");
+	юТест.ПроверитьРавенство(Результат.ListFromOtherPackage.Получить(1).name, "456", "Прокси.EchoObject(... param ...).ListFromOtherPackage.Get[1]");
+	
+	юТест.ПроверитьРавенство(Результат.ListFromOtherPackage[0].name, "123", "Прокси.EchoObject(... param ...).ListFromOtherPackage[0]");
+	юТест.ПроверитьРавенство(Результат.ListFromOtherPackage[1].name, "456", "Прокси.EchoObject(... param ...).ListFromOtherPackage[1]");
 	
 КонецПроцедуры
 
