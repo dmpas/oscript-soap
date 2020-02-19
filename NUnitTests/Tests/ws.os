@@ -29,7 +29,7 @@
 
 Процедура ТестДолжен_ПроверитьЧтоСоздается() Экспорт
 
-	Определения = Новый WSОпределения("http://sv-ws-83-tmp:8084/httpservice/ws/echo.1cws?wsdl", "default");
+	Определения = Новый WSОпределения("http://bl-3/httpservice/ws/echo.1cws?wsdl", "default");
 	Прокси = Новый WSПрокси(Определения, "http://dmpas/echo", "EchoService", "EchoServiceSoap");
 	Прокси.Пользователь = "default";
 
@@ -78,6 +78,7 @@
 	
 	ТипОбъекта     = Прокси.ФабрикаXDTO.Тип("http://example.com/soap-mixed", "Object");
 	ОбъектПараметр = Прокси.ФабрикаXDTO.Создать(ТипОбъекта);
+	юТест.ПроверитьРавенство(ТипЗнч(ОбъектПараметр), Тип("ОбъектXDTO"), "Создан тип объекта XDTO");
 	ОбъектПараметр.Установить("BaseProperty", "base property value");
 	ОбъектПараметр.Установить("Property", "property value"); 
 	Результат = Прокси.EchoObject(ОбъектПараметр);

@@ -44,13 +44,14 @@ namespace NUnitTests
 			engine.AttachAssembly (System.Reflection.Assembly.GetAssembly (typeof (EngineHelpWrapper)));
 
 			var testrunnerSource = LoadFromAssemblyResource ("NUnitTests.Tests.testrunner.os");
-			var testrunnerModule = engine.GetCompilerService ().CreateModule (testrunnerSource);
-
-			engine.LoadUserScript (new ScriptEngine.UserAddedScript () {
-				Type = ScriptEngine.UserAddedScriptType.Class, Module = testrunnerModule, Symbol = "TestRunner"
-			});
-
-			var testRunner = AttachedScriptsFactory.ScriptFactory ("TestRunner", new IValue [] { });
+			var moduleByteCode = engine.GetCompilerService().Compile(testrunnerSource);
+			var testrunnerModule = engine.EngineInstance.LoadModuleImage(moduleByteCode);
+			
+			var testRunner = new UserScriptContextInstance(testrunnerModule);
+			testRunner.AddProperty("ЭтотОбъект", "ThisObject", testRunner);
+			testRunner.InitOwnData();
+			testRunner.Initialize();
+			
 			TestRunner = ValueFactory.Create (testRunner);
 
 			var testRootDir = ValueFactory.Create(TestContext.CurrentContext.TestDirectory);
@@ -63,13 +64,14 @@ namespace NUnitTests
 		public void RunTestScript (string resourceName)
 		{
 			var source = LoadFromAssemblyResource (resourceName);
-			var module = engine.GetCompilerService ().CreateModule (source);
+			var byteCode = engine.GetCompilerService().Compile(source);
+			var module = engine.EngineInstance.LoadModuleImage(byteCode);
 
-			engine.LoadUserScript (new ScriptEngine.UserAddedScript () {
-				Type = ScriptEngine.UserAddedScriptType.Class, Module = module, Symbol = resourceName
-			});
+			var test = new UserScriptContextInstance(module);
+			test.AddProperty("ЭтотОбъект", "ThisObject", test);
+			test.InitOwnData();
+			test.Initialize();
 			
-			var test = AttachedScriptsFactory.ScriptFactory (resourceName, new IValue [] { });
 			ArrayImpl testArray;
 			{
 				int methodIndex = test.FindMethod ("ПолучитьСписокТестов");

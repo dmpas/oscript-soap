@@ -249,7 +249,6 @@ namespace TinyXdto
 				throw new NotSupportedException ("Какой-то новый тип для XML");
 		}
 
-		[ContextMethod ("Тип", "Type")]
 		public IXdtoType Type (string uri, string name)
 		{
 
@@ -266,7 +265,6 @@ namespace TinyXdto
 			return Type (new XmlDataType (xmlType.Name, xmlType.Namespace));
 		}
 
-		[ContextMethod("Тип", "Type")]
 		public IXdtoType Type (IValue xmlType)
 		{
 			if (xmlType is XmlDataType)
@@ -276,6 +274,33 @@ namespace TinyXdto
 				return Type ((xmlType as XmlExpandedName).NamespaceUri, (xmlType as XmlExpandedName).LocalName);
 
 			throw RuntimeException.InvalidArgumentType (nameof (xmlType));
+		}
+
+		[ContextMethod("Тип", "Type")]
+		public IXdtoType Type_External(IValue p1, IValue p2 = null)
+		{
+			var p1Raw = p1?.GetRawValue();
+			var p2Raw = p2?.GetRawValue();
+
+			if (p2Raw == null || p2Raw.DataType == DataType.Undefined)
+			{
+				return Type(p1Raw);
+			}
+
+			var uri = p1Raw?.AsString();
+			var name = p2Raw?.AsString();
+
+			if (uri == null)
+			{
+				throw RuntimeException.InvalidArgumentType("uri");
+			}
+
+			if (name == null)
+			{
+				throw RuntimeException.InvalidArgumentType("name");
+			}
+
+			return Type(uri, name);
 		}
 
 		[ContextMethod ("Создать", "Create")]

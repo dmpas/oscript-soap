@@ -8,8 +8,6 @@ using System;
 using ScriptEngine.Machine.Contexts;
 using ScriptEngine.Machine;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
 
 namespace TinyXdto
 {
@@ -111,7 +109,6 @@ namespace TinyXdto
 			Add (property, dataElement);
 		}
 
-		[ContextMethod("Получить", "Get")]
 		public IValue Get (XdtoProperty property)
 		{
 			if (property != null && _data.ContainsKey (property))
@@ -121,12 +118,23 @@ namespace TinyXdto
 			return ValueFactory.Create ();
 		}
 
-		[ContextMethod("Получить", "Get")]
 		public IValue Get (string xpath)
 		{
 			// TODO: xpath не только name
 			var innerProperty = Properties().Get (xpath);
 			return Get (innerProperty);
+		}
+		
+		[ContextMethod("Получить", "Get")]
+		public IValue Get_External(IValue xpath)
+		{
+			var rawPath = xpath?.GetRawValue();
+			if (rawPath is XdtoProperty)
+			{
+				return Get(rawPath as XdtoProperty);
+			}
+
+			return Get(rawPath.AsString());
 		}
 
 		[ContextMethod("ПолучитьXDTO", "GetXDTO")]
@@ -220,18 +228,30 @@ namespace TinyXdto
 			return _type;
 		}
 
-		[ContextMethod ("Установить", "Set")]
 		public void Set (string xpath, IValue value)
 		{
 			var customProperty = Properties().Get(xpath);
 			Set(customProperty, value);
 		}
 
-		[ContextMethod ("Установить", "Set")]
 		public void Set (XdtoProperty property, IValue value)
 		{
 			RegisterProperty(property.LocalName);
 			_data [property] = value;
+		}
+
+		[ContextMethod ("Установить", "Set")]
+		public void Set (IValue property, IValue value)
+		{
+			var rawProperty = property?.GetRawValue();
+			if (rawProperty is XdtoProperty)
+			{
+				Set(rawProperty as XdtoProperty, value);
+			}
+			else
+			{
+				Set(rawProperty.AsString(), value);
+			}
 		}
 
 		[ContextMethod ("Установлено", "IsSet")]
